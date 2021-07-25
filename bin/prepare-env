@@ -13,6 +13,7 @@ export INSTALL_SWAP_SIZE
 export INSTALL_GRUB_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 
+export INSTALL_LVM_DEVICE=$INSTALL_OS_DEVICE
 export INSTALL_ROOT_DEVICE=/dev/mapper/vg-root
 export INSTALL_SWAP_DEVICE=/dev/mapper/vg-swap
 
@@ -21,12 +22,11 @@ if ask "Enable luks encryption?"; then
     export INSTALL_LUKS_DEVICE=$INSTALL_OS_DEVICE
     export INSTALL_LUKS_NAME=lvm
     export INSTALL_LUKS_KEYFILE=$PWD/keyfile-$INSTALL_LUKS_NAME.bin
-    export INSTALL_LVM_DEVICE=/dev/mapper/lvm
 
     INSTALL_LUKS_PASSPHRASE=$(input-secret "encryption passphrase")
     export INSTALL_LUKS_PASSPHRASE
-else
-    export INSTALL_LVM_DEVICE=$INSTALL_OS_DEVICE
+
+    export INSTALL_LVM_DEVICE=/dev/mapper/lvm
 fi
 
 INSTALL_LANG=$(input-required locale en_US.UTF-8)

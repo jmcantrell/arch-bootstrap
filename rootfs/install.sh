@@ -16,9 +16,9 @@ hwclock --systohc --utc
 
 echo "%wheel ALL=(ALL) ${INSTALL_SUDOER_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
 
-useradd -m "$INSTALL_SUDOER_USERNAME" -G users,wheel -s /bin/zsh
+useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel --shell /bin/zsh
 chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
-passwd -d root
+passwd --delete root
 
 systemctl enable ntpd.service
 
@@ -36,11 +36,11 @@ systemctl enable atd.service
 
 systemctl enable iwd.service
 
-gpasswd -a "$INSTALL_SUDOER_USERNAME" locate
+gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
 systemctl enable plocate-updatedb.timer
 
 if [[ ${INSTALL_VIRTUALBOX:-0} == 1 ]]; then
     pacman -S --noconfirm --needed virtualbox-guest-utils-nox
     systemctl enable vboxservice.service
-    gpasswd -a "$INSTALL_SUDOER_USERNAME" vboxsf
+    gpasswd --add "$INSTALL_SUDOER_USERNAME" vboxsf
 fi

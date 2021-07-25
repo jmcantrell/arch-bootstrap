@@ -2,4 +2,7 @@
 
 set -euo pipefail
 
-remove-comments packages | xargs -r pacstrap /mnt
+readarray -t packages <./packages
+[[ -v INSTALL_CPU ]] && packages+=("$INSTALL_CPU"-ucode)
+
+pacstrap /mnt "${packages[@]}"

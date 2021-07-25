@@ -5,7 +5,7 @@ set -euo pipefail
 reply=$(input "$@")
 
 if [[ -z $reply ]]; then
-    echo "ERROR: input value cannot be empty" >&2
+    echo "${0##*/}: input value cannot be empty" >&2
     exit 1
 fi
 

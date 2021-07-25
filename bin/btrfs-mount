@@ -3,10 +3,7 @@
 set -euo pipefail
 
 options=autodefrag,compress=lzo
-
-if [[ ${INSTALL_SSD:-0} == 1 ]]; then
-    options+=ssd,discard
-fi
+[[ ${INSTALL_SSD:-0} == 1 ]] && options+=ssd,discard
 
 btrfs-subvolumes | while read -r subvol; do
     mnt=/mnt/${subvol#@}

@@ -2,22 +2,19 @@
 
 set -euo pipefail
 
+grub_enable_cryptodisk=n
 grub_preload_modules=(part_gpt part_msdos lvm)
 grub_cmdline_linux=(resume="${INSTALL_SWAP_DEVICE}" root="${INSTALL_ROOT_DEVICE}")
-grub_enable_cryptodisk=n
 
 if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
-    partuuid=$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE")
-    cryptdevice=PARTUUID=$partuuid:$INSTALL_LUKS_NAME
-
-    grub_preload_modules=(part_gpt part_msdos cryptodisk luks lvm)
-    grub_cmdline_linux=(cryptdevice="${cryptdevice}" "${grub_cmdline_linux[@]}")
     grub_enable_cryptodisk=y
+    grub_preload_modules+=(cryptodisk luks)
+    grub_cmdline_linux+=("cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
 fi
 
-export GRUB_PRELOAD_MODULES="${grub_preload_modules[*]}"
-export GRUB_CMDLINE_LINUX="${grub_cmdline_linux[*]}"
 export GRUB_ENABLE_CRYPTODISK=$grub_enable_cryptodisk
+export GRUB_PRELOAD_MODULES=${grub_preload_modules[*]}
+export GRUB_CMDLINE_LINUX=${grub_cmdline_linux[*]}
 
 cp -a /mnt/etc/default/grub{,.pacnew}
 envsubst <./templates/etc/default/grub >/mnt/etc/default/grub

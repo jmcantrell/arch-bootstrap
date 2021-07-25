@@ -4,24 +4,13 @@ set -euo pipefail
 
 question=$1
 default=${2:-}
+default_desc=yn
 
-if [[ $default != y && $default != n ]]; then
-    default=n
-fi
+[[ $default_desc != *$default* ]] && default=n
 
-if [[ $default == y ]]; then
-    given=Yn
-else
-    given=yN
-fi
-
-prompt="$question [$given]: "
-
-read -r -n1 -p "$prompt" reply
+read -r -n1 -p "$question [${default_desc^^$default}]: " reply
 echo >&2
 
 reply=${reply:-$default}
 
-if [[ $reply != y && $reply != Y ]]; then
-    exit 1
-fi
+[[ ${reply,,} == y ]]

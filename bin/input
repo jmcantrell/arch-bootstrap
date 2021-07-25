@@ -5,12 +5,6 @@ set -euo pipefail
 name=$1
 default=${2:-}
 
-prompt="Enter $name"
+read -r -p "Enter ${name}${default:+ [$default]}: " reply
 
-[[ -n $default ]] && prompt+=" [$default]"
-
-read -r -p "$prompt: " reply
-
-[[ -z $reply ]] && reply=$default
-
-echo "$reply"
+echo "${reply:-$default}"

@@ -7,7 +7,6 @@ btrfs-progs
 curl
 git
 grub-bios
-intel-ucode
 iptables-nft
 iwd
 linux

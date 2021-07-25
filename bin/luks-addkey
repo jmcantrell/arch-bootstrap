@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+touch "$INSTALL_LUKS_KEYFILE"
+chmod 000 "$INSTALL_LUKS_KEYFILE"
+dd bs=512 count=8 if=/dev/urandom of="$INSTALL_LUKS_KEYFILE"
+
+cryptsetup luksAddKey "$INSTALL_LUKS_DEVICE" "$INSTALL_LUKS_KEYFILE" <<<"$INSTALL_LUKS_PASSPHRASE"

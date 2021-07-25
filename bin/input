@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+name=$1
+default=${2:-}
+
+prompt="Enter $name"
+
+[[ -n $default ]] && prompt+=" [$default]"
+
+read -r -p "$prompt: " reply
+
+[[ -z $reply ]] && reply=$default
+
+echo "$reply"

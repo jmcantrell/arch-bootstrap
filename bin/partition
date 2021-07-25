@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+parted -s "$INSTALL_DEVICE" \
+    mklabel gpt unit MiB \
+    mkpart boot 0% 2 \
+    set 1 bios_grub on \
+    mkpart os 2 100% \
+    set 2 lvm on

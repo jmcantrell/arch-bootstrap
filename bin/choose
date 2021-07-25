@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+name=$1
+shift
+
+prompt="Choose $name"
+
+echo "$prompt:" >&2
+
+select reply in "$@"; do
+    break
+done
+
+if [[ $reply ]]; then
+    echo "$reply"
+else
+    exit 1
+fi

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Show disk summary to help decision.
+lsblk -pd -o "NAME,SIZE,TYPE,STATE,VENDOR,MODEL" | grep -E '(NAME|disk)' >&2
+
+# Get an array of all disk devices.
+readarray -t disks < <(lsblk -pld -o NAME,TYPE | tail -n+2 | grep '\bdisk\b' | awk '{print $1}')
+
+choose "$@" "${disks[@]}"

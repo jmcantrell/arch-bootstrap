@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+grep -wq 0 /sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational && export INSTALL_SSD=1
+
+grep -wq GenuineIntel /proc/cpuinfo && export INSTALL_INTEL=1
+
+systemd-detect-virt | grep -wq oracle && export INSTALL_VIRTUALBOX=1

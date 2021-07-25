@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+question=$1
+default=${2:-}
+
+if [[ $default != y && $default != n ]]; then
+    default=n
+fi
+
+if [[ $default == y ]]; then
+    given=Yn
+else
+    given=yN
+fi
+
+prompt="$question [$given]: "
+
+read -r -n1 -p "$prompt" reply
+echo >&2
+
+reply=${reply:-$default}
+
+if [[ $reply != y && $reply != Y ]]; then
+    exit 1
+fi

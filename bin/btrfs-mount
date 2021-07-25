@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+options=autodefrag,compress=lzo
+
+if [[ ${INSTALL_SSD:-0} == 1 ]]; then
+    options+=ssd,discard
+fi
+
+btrfs-subvolumes | while read -r subvol; do
+    mnt=/mnt/${subvol#@}
+    mkdir -p "$mnt"
+    mount -o "$options,subvol=$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
+done

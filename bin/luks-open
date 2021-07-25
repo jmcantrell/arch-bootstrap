@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cryptsetup open --type luks1 \
+    ${INSTALL_SSD:+--allow-discards} \
+    "$INSTALL_LUKS_DEVICE" "$INSTALL_LUKS_NAME" <<<"$INSTALL_LUKS_PASSPHRASE"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+btrfs-subvolumes | tac | while read -r subvol; do
+    umount /mnt/"${subvol#@}"
+done

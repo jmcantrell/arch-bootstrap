@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+swapon ${INSTALL_SSD:+--discard} "$INSTALL_SWAP_DEVICE"

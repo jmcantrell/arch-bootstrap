@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Remove commented lines, trailing comments, and blank lines.
+
+set -euo pipefail
+
+sed "/^[[:space:]]*#.*/d;s/#.*//;/^[[:space:]]*$/d" "$@"

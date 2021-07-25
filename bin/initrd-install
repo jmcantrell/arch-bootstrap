@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+binaries=(/usr/bin/btrfs)
+modules=()
+hooks=(base udev autodetect modconf block lvm2 filesystems btrfs keyboard fsck)
+files=()
+
+if [[ ${INSTALL_INTEL:-0} == 1 ]]; then
+    modules=(crc32c-intel intel_agp i915)
+fi
+
+if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
+    hooks=(
+        base udev autodetect keyboard keymap consolefont modconf
+        block encrypt resume lvm2 filesystems btrfs usr shutdown fsck
+    )
+
+    keyfile_name=crypto_keyfile.bin
+    cp -a "$INSTALL_LUKS_KEYFILE" /mnt/"$keyfile_name"
+    files=("/$keyfile_name")
+fi
+
+export BINARIES="${binaries[*]}"
+export MODULES="${modules[*]}"
+export HOOKS="${hooks[*]}"
+export FILES="${files[*]}"
+
+cp -a /mnt/etc/mkinitcpio.conf{,.pacnew}
+envsubst <./templates/etc/mkinitcpio.conf >/mnt/etc/mkinitcpio.conf
+
+arch-chroot /mnt mkinitcpio --allpresets

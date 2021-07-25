@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mkfs.btrfs --label root "$INSTALL_ROOT_DEVICE"
+
+mount "$INSTALL_ROOT_DEVICE" /mnt
+
+btrfs-subvolumes | while read -r subvol; do
+    btrfs subvolume create /mnt/"$subvol"
+done
+
+umount /mnt

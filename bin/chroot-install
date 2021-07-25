@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+arch-chroot /mnt /install.sh
+rm /mnt/install.sh

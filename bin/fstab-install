@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+genfstab -t UUID /mnt >>/mnt/etc/fstab
+
+if [[ ${INSTALL_SSD:-0} == 1 ]]; then
+    sed -i '/swap/s:defaults:defaults,discard:' /mnt/etc/fstab
+fi

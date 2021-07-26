@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Prompts the user for all necessary details for an install.
+# Prompt the user for all necessary install details.
 
 set -euo pipefail
 

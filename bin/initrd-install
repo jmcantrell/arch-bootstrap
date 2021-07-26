@@ -8,7 +8,7 @@ hooks=(base udev autodetect modconf block lvm2 filesystems btrfs keyboard fsck)
 files=()
 
 if [[ ${INSTALL_CPU:-unknown} == intel ]]; then
-    modules=(crc32c-intel intel_agp i915)
+    modules+=(crc32c-intel intel_agp i915)
 fi
 
 if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
@@ -19,7 +19,7 @@ if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
 
     keyfile_name=crypto_keyfile.bin
     cp -a "$INSTALL_LUKS_KEYFILE" /mnt/"$keyfile_name"
-    files=("/$keyfile_name")
+    files+=("/$keyfile_name")
 fi
 
 export BINARIES=${binaries[*]}

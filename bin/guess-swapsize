@@ -4,10 +4,10 @@ set -euo pipefail
 
 free=$(free -h | grep '^Mem:' | sed -e 's:\s\+: :g' | cut -d' ' -f2)
 
-# find the closest actual ram size, rounding up
-guess=1 # start guess at 1Gi
+# Find the closest actual ram size, rounding up.
+guess=1 # Swap size will be at least 1G.
 
-if [[ ${free: -2} = Gi ]]; then
+if [[ ${free: -2} == Gi ]]; then
     memsize=${free%Gi}
     memsize=${memsize%.*}
     while ((guess < memsize)); do

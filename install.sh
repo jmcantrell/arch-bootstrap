@@ -26,6 +26,10 @@ timedatectl set-ntp true
 
 rsync -b --suffix=.pacnew ./rootfs/ /mnt
 
+if [[ -v INSTALL_PACMAN_HOST ]]; then
+    rsync -avz "$INSTALL_PACMAN_HOST":/var/cache/pacman/pkg/ /mnt/var/cache/pacman/pkg
+fi
+
 pacstrap-install
 fstab-install
 chroot-install

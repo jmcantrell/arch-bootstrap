@@ -1,0 +1,19 @@
+export INSTALL_DEVICE=/dev/sda
+
+export INSTALL_SWAP_SIZE=4G
+
+# export INSTALL_LUKS_PASSPHRASE=hunter2
+
+# export INSTALL_LANG=en_US.UTF-8
+# export INSTALL_KEYMAP=us
+# export INSTALL_TIMEZONE=America/Chicago
+
+export INSTALL_HOSTNAME=arch
+
+# export INSTALL_SUDO_NOPASSWD=1
+
+export INSTALL_SUDOER_USERNAME=user
+export INSTALL_SUDOER_PASSWORD=hunter2
+# export INSTALL_SUDOER_SHELL=/bin/zsh
+
+# vi:ft=sh

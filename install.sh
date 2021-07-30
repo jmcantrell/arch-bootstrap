@@ -4,37 +4,38 @@ set -euo pipefail
 
 export PATH=$PWD/bin:$PATH
 
-# If not using a preset, prompt the user for install details.
-[[ -v INSTALL_DEVICE ]] || . prepare-env
+config=${1-}
 
-# Set some environment variables based on this machine's capabilities.
-. detect-features
+if [[ -z $config ]]; then
+    echo "no config file provided" >&2
+    exit 1
+fi
+
+if [[ ! -r $config ]]; then
+    echo "config file not found" >&2
+    exit 1
+fi
+
+timedatectl set-ntp true
+
+. "$config"
+. prepare
 
 partition
 
-if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
+if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
     luks-format
     luks-addkey
     luks-open
 fi
 
 lvm-create
+
 swap-create
 swap-open
+
 btrfs-format
 btrfs-mount
-
-timedatectl set-ntp true
-
-# Add system file modifications, backing up the originals.
-rsync -v -a --no-owner --no-group -b --suffix=.pacnew ./rootfs/ /mnt
-
-# Try to reuse packages from another Arch Linux instance.
-# TODO: Find a better way than mirroring the entire cache
-if [[ -v INSTALL_PACMAN_HOST ]]; then
-    mkdir -p /mnt/var/cache/pacman/pkg
-    rsync -avz "$INSTALL_PACMAN_HOST":/var/cache/pacman/pkg/ /mnt/var/cache/pacman/pkg
-fi
 
 pacstrap-install
 fstab-install

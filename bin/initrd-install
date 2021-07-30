@@ -4,30 +4,38 @@ set -euo pipefail
 
 binaries=(/usr/bin/btrfs)
 modules=()
-hooks=(base udev autodetect modconf block lvm2 filesystems btrfs keyboard fsck)
 files=()
+hooks=(base udev autodetect)
 
-if [[ ${INSTALL_CPU:-unknown} == intel ]]; then
+if [[ ${INSTALL_CPU_VENDOR:-unknown} == intel ]]; then
     modules+=(crc32c-intel intel_agp i915)
 fi
 
-if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
-    hooks=(
-        base udev autodetect keyboard keymap consolefont modconf
-        block encrypt resume lvm2 filesystems btrfs usr shutdown fsck
-    )
-
+if [[ -v INSTALL_LUKS_DEVICE ]]; then
+    hooks+=(keyboard keymap consolefont)
     keyfile_name=crypto_keyfile.bin
     cp -a "$INSTALL_LUKS_KEYFILE" /mnt/"$keyfile_name"
     files+=("/$keyfile_name")
 fi
 
-export BINARIES=${binaries[*]}
-export MODULES=${modules[*]}
-export HOOKS=${hooks[*]}
-export FILES=${files[*]}
+hooks+=(modconf block)
 
-cp -a /mnt/etc/mkinitcpio.conf{,.pacnew}
-envsubst <./templates/etc/mkinitcpio.conf >/mnt/etc/mkinitcpio.conf
+if [[ -v INSTALL_LUKS_DEVICE ]]; then
+    hooks+=(encrypt)
+fi
+
+hooks+=(resume lvm2 filesystems btrfs)
+
+if [[ ! -v INSTALL_LUKS_DEVICE ]]; then
+    hooks+=(keyboard)
+fi
+
+hooks+=(fsck)
+
+export INITRD_BINARIES=${binaries[*]}
+export INITRD_MODULES=${modules[*]}
+export INITRD_HOOKS=${hooks[*]}
+export INITRD_FILES=${files[*]}
+template-install ./templates/etc/mkinitcpio.conf
 
 arch-chroot /mnt mkinitcpio --allpresets

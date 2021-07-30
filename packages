@@ -13,11 +13,9 @@ linux
 linux-firmware
 linux-headers
 lvm2
-lynx
 man-db
 man-pages
 mkinitcpio
-neovim
 nftables
 ntp
 openssh
@@ -30,6 +28,7 @@ stow
 sudo
 systemd-resolvconf
 tmux
+vim
 wget
 zsh
 zsh-completions

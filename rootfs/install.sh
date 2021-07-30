@@ -14,9 +14,8 @@ echo "$INSTALL_HOSTNAME" >/etc/hostname
 ln -sf "/usr/share/zoneinfo/$INSTALL_TIMEZONE" /etc/localtime
 hwclock --systohc --utc
 
-echo "%wheel ALL=(ALL) ${INSTALL_SUDOER_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
-
-useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel --shell /bin/zsh
+echo "%wheel ALL=(ALL) ${INSTALL_SUDO_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
+useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"}
 chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 passwd --delete root
 
@@ -39,8 +38,7 @@ systemctl enable iwd.service
 gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
 systemctl enable plocate-updatedb.timer
 
-if [[ ${INSTALL_VIRTUALBOX:-0} == 1 ]]; then
-    pacman -S --noconfirm --needed virtualbox-guest-utils-nox
+if ((${INSTALL_VIRTUALBOX:-0})); then
     systemctl enable vboxservice.service
     gpasswd --add "$INSTALL_SUDOER_USERNAME" vboxsf
 fi

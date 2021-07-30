@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+template=$(realpath "$1")
+mnt=/mnt/${template#$PWD/templates/}
+
+if [[ -f $mnt ]]; then
+    cp -a "$mnt" "$mnt.pacnew"
+fi
+
+envsubst <"$template" >"$mnt"

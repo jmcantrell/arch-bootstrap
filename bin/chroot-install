@@ -2,5 +2,15 @@
 
 set -euo pipefail
 
+# Apply file system modifications, backing up original files.
+rsync -v -a --no-owner --no-group -b --suffix=.pacnew ./rootfs/ /mnt
+
+# Persist any WIFI connections.
+rsync -v -a --no-owner --no-group /var/lib/iwd/ /mnt/var/lib/iwd
+
+country=${INSTALL_LANG%.*}
+export REFLECTOR_COUNTRY=${country#*_}
+template-install ./templates/etc/xdg/reflector/reflector.conf
+
 arch-chroot /mnt /install.sh
 rm /mnt/install.sh

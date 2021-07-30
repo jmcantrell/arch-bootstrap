@@ -2,22 +2,21 @@
 
 set -euo pipefail
 
-grub_enable_cryptodisk=n
 grub_preload_modules=(part_gpt part_msdos lvm)
-grub_cmdline_linux=(resume="${INSTALL_SWAP_DEVICE}" root="${INSTALL_ROOT_DEVICE}")
 
-if [[ ${INSTALL_LUKS:-0} == 1 ]]; then
-    grub_enable_cryptodisk=y
+grub_cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
+
+if [[ -v INSTALL_LUKS_DEVICE ]]; then
+    export GRUB_ENABLE_CRYPTODISK=y
     grub_preload_modules+=(cryptodisk luks)
-    grub_cmdline_linux+=("cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
+    grub_cmdline_linux+=(cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
+else
+    export GRUB_ENABLE_CRYPTODISK=n
 fi
 
-export GRUB_ENABLE_CRYPTODISK=$grub_enable_cryptodisk
 export GRUB_PRELOAD_MODULES=${grub_preload_modules[*]}
 export GRUB_CMDLINE_LINUX=${grub_cmdline_linux[*]}
-
-cp -a /mnt/etc/default/grub{,.pacnew}
-envsubst <./templates/etc/default/grub >/mnt/etc/default/grub
+template-install ./templates/etc/default/grub
 
 arch-chroot /mnt grub-install "$INSTALL_DEVICE" --recheck
 arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg

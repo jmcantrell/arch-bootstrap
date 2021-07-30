@@ -2,7 +2,20 @@
 
 set -euo pipefail
 
+if [[ -v INSTALL_PACMAN_HOST ]]; then
+    mnt=/mnt/var/cache/pacman/pkg
+    mkdir -p "$mnt"
+    rsync -avz "$INSTALL_PACMAN_HOST":"${mnt#/mnt}"/ "$mnt"
+fi
+
 readarray -t packages <./packages
-[[ -v INSTALL_CPU ]] && packages+=("$INSTALL_CPU"-ucode)
+
+if [[ -v INSTALL_CPU_VENDOR ]]; then
+    packages+=("$INSTALL_CPU_VENDOR"-ucode)
+fi
+
+if ((${INSTALL_VIRTUALBOX:-0})); then
+    packages+=(virtualbox-guest-utils-nox)
+fi
 
 pacstrap /mnt "${packages[@]}"

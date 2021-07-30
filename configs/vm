@@ -1,0 +1,12 @@
+export INSTALL_DEVICE=/dev/sda
+
+export INSTALL_SWAP_SIZE=4G
+
+export INSTALL_HOSTNAME=archvm
+
+export INSTALL_SUDO_NOPASSWD=1
+
+export INSTALL_SUDOER_USERNAME=user
+export INSTALL_SUDOER_PASSWORD=hunter2
+
+# vi:ft=sh

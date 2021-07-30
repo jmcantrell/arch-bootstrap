@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+config=$1
+
+if [[ -z $config ]]; then
+    echo "missing config file" >&2
+    exit 1
+fi
+
+if [[ ! -r $config ]]; then
+    echo "config file missing or not readable" >&2
+    exit 1
+fi
+
+if ! . "$config"; then
+    echo "unable to source config file" >&2
+    exit 1
+fi
 
 export INSTALL_GRUB_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2

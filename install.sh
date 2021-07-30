@@ -4,22 +4,7 @@ set -euo pipefail
 
 export PATH=$PWD/bin:$PATH
 
-config=${1-}
-
-if [[ -z $config ]]; then
-    echo "no config file provided" >&2
-    exit 1
-fi
-
-if [[ ! -r $config ]]; then
-    echo "config file not found" >&2
-    exit 1
-fi
-
 timedatectl set-ntp true
-
-. "$config"
-. prepare
 
 partition
 

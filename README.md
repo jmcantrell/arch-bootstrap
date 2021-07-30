@@ -11,10 +11,10 @@ My opinionated Arch Linux installer.
 - Networking: networkd, resolved, nftables, iwd, Multicast DNS
 - Services: ntpd, sshd, atd, plocate, pkgfile, reflector
 
-See `./packages` for installed packages.
-See `./rootfs` for file system modifications.
+See `packages` for installed packages.
+See `rootfs` for file system modifications.
 
-The script `./rootfs/install.sh` contains additional configuration and
+The script `rootfs/install.sh` contains additional configuration and
 is removed after the installation is completed.
 
 Any WIFI connections created during the install will be persisted to

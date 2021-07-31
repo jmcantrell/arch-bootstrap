@@ -25,5 +25,5 @@ the installed system.
 1. Boot into the Arch Linux ISO and set up networking
 1. Copy this repo to the system (e.g. `git clone` or `scp`)
 1. Create a config file (e.g. `cp configs/sample config`)
-1. Prepare the environment: `./prepare.sh config`
+1. Prepare the environment: `. ./prepare.sh config`
 1. Run the install script: `./install.sh config`

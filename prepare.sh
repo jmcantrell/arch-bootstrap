@@ -17,6 +17,8 @@ if ! . "$config"; then
     exit 1
 fi
 
+export PATH=$PWD/bin:$PATH
+
 export INSTALL_GRUB_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 

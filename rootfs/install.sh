@@ -19,11 +19,9 @@ useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel ${INSTALL_
 chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 passwd --delete root
 
-systemctl enable ntpd.service
-
 systemctl enable sshd.service
 
-systemctl enable systemd-{networkd,resolved}.service
+systemctl enable systemd-{networkd,resolved,timesyncd}.service
 
 systemctl enable nftables.service
 

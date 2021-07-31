@@ -9,7 +9,7 @@ My opinionated Arch Linux installer.
 - Partition Layout: LVM (with hibernate to swap)
 - File System: Btrfs (with subvolumes: `/`, `/var`, `/home`)
 - Networking: networkd, resolved, nftables, iwd, Multicast DNS
-- Services: ntpd, sshd, atd, plocate, pkgfile, reflector
+- Services: sshd, timesyncd, atd, plocate, pkgfile, reflector
 
 See `packages` for installed packages.
 See `rootfs` for file system modifications.

@@ -10,7 +10,6 @@ linux-firmware
 lvm2
 mkinitcpio
 nftables
-ntp
 openssh
 pkgfile
 plocate

@@ -8,7 +8,7 @@ timedatectl set-ntp true
 
 partition
 
-if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
+if [[ -v INSTALL_LUKS_DEVICE ]]; then
     luks-format
     luks-addkey
     luks-open

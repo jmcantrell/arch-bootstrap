@@ -15,5 +15,6 @@ openssh
 pkgfile
 plocate
 reflector
+rsync
 sudo
 systemd-resolvconf

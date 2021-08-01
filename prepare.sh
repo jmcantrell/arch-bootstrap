@@ -58,6 +58,11 @@ if [[ ! -v INSTALL_KEYMAP ]]; then
     export INSTALL_KEYMAP=${KEYMAP:-us}
 fi
 
+if [[ ! -v INSTALL_FONT ]]; then
+    [[ ! -v FONT && -r /etc/vconsole.conf ]] && . /etc/vconsole.conf
+    export INSTALL_FONT=${FONT:-Lat2-Terminus16}
+fi
+
 if [[ ! -v INSTALL_TIMEZONE ]]; then
     if [[ -r /etc/localtime ]]; then
         INSTALL_TIMEZONE=$(realpath /etc/localtime)

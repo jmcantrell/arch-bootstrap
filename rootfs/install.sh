@@ -3,11 +3,13 @@
 set -euo pipefail
 
 echo "LANG=$INSTALL_LANG" >/etc/locale.conf
-
 sed -i -e "/#$INSTALL_LANG/s/^#//" /etc/locale.gen
 locale-gen
 
-echo "KEYMAP=$INSTALL_KEYMAP" >/etc/vconsole.conf
+cat >/etc/vconsole.conf <<-EOF
+FONT=$INSTALL_FONT
+KEYMAP=$INSTALL_KEYMAP
+EOF
 
 echo "$INSTALL_HOSTNAME" >/etc/hostname
 

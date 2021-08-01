@@ -12,5 +12,8 @@ country=${INSTALL_LANG%.*}
 export REFLECTOR_COUNTRY=${country#*_}
 template-install ./templates/etc/xdg/reflector/reflector.conf
 
+export LVM_ISSUE_DISCARDS=${INSTALL_SSD:-0}
+template-install ./templates/etc/lvm/lvm.conf
+
 arch-chroot /mnt /install.sh
 rm /mnt/install.sh

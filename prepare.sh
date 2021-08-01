@@ -40,10 +40,6 @@ GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
 AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
 esac
 
-if grep -wq 0 /sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational; then
-    export INSTALL_SSD=1
-fi
-
 if systemd-detect-virt | grep -wq oracle; then
     export INSTALL_VIRTUALBOX=1
 fi

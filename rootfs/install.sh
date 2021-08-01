@@ -30,6 +30,8 @@ systemctl enable reflector.{service,timer}
 systemctl enable pkgfile-update.timer
 pkgfile -u
 
+systemctl enable fstrim.timer
+
 gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
 systemctl enable plocate-updatedb.timer
 updatedb

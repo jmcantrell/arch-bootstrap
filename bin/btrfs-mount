@@ -2,10 +2,8 @@
 
 set -euo pipefail
 
-options=autodefrag,compress=zstd${INSTALL_SSD:+,ssd,discard}
-
 btrfs-subvolumes | while read -r subvol; do
     mnt=/mnt/${subvol#@}
     mkdir -p "$mnt"
-    mount -o "$options,subvol=$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
+    mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
 done

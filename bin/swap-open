@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-swapon ${INSTALL_SSD:+--discard} "$INSTALL_SWAP_DEVICE"
+swapon "$INSTALL_SWAP_DEVICE"

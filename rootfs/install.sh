@@ -37,6 +37,7 @@ systemctl enable iwd.service
 
 gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
 systemctl enable plocate-updatedb.timer
+updatedb
 
 if ((${INSTALL_VIRTUALBOX:-0})); then
     systemctl enable vboxservice.service

@@ -21,19 +21,14 @@ useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel ${INSTALL_
 chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 passwd --delete root
 
-systemctl enable sshd.service
-
 systemctl enable systemd-{networkd,resolved,timesyncd}.service
 
-systemctl enable nftables.service
+systemctl enable {sshd,atd,iwd,nftables}.service
 
 systemctl enable reflector.{service,timer}
 
 systemctl enable pkgfile-update.timer
-
-systemctl enable atd.service
-
-systemctl enable iwd.service
+pkgfile -u
 
 gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
 systemctl enable plocate-updatedb.timer

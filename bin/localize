@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export LANG=$INSTALL_LANG
+
+setfont "$INSTALL_FONT"
+loadkeys "$INSTALL_KEYMAP"
+
+timedatectl set-ntp true

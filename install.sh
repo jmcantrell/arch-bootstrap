@@ -2,12 +2,7 @@
 
 set -euo pipefail
 
-export PATH=$PWD/bin:$PATH
-
-setfont "$INSTALL_FONT"
-loadkeys "$INSTALL_KEYMAP"
-
-timedatectl set-ntp true
+localize
 
 partition
 

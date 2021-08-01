@@ -8,7 +8,7 @@ if [[ -z $config ]]; then
 fi
 
 if [[ ! -r $config ]]; then
-    echo "config file missing or not readable" >&2
+    echo "config file does not exist" >&2
     exit 1
 fi
 

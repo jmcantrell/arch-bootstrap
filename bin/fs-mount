@@ -7,3 +7,8 @@ btrfs-subvolumes | while read -r subvol; do
     mkdir -p "$mnt"
     mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
 done
+
+if ((${INSTALL_EFI:-0})); then
+    mkdir -p /mnt/boot/efi
+    mount "$INSTALL_BOOT_DEVICE" /mnt/boot/efi
+fi

@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+if ((${INSTALL_EFI:-0})); then
+    umount /mnt/boot/efi
+fi
+
 btrfs-subvolumes | tac | while read -r subvol; do
     umount /mnt/"${subvol#@}"
 done

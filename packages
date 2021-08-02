@@ -2,7 +2,6 @@ at
 base
 bash
 btrfs-progs
-grub-bios
 iptables-nft
 iwd
 linux

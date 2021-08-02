@@ -4,22 +4,22 @@ config=$1
 
 if [[ -z $config ]]; then
     echo "missing config file" >&2
-    exit 1
+    return 1
 fi
 
 if [[ ! -r $config ]]; then
     echo "config file does not exist" >&2
-    exit 1
+    return 1
 fi
 
 if ! . "$config"; then
     echo "unable to source config file" >&2
-    exit 1
+    return 1
 fi
 
 export PATH=$PWD/bin:$PATH
 
-export INSTALL_GRUB_DEVICE=${INSTALL_DEVICE}1
+export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 
 if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
@@ -39,6 +39,10 @@ case $(grep -w -m1 '^vendor_id' /proc/cpuinfo | awk '{print $NF}') in
 GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
 AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
 esac
+
+if [[ -d /sys/firmware/efi/efivars ]]; then
+    export INSTALL_EFI=1
+fi
 
 if systemd-detect-virt | grep -wq oracle; then
     export INSTALL_VIRTUALBOX=1

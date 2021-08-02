@@ -17,8 +17,8 @@ lvm-create
 swap-create
 swap-open
 
-btrfs-format
-btrfs-mount
+fs-format
+fs-mount
 
 pacstrap-install
 fstab-install

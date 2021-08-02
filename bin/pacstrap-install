@@ -14,6 +14,12 @@ if [[ -v INSTALL_CPU_VENDOR ]]; then
     packages+=("$INSTALL_CPU_VENDOR"-ucode)
 fi
 
+if ((${INSTALL_EFI:-0})); then
+    packages+=(grub efibootmgr)
+else
+    packages+=(grub-bios)
+fi
+
 if ((${INSTALL_VIRTUALBOX:-0})); then
     packages+=(virtualbox-guest-utils-nox)
 fi

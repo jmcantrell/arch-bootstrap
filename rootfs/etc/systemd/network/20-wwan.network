@@ -1,6 +1,5 @@
 [Match]
-Name=en*
-Name=eth*
+Name=ww*
 
 [Network]
 DHCP=yes
@@ -9,7 +8,7 @@ IPForward=yes
 IPv6PrivacyExtensions=yes
 
 [DHCPv4]
-RouteMetric=512
+RouteMetric=2048
 
 [DHCPv6]
-RouteMetric=512
+RouteMetric=2048

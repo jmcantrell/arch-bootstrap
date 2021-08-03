@@ -1,8 +1,0 @@
-[Match]
-Name=wlp*
-Name=wlan*
-
-[Network]
-DHCP=yes
-MulticastDNS=yes
-IPv6PrivacyExtensions=yes

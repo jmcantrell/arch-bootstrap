@@ -40,12 +40,11 @@ GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
 AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
 esac
 
+INSTALL_VIRTUAL=$(systemd-detect-virt)
+export INSTALL_VIRTUAL
+
 if [[ -d /sys/firmware/efi/efivars ]]; then
     export INSTALL_EFI=1
-fi
-
-if systemd-detect-virt | grep -wq oracle; then
-    export INSTALL_VIRTUALBOX=1
 fi
 
 if [[ ! -v INSTALL_LANG ]]; then

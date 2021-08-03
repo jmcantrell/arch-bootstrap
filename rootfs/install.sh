@@ -36,7 +36,7 @@ gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
 systemctl enable plocate-updatedb.timer
 updatedb
 
-if ((${INSTALL_VIRTUALBOX:-0})); then
+if [[ $INSTALL_VIRTUAL == oracle ]]; then
     systemctl enable vboxservice.service
     gpasswd --add "$INSTALL_SUDOER_USERNAME" vboxsf
 fi

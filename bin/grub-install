@@ -4,6 +4,11 @@ set -euo pipefail
 
 grub_preload_modules=(part_gpt part_msdos lvm)
 grub_cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
+grub_cmdline_linux_default=(loglevel=3 quiet)
+
+if [[ $INSTALL_VIRTUAL == none ]]; then
+    grub_cmdline_linux_default+=(consoleblank=600)
+fi
 
 if [[ -v INSTALL_LUKS_DEVICE ]]; then
     export GRUB_ENABLE_CRYPTODISK=y
@@ -15,6 +20,7 @@ fi
 
 export GRUB_PRELOAD_MODULES=${grub_preload_modules[*]}
 export GRUB_CMDLINE_LINUX=${grub_cmdline_linux[*]}
+export GRUB_CMDLINE_LINUX_DEFAULT=${grub_cmdline_linux_default[*]}
 template-install ./templates/etc/default/grub
 
 arch-chroot /mnt grub-install "$INSTALL_DEVICE" --recheck

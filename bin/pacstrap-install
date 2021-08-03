@@ -20,7 +20,7 @@ else
     packages+=(grub-bios)
 fi
 
-if ((${INSTALL_VIRTUALBOX:-0})); then
+if [[ $INSTALL_VIRTUAL == oracle ]]; then
     packages+=(virtualbox-guest-utils-nox)
 fi
 

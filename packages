@@ -15,4 +15,3 @@ plocate
 reflector
 rsync
 sudo
-systemd-resolvconf

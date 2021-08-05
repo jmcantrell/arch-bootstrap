@@ -18,4 +18,4 @@ if [[ $INSTALL_VIRTUAL == oracle ]]; then
     packages+=(virtualbox-guest-utils-nox)
 fi
 
-pacstrap -c /mnt "${packages[@]}"
+pacstrap /mnt "${packages[@]}"

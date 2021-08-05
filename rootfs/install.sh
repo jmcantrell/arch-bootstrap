@@ -21,7 +21,7 @@ useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel ${INSTALL_
 chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 passwd --delete root
 
-cp -a /etc/resolv.conf{,.pacnew}
+mv /etc/resolv.conf{,.pacnew}
 ln -sfv /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 systemctl enable systemd-{networkd,resolved,timesyncd}.service

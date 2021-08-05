@@ -23,18 +23,11 @@ passwd --delete root
 
 systemctl enable systemd-{networkd,resolved,timesyncd}.service
 
-systemctl enable {sshd,atd,iwd,nftables}.service
+systemctl enable {sshd,iwd}.service
 
 systemctl enable reflector.{service,timer}
 
-systemctl enable pkgfile-update.timer
-pkgfile -u
-
 systemctl enable fstrim.timer
-
-gpasswd --add "$INSTALL_SUDOER_USERNAME" locate
-systemctl enable plocate-updatedb.timer
-updatedb
 
 if [[ $INSTALL_VIRTUAL == oracle ]]; then
     systemctl enable vboxservice.service

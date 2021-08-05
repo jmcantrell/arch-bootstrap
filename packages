@@ -1,17 +1,12 @@
-at
 base
 bash
 btrfs-progs
-iptables-nft
 iwd
 linux
 linux-firmware
 lvm2
 mkinitcpio
-nftables
 openssh
-pkgfile
-plocate
 reflector
 rsync
 sudo

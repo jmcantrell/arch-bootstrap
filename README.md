@@ -8,8 +8,8 @@ My opinionated Arch Linux installer.
 - Security: Optional LUKS full disk encryption
 - Partition Layout: LVM (with hibernate to swap)
 - File System: Btrfs (with subvolumes: `/`, `/var`, `/home`)
-- Networking: networkd, resolved, nftables, iwd, Multicast DNS
-- Services: sshd, timesyncd, atd, plocate, pkgfile, reflector
+- Networking: networkd, resolved, iwd, Multicast DNS
+- Services: sshd, timesyncd, reflector
 
 See `packages` for installed packages.
 See `rootfs` for file system modifications.

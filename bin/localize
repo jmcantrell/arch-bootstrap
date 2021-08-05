@@ -8,3 +8,8 @@ setfont "$INSTALL_FONT"
 loadkeys "$INSTALL_KEYMAP"
 
 timedatectl set-ntp true
+
+reflector \
+    --protocol https --latest 5 \
+    --save /etc/pacman.d/mirrorlist \
+    --country "$INSTALL_COUNTRY"

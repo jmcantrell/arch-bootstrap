@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Apply file system modifications, backing up original files.
-rsync -rlv -b --suffix=.pacnew ./rootfs/ /mnt
+rsync -av --no-owner --no-group -b --suffix=.pacnew ./rootfs/ /mnt
 
 # Persist any WIFI connections.
 rsync -av --no-owner --no-group /var/lib/iwd/ /mnt/var/lib/iwd

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-pvcreate "$INSTALL_LVM_DEVICE"
+pvcreate -ff --yes "$INSTALL_LVM_DEVICE"
 vgcreate vg "$INSTALL_LVM_DEVICE"
-lvcreate --size "$INSTALL_SWAP_SIZE" vg --name swap
-lvcreate --extents "+100%FREE" vg --name root
+lvcreate --wipesignatures y --yes --size "$INSTALL_SWAP_SIZE" vg --name swap
+lvcreate --wipesignatures y --yes --extents "+100%FREE" vg --name root

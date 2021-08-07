@@ -2,13 +2,18 @@
 
 set -euo pipefail
 
+mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 curl https://gitlab.com/jmcantrell.keys >~/.ssh/authorized_keys
 
-pacman -Sy --noconfirm git
+cd ~
 
-git clone https://gitlab.com/jmcantrell/bootstrap-arch.git ~/bootstrap
+archive_name=bootstrap-arch-master
+curl -O https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/master/"$archive_name".tar.gz
+tar -x -f "$archive_name".tar.gz
 
-cp ~/bootstrap/rootfs/etc/systemd/network/* /etc/systemd/network
+cd ~/"archive_name"
+
+cp ./rootfs/etc/systemd/network/* /etc/systemd/network
 systemctl restart systemd-networkd.service

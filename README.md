@@ -15,8 +15,8 @@ resulting system closely matches what you would get from following the
 Default Btrfs Subvolumes:
 
 - `/`
-- `/var`
 - `/home`
+- `/var/log`
 
 Services:
 

@@ -8,34 +8,41 @@ resulting system closely matches what you would get from following the
 
 ## Opinions
 
-- Boot loader: GRUB (with GPT partition table)
-- Security: Optional LUKS full disk encryption
-- Partition layout: LVM (with hibernate to swap)
+Boot loading is handled by GRUB with a GPT partition table using BIOS
+or EFI mode, depending on the hardware capabilities.
 
-Default btrfs subvolumes:
+Logical volume management is handled by LVM, including a swap
+partition (allowing for hibernation). If enabled, full disk encryption
+is handled by LUKS, using the [LVM on LUKS][2] method.
 
-- `/`
-- `/home`
-- `/var/log`
+The file system is formatted with btrfs using the [suggested subvolume
+layout][3] (configurable).
 
-Services:
+The following services are installed and enabled:
 
-- networkd (mDNS enabled)
-- resolved
-- iwd
-- sshd
-- timesyncd
-- reflector
-- fstrim
+- [networkd][4]
+- [resolved][5] ([mDNS enabled][6])
+- [iwd][7]
+- [sshd][8]
+- [timesyncd][9]
+- [reflector][10]
+- [fstrim][11]
 
-Pacman options:
+The following pacman options are changed:
 
 - `ParallelDownloads = 5`
 - `CleanMethod = KeepCurrent`
 
-Blacklisted kernel modules:
+The following kernel modules are blacklisted:
 
 - `pcspkr`
+
+Any wireless connections created during the install will be persisted
+to the installed system.
+
+If [installing in a VirtualBox virtual machine][12], the guest utilities
+will be enabled and the privileged user will be added to the `vboxsf`
+group.
 
 ## Configuration
 
@@ -57,18 +64,6 @@ ownership) intact.
 The script `./rootfs/install.sh` contains additional configuration
 performed during the `chroot` step and is removed from the resulting
 system after the installation is completed.
-
-## Behavior
-
-When installing the boot loader, if EFI is detected, it will be
-configured and used instead of BIOS.
-
-Any wireless connections created during the install will be persisted
-to the installed system.
-
-If installing in a VirtualBox virtual machine, the guest utilities
-will be enabled and the privileged user will be added to the `vboxsf`
-group.
 
 ## Usage
 
@@ -104,3 +99,14 @@ After installation, the system is left mounted at `/mnt`.
 If all is well, `poweroff`.
 
 [1]: https://wiki.archlinux.org/title/Installation_guide
+[2]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
+[3]: https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout
+[4]: https://wiki.archlinux.org/title/Systemd-networkd
+[5]: https://wiki.archlinux.org/title/Systemd-resolved
+[6]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS
+[7]: https://wiki.archlinux.org/title/Iwd
+[8]: https://wiki.archlinux.org/title/OpenSSH#Server_usage
+[9]: https://wiki.archlinux.org/title/Systemd-timesyncd
+[10]: https://wiki.archlinux.org/title/Reflector
+[11]: https://wiki.archlinux.org/title/Solid_state_drive
+[12]: https://wiki.archlinux.org/title/VirtualBox/Install_Arch_Linux_as_a_guest

@@ -54,3 +54,5 @@ echo zsh >>packages
 ```
 
 After installation, the system is left mounted at `/mnt`.
+
+If all is well, `poweroff`.

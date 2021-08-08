@@ -40,9 +40,8 @@ The following kernel modules are blacklisted:
 Any wireless connections created during the install will be persisted
 to the installed system.
 
-If [installing in a VirtualBox virtual machine][12], the guest utilities
-will be enabled and the privileged user will be added to the `vboxsf`
-group.
+If [installing as a VirtualBox guest][12], the guest utilities will be
+enabled and the privileged user will be added to the `vboxsf` group.
 
 ## Configuration
 

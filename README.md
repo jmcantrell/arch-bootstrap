@@ -81,6 +81,8 @@ iwctl station wlan0 connect <ssid>
 # Download an archive of this repo, add SSH keys, and enable mDNS (archiso.local).
 curl -s https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh | bash -s
 
+cd ~/bootstrap-arch-master
+
 # Optionally, add some extra packages to install.
 echo zsh >>./config/packages
 

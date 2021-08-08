@@ -74,7 +74,7 @@ group.
 
 Boot into the Arch Linux ISO and prepare the environment:
 
-```
+```sh
 # Optionally, connect to a wireless access point.
 iwctl station wlan0 connect <ssid>
 

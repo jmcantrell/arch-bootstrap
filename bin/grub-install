@@ -6,8 +6,8 @@ grub_preload_modules=(part_gpt part_msdos lvm)
 grub_cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
 grub_cmdline_linux_default=(loglevel=3 quiet)
 
-if [[ $INSTALL_VIRTUAL == none ]]; then
-    grub_cmdline_linux_default+=(consoleblank=600)
+if [[ -v INSTALL_CONSOLE_BLANK ]]; then
+    grub_cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLE_BLANK")
 fi
 
 if [[ -v INSTALL_LUKS_DEVICE ]]; then

@@ -8,11 +8,11 @@ resulting system closely matches what you would get from following the
 
 ## Opinions
 
-- Boot Loader: GRUB (with GPT partition table)
+- Boot loader: GRUB (with GPT partition table)
 - Security: Optional LUKS full disk encryption
-- Partition Layout: LVM (with hibernate to swap)
+- Partition layout: LVM (with hibernate to swap)
 
-Default Btrfs Subvolumes:
+Default btrfs subvolumes:
 
 - `/`
 - `/home`
@@ -28,12 +28,12 @@ Services:
 - reflector
 - fstrim
 
-Pacman Options:
+Pacman options:
 
 - `ParallelDownloads = 5`
 - `CleanMethod = KeepCurrent`
 
-Blacklisted Kernel Modules:
+Blacklisted kernel modules:
 
 - `pcspkr`
 

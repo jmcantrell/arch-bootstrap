@@ -25,8 +25,8 @@ after the installation is completed.
 When installing the boot loader, if EFI is detected, it will be
 configured and used instead of BIOS.
 
-Any WIFI connections created during the install will be persisted to
-the installed system.
+Any wireless connections created during the install will be persisted
+to the installed system.
 
 If installing in a VirtualBox virtual machine, the guest utilities
 will be enabled and the privileged user will be added to the 'vboxsf'
@@ -37,6 +37,9 @@ group.
 Boot into the Arch Linux ISO and prepare the environment:
 
 ```
+# Optionally, connect to a wireless access point.
+iwctl station wlan0 connect <ssid>
+
 # Download an archive of this repo, add SSH keys, and enable mDNS (archiso.local).
 curl -s https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh | bash -s
 

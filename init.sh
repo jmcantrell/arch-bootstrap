@@ -13,7 +13,7 @@ archive_name=bootstrap-arch-master
 curl -O https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/master/"$archive_name".tar.gz
 tar -x -f "$archive_name".tar.gz
 
-cd ~/"archive_name"
+cd ~/"$archive_name"
 
 cp ./rootfs/etc/systemd/network/* /etc/systemd/network
 systemctl restart systemd-networkd.service

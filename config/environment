@@ -21,7 +21,7 @@ export INSTALL_HOSTNAME=arch
 
 export INSTALL_SUDOER_USERNAME=user
 export INSTALL_SUDOER_PASSWORD=hunter2
-# export INSTALL_SUDOER_SHELL=/bin/zsh  # be sure it's in ../packages
+# export INSTALL_SUDOER_SHELL=/bin/zsh
 
 # Should the display go to sleep after a bit?
 # export INSTALL_CONSOLE_BLANK=600  # 10 minutes

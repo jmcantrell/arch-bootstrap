@@ -2,11 +2,11 @@
 
 set -euo pipefail
 
-btrfs-subvolumes | while read -r subvol; do
+while read -r subvol; do
     mnt=/mnt/${subvol#@}
     mkdir -p "$mnt"
     mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
-done
+done <./btrfs-subvolumes
 
 if ((${INSTALL_EFI:-0})); then
     mkdir -p /mnt/boot/efi

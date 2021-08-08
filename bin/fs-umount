@@ -6,6 +6,6 @@ if ((${INSTALL_EFI:-0})); then
     umount /mnt/boot/efi
 fi
 
-btrfs-subvolumes | tac | while read -r subvol; do
+while read -r subvol; do
     umount /mnt/"${subvol#@}"
-done
+done < <(tac ./btrfs-subvolumes)

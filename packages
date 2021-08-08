@@ -7,5 +7,4 @@ lvm2
 mkinitcpio
 openssh
 reflector
-rsync
 sudo

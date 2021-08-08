@@ -1,21 +1,6 @@
 #!/usr/bin/env bash
 
-config=$1
-
-if [[ -z $config ]]; then
-    echo "missing config file" >&2
-    return 1
-fi
-
-if [[ ! -r $config ]]; then
-    echo "config file does not exist" >&2
-    return 1
-fi
-
-if ! . "$config"; then
-    echo "unable to source config file" >&2
-    return 1
-fi
+. ./config/environment
 
 export PATH=$PWD/bin:$PATH
 

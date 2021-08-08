@@ -10,8 +10,8 @@ mkfs.btrfs --label root "$INSTALL_ROOT_DEVICE"
 
 mount "$INSTALL_ROOT_DEVICE" /mnt
 
-while read -r subvol; do
+while read -r subvol _; do
     btrfs subvolume create /mnt/"$subvol"
-done <./btrfs-subvolumes
+done <./config/subvolumes
 
 umount /mnt

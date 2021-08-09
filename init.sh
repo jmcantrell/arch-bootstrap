@@ -4,7 +4,7 @@ set -euo pipefail
 
 cd ~
 
-if [[ $0 == bash ]]; then
+if [[ ! -d bootstrap-arch-master ]]; then
     # If running this script from the output of curl, then get the rest of the repo.
     curl -sLO https://gitlab.com/jmcantrell/-/archive/master/bootstrap-arch-master.tar.gz
     tar -v -x -f bootstrap-arch-master.tar.gz

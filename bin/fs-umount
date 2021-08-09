@@ -8,4 +8,4 @@ fi
 
 while read -r _ mnt; do
     umount /mnt/"${mnt#/}"
-done < <(tac ./config/subvolumes)
+done < <(tac "$BOOTSTRAP_DIR"/config/subvolumes)

@@ -12,7 +12,7 @@ export INSTALL_HOSTNAME=arch
 # export INSTALL_FONT=Lat2-Terminus16
 # export INSTALL_TIMEZONE=UTC
 
-# Used by reflector to filter pacman mirrors.
+# Currently, only used by reflector to filter pacman mirrors.
 # If unset, the value will be parsed from INSTALL_LANG.
 # export INSTALL_COUNTRY=US
 
@@ -24,6 +24,6 @@ export INSTALL_SUDOER_PASSWORD=hunter2
 # export INSTALL_SUDOER_SHELL=/bin/zsh
 
 # Should the display go to sleep after a bit?
-# export INSTALL_CONSOLE_BLANK=600  # 10 minutes
+# export INSTALL_CONSOLE_BLANK=$((10 * 60)) # 10 minutes
 
 # vi:ft=sh

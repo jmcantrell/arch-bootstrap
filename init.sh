@@ -2,18 +2,19 @@
 
 set -euo pipefail
 
+cd ~
+
+if [[ $0 == bash ]]; then
+    # If running this script from the output of curl, then get the rest of the repo.
+    curl -sLO https://gitlab.com/jmcantrell/-/archive/master/bootstrap-arch-master.tar.gz
+    tar -v -x -f bootstrap-arch-master.tar.gz
+    cd bootstrap-arch-master
+fi
+
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 curl -sL https://gitlab.com/jmcantrell.keys >~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
-
-cd ~
-
-archive_name=bootstrap-arch-master
-curl -sLO https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/master/"$archive_name".tar.gz
-tar -x -f "$archive_name".tar.gz
-
-cd ~/"$archive_name"
 
 cp ./rootfs/etc/systemd/network/* /etc/systemd/network
 systemctl restart systemd-networkd.service

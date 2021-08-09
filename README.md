@@ -4,29 +4,31 @@ My opinionated Arch Linux installer.
 
 Aside from the opinions listed below, care is taken to ensure the
 resulting system closely matches what you would get from following the
-[official installation guide][1].
+[official installation guide][install].
 
 ## Opinions
 
 Boot loading is handled by GRUB with a GPT partition table using BIOS
-or EFI mode, depending on the hardware capabilities.
+or EFI mode, depending on the detected hardware capabilities.
 
 Logical volume management is handled by LVM, including a swap
-partition (allowing for hibernation). If enabled, full disk encryption
-is handled by LUKS, using the [LVM on LUKS][2] method.
+partition (allowing for hibernation).
+
+If enabled, full disk encryption is handled by LUKS, using the [LVM on
+LUKS][lvm-on-luks] method.
 
 The file system is formatted with btrfs using the [suggested subvolume
-layout][3] (configurable).
+layout][btrfs-subvols] (configurable).
 
 The following services are installed and enabled:
 
-- [networkd][4]
-- [resolved][5] ([mDNS enabled][6])
-- [iwd][7]
-- [sshd][8]
-- [timesyncd][9]
-- [reflector][10]
-- [fstrim][11]
+- [networkd][networkd]
+- [resolved][resolved] ([mDNS enabled][mdns])
+- [iwd][iwd]
+- [sshd][sshd]
+- [timesyncd][timesyncd]
+- [reflector][reflector]
+- [fstrim][ssd]
 
 The following pacman options are changed:
 
@@ -40,7 +42,7 @@ The following kernel modules are blacklisted:
 Any wireless connections created during the install will be persisted
 to the installed system.
 
-If [installing as a VirtualBox guest][12], the guest utilities will be
+If [installing as a VirtualBox guest][vbox-guest], the guest utilities will be
 enabled and the privileged user will be added to the `vboxsf` group.
 
 ## Configuration
@@ -66,46 +68,65 @@ system after the installation is completed.
 
 ## Usage
 
-Boot into the Arch Linux ISO and prepare the environment:
+In general, the installation steps are as follows:
 
-```sh
-# Optionally, connect to a wireless access point.
-iwctl station wlan0 connect <ssid>
-
-# Download an archive of this repo, add SSH keys, and enable mDNS (archiso.local).
-curl -s https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh | bash -s
-
-cd ~/bootstrap-arch-master
-
-# Optionally, add some extra packages to install.
-echo zsh >>./config/packages
-
-# Optionally, change the btrfs subvolumes.
-vim ./config/subvolumes
-
-# Edit the environment file to suit your needs.
-vim ./config/environment
-
-# Prepare the installation environment.
-. ./prepare.sh
-
-# Start an unattended installation.
-./install.sh
-```
+1. Boot into a copy of the latest [Arch Linux ISO][archiso]
+1. Connect to the internet
+1. Copy this repository to the live environment
+1. Customize the files in `./config/`
+1. Prepare the environment: `. ./prepare.sh`
+1. Run the installation script: `./install.sh`
 
 After installation, the system is left mounted at `/mnt`.
 
 If all is well, `poweroff`.
 
-[1]: https://wiki.archlinux.org/title/Installation_guide
-[2]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
-[3]: https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout
-[4]: https://wiki.archlinux.org/title/Systemd-networkd
-[5]: https://wiki.archlinux.org/title/Systemd-resolved
-[6]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS
-[7]: https://wiki.archlinux.org/title/Iwd
-[8]: https://wiki.archlinux.org/title/OpenSSH#Server_usage
-[9]: https://wiki.archlinux.org/title/Systemd-timesyncd
-[10]: https://wiki.archlinux.org/title/Reflector
-[11]: https://wiki.archlinux.org/title/Solid_state_drive
-[12]: https://wiki.archlinux.org/title/VirtualBox/Install_Arch_Linux_as_a_guest
+### Initialize the SSH server and enable mDNS
+
+If you want or need to manage the installation over SSH, the
+`./init.sh` script can make this easier. It does the following:
+
+- Get a copy of this repository, if needed
+- Authorize the SSH keys with access to this repository
+- Enable [Multicast DNS][mdns], making `archiso.local` reachable
+
+If you already have the repository copied to the live environment,
+just run it:
+
+```
+./init.sh
+```
+
+If you need to download the repository too, just `curl` it:
+
+```
+curl https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh | bash -s
+```
+
+If you don't need to manually connect to the internet, you could also
+run the script by using the `script` boot parameter, recognized by the
+Arch Linux ISO.
+
+When you see the GRUB menu as the ISO is booting, press the `<tab>`
+key to edit the kernel command line. Add the following:
+
+```
+script=https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh
+```
+
+The script will be run similarly to the curl method above as soon as
+the environment is ready.
+
+[install]: https://wiki.archlinux.org/title/Installation_guide
+[lvm-on-luks]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
+[btrfs-subvols]: https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout
+[networkd]: https://wiki.archlinux.org/title/Systemd-networkd
+[resolved]: https://wiki.archlinux.org/title/Systemd-resolved
+[mdns]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS
+[iwd]: https://wiki.archlinux.org/title/Iwd
+[sshd]: https://wiki.archlinux.org/title/OpenSSH#Server_usage
+[timesyncd]: https://wiki.archlinux.org/title/Systemd-timesyncd
+[reflector]: https://wiki.archlinux.org/title/Reflector
+[ssd]: https://wiki.archlinux.org/title/Solid_state_drive
+[vbox-guest]: https://wiki.archlinux.org/title/VirtualBox/Install_Arch_Linux_as_a_guest
+[archiso]: https://archlinux.org/download/

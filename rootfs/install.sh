@@ -17,8 +17,14 @@ ln -sf "/usr/share/zoneinfo/$INSTALL_TIMEZONE" /etc/localtime
 hwclock --systohc --utc
 
 echo "%wheel ALL=(ALL) ${INSTALL_SUDO_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
-useradd --create-home "$INSTALL_SUDOER_USERNAME" --groups users,wheel ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"}
+
+useradd \
+    --create-home --groups users,wheel \
+    ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
+    "$INSTALL_SUDOER_USERNAME"
+
 chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
+
 passwd --delete root
 
 systemctl enable systemd-{networkd,resolved,timesyncd}.service

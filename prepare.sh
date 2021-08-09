@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-. ./config/environment
+BOOTSTRAP_DIR=$(dirname "$0")
+export BOOTSTRAP_DIR
 
-export PATH=$PWD/bin:$PATH
+. "$BOOTSTRAP_DIR"/config/environment
+
+export PATH=$BOOTSTRAP_DIR/bin:$PATH
 
 export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
@@ -11,7 +14,7 @@ if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
     export INSTALL_LUKS_DEVICE=$INSTALL_OS_DEVICE
     export INSTALL_LUKS_NAME=crypt
     export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_NAME
-    export INSTALL_LUKS_KEYFILE=$PWD/keyfile-$INSTALL_LUKS_NAME.bin
+    export INSTALL_LUKS_KEYFILE=$BOOTSTRAP_DIR/keyfile-$INSTALL_LUKS_NAME.bin
     export INSTALL_LVM_DEVICE=$INSTALL_LUKS_MAPPER
 else
     export INSTALL_LVM_DEVICE=$INSTALL_OS_DEVICE

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-readarray -t packages <./config/packages
+readarray -t packages <"$BOOTSTRAP_DIR"/config/packages
 
 if [[ -v INSTALL_CPU_VENDOR ]]; then
     packages+=("$INSTALL_CPU_VENDOR"-ucode)

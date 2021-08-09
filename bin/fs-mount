@@ -6,7 +6,7 @@ while read -r subvol mnt; do
     mnt=/mnt/${mnt#/}
     mkdir -p "$mnt"
     mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
-done <./config/subvolumes
+done <"$BOOTSTRAP_DIR"/config/subvolumes
 
 if ((${INSTALL_EFI:-0})); then
     mkdir -p /mnt/boot/efi

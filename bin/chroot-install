@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-rsync -av --no-owner --no-group "$BOOTSTRAP_DIR"/rootfs/ /mnt
+rsync -v -a --no-owner --no-group "$BOOTSTRAP_DIR"/rootfs/ /mnt
 
-rsync -av --no-owner --no-group /var/lib/iwd/ /mnt/var/lib/iwd
+rsync -v -a --no-owner --no-group /var/lib/iwd/ /mnt/var/lib/iwd
 
 ln -sfv /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
 

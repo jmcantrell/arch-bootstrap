@@ -6,7 +6,7 @@ cd ~
 
 if [[ ! -d bootstrap-arch-master ]]; then
     # If running this script from the output of curl, then get the rest of the repo.
-    curl -sLO https://gitlab.com/jmcantrell/-/archive/master/bootstrap-arch-master.tar.gz
+    curl -sLO https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/master/bootstrap-arch-master.tar.gz
     tar -v -x -f bootstrap-arch-master.tar.gz
     cd bootstrap-arch-master
 fi

@@ -8,6 +8,8 @@ fi
 
 mkfs.btrfs --label root "$INSTALL_ROOT_DEVICE"
 
+mkdir -p "$INSTALL_DIR"
+
 mount "$INSTALL_ROOT_DEVICE" "$INSTALL_DIR"
 
 while read -r subvol _; do

@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-genfstab -t UUID /mnt >>/mnt/etc/fstab
+genfstab -t UUID "$INSTALL_DIR" >>"$INSTALL_DIR"/etc/fstab

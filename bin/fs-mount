@@ -2,13 +2,16 @@
 
 set -euo pipefail
 
-while read -r subvol mnt; do
-    mnt=/mnt/${mnt#/}
-    mkdir -p "$mnt"
-    mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt"
+mkdir -p "$INSTALL_DIR"
+
+while read -r subvol dir; do
+    mnt_dir=$INSTALL_DIR/${dir#/}
+    mkdir -p "$mnt_dir"
+    mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt_dir"
 done <"$BOOTSTRAP_DIR"/config/subvolumes
 
 if ((${INSTALL_EFI:-0})); then
-    mkdir -p /mnt/boot/efi
-    mount "$INSTALL_BOOT_DEVICE" /mnt/boot/efi
+    efi_dir=$INSTALL_DIR/boot/efi
+    mkdir -p "$efi_dir"
+    mount "$INSTALL_BOOT_DEVICE" "$efi_dir"
 fi

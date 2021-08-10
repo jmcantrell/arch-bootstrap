@@ -2,16 +2,16 @@
 
 set -euo pipefail
 
-rsync -v -a --no-owner --no-group "$BOOTSTRAP_DIR"/rootfs/ /mnt
+rsync -v -a --no-owner --no-group "$BOOTSTRAP_DIR"/rootfs/ "$INSTALL_DIR"
 
-rsync -v -a --no-owner --no-group /var/lib/iwd/ /mnt/var/lib/iwd
+rsync -v -a --no-owner --no-group /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
 
-ln -sfv /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf
+ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_DIR"/etc/resolv.conf
 
-rm -f /mnt/etc/machine-id
+rm -f "$INSTALL_DIR"/etc/machine-id
 
 export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 
-arch-chroot /mnt /install.sh
-rm /mnt/install.sh
+arch-chroot "$INSTALL_DIR" /install.sh
+rm "$INSTALL_DIR"/install.sh

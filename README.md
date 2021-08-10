@@ -74,7 +74,7 @@ In general, the installation steps are as follows:
 1. Prepare the environment: `. ./prepare.sh`
 1. Run the installation script: `./install.sh`
 
-After installation, the system is left mounted at `/mnt`.
+After installation, the system is left mounted.
 
 If all is well, `poweroff`.
 

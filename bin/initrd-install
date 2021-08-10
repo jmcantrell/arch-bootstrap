@@ -14,7 +14,7 @@ fi
 if [[ -v INSTALL_LUKS_DEVICE ]]; then
     hooks+=(keyboard keymap consolefont)
     keyfile_name=crypto_keyfile.bin
-    cp -a "$INSTALL_LUKS_KEYFILE" /mnt/"$keyfile_name"
+    cp -a "$INSTALL_LUKS_KEYFILE" "$INSTALL_DIR/$keyfile_name"
     files+=("/$keyfile_name")
 fi
 
@@ -38,4 +38,4 @@ export INITRD_HOOKS=${hooks[*]}
 export INITRD_FILES=${files[*]}
 template-install /etc/mkinitcpio.conf
 
-arch-chroot /mnt mkinitcpio --allpresets
+arch-chroot "$INSTALL_DIR" mkinitcpio --allpresets

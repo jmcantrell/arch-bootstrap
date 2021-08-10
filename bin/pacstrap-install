@@ -21,4 +21,4 @@ fi
 # Enable parallel package downloads.
 sed -i '/^#\?ParallelDownloads\b/s/#//' /etc/pacman.conf
 
-pacstrap /mnt "${packages[@]}"
+pacstrap "$INSTALL_DIR" "${packages[@]}"

@@ -4,4 +4,4 @@ set -euo pipefail
 
 path=${1#/}
 
-envsubst <"$BOOTSTRAP_DIR/templates/$path" >/mnt/"$path"
+envsubst <"$BOOTSTRAP_DIR/templates/$path" >"$INSTALL_DIR/$path"

@@ -23,5 +23,5 @@ export GRUB_CMDLINE_LINUX=${grub_cmdline_linux[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${grub_cmdline_linux_default[*]}
 template-install /etc/default/grub
 
-arch-chroot /mnt grub-install "$INSTALL_DEVICE" --recheck
-arch-chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot "$INSTALL_DIR" grub-install "$INSTALL_DEVICE" --recheck
+arch-chroot "$INSTALL_DIR" grub-mkconfig -o /boot/grub/grub.cfg

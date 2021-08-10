@@ -17,9 +17,6 @@ partition (allowing for hibernation).
 If enabled, full disk encryption is handled by LUKS, using the [LVM on
 LUKS][lvm-on-luks] method.
 
-The file system is formatted with btrfs using the [suggested subvolume
-layout][btrfs-subvols] (configurable).
-
 The following services are installed and enabled:
 
 - [networkd][networkd]
@@ -119,7 +116,6 @@ the environment is ready.
 
 [install]: https://wiki.archlinux.org/title/Installation_guide
 [lvm-on-luks]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
-[btrfs-subvols]: https://wiki.archlinux.org/title/Snapper#Suggested_filesystem_layout
 [networkd]: https://wiki.archlinux.org/title/Systemd-networkd
 [resolved]: https://wiki.archlinux.org/title/Systemd-resolved
 [mdns]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS

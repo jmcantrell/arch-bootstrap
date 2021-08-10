@@ -1,3 +1,4 @@
-@         /
-@home     /home
-@var_log  /var/log
+@           /
+@home       /home
+@var_log    /var/log
+@var_cache  /var/cache

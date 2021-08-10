@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BOOTSTRAP_DIR=$(dirname "$0")
+BOOTSTRAP_DIR=$(realpath "$(dirname "$0")")
 export BOOTSTRAP_DIR
 
 . "$BOOTSTRAP_DIR"/config/environment

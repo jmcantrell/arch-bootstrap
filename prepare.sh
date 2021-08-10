@@ -30,8 +30,8 @@ GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
 AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
 esac
 
-INSTALL_VIRTUAL=$(systemd-detect-virt)
-export INSTALL_VIRTUAL
+INSTALL_VM_TYPE=$(systemd-detect-virt)
+export INSTALL_VM_TYPE
 
 if [[ -d /sys/firmware/efi/efivars ]]; then
     export INSTALL_EFI=1

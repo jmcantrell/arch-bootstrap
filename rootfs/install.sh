@@ -35,7 +35,7 @@ systemctl enable reflector.{service,timer}
 
 systemctl enable fstrim.timer
 
-if [[ $INSTALL_VIRTUAL == oracle ]]; then
+if [[ $INSTALL_VM_TYPE == oracle ]]; then
     systemctl enable vboxservice.service
     gpasswd --add "$INSTALL_SUDOER_USERNAME" vboxsf
 fi

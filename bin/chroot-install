@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-rsync -v -a --no-owner --no-group "$BOOTSTRAP_DIR"/rootfs/ "$INSTALL_DIR"
+rsync -rv "$BOOTSTRAP_DIR"/rootfs/ "$INSTALL_DIR"
 
-rsync -v -a --no-owner --no-group /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
+rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
 
 ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_DIR"/etc/resolv.conf
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 if ((${INSTALL_EFI:-0})); then
     boot_size=512

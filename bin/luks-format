@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 cryptsetup luksFormat --type luks1 "$INSTALL_LUKS_DEVICE" <<<"$INSTALL_LUKS_PASSPHRASE"

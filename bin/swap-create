@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 mkswap --label swap "$INSTALL_SWAP_DEVICE"

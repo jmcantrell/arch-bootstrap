@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 echo "LANG=$INSTALL_LANG" >/etc/locale.conf
 sed -i -e "/#$INSTALL_LANG/s/^#//" /etc/locale.gen

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 pvcreate -ff --yes "$INSTALL_LVM_DEVICE"
 vgcreate vg "$INSTALL_LVM_DEVICE"

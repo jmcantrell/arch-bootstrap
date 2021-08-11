@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 rsync -rv "$BOOTSTRAP_DIR"/rootfs/ "$INSTALL_DIR"
 

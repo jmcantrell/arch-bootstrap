@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
 
 genfstab -t UUID "$INSTALL_DIR" >>"$INSTALL_DIR"/etc/fstab

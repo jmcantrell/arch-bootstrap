@@ -27,8 +27,6 @@ chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 
 passwd --delete root
 
-systemctl enable paccache.timer
-
 systemctl enable systemd-{networkd,resolved,timesyncd}.service
 
 systemctl enable {sshd,iwd}.service

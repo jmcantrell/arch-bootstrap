@@ -13,5 +13,5 @@ rm -f "$INSTALL_DIR"/etc/machine-id
 export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 
-arch-chroot "$INSTALL_DIR" /install.sh
-rm "$INSTALL_DIR"/install.sh
+arch-chroot "$INSTALL_DIR" /install
+rm "$INSTALL_DIR"/install

@@ -59,7 +59,7 @@ File system tree modifications are defined in `./rootfs/`. This
 directory will be `rsync`ed to `/` with the permissions (but not
 ownership) intact.
 
-The script `./rootfs/install.sh` contains additional configuration
+The script `./rootfs/install` contains additional configuration
 performed during the `chroot` step and is removed from the resulting
 system after the installation is completed.
 
@@ -71,8 +71,8 @@ In general, the installation steps are as follows:
 1. Connect to the internet
 1. Copy this repository to the live environment
 1. Customize the files in `./config/`
-1. Prepare the environment: `. ./prepare.sh`
-1. Run the installation script: `./install.sh`
+1. Prepare the environment: `. ./scripts/prepare`
+1. Run the installation script: `./scripts/install`
 
 After installation, the system is left mounted.
 
@@ -81,7 +81,7 @@ If all is well, `poweroff`.
 ### Initialize the SSH server and enable mDNS
 
 If you want or need to manage the installation over SSH, the
-`./init.sh` script can make this easier. It does the following:
+`./scripts/init` script can make this easier. It does the following:
 
 - Get a copy of this repository, if needed
 - Authorize the SSH keys with access to this repository
@@ -91,13 +91,13 @@ If you already have the repository copied to the live environment,
 just run it:
 
 ```
-./init.sh
+./scripts/init
 ```
 
 If you need to download the repository too, just `curl` it:
 
 ```
-curl https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh | bash -s
+curl https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/scripts/init | bash -s
 ```
 
 If you don't need to manually connect to the internet, you could also
@@ -108,7 +108,7 @@ When you see the GRUB menu as the ISO is booting, press the `<tab>`
 key to edit the kernel command line. Add the following:
 
 ```
-script=https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/init.sh
+script=https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/scripts/init
 ```
 
 The script will be run similarly to the curl method above as soon as

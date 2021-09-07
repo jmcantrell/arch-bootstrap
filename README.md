@@ -70,6 +70,7 @@ In general, the installation steps are as follows:
 1. Boot into a copy of the latest [Arch Linux ISO][archiso]
 1. Connect to the internet
 1. Copy this repository to the live environment
+1. Change the directory to this repository
 1. Customize the files in `./config/`
 1. Prepare the environment: `. ./scripts/prepare`
 1. Run the installation script: `./scripts/install`
@@ -97,7 +98,7 @@ just run it:
 If you need to download the repository too, just `curl` it:
 
 ```
-curl https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/scripts/init | bash -s
+curl https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/main/scripts/init | bash -s
 ```
 
 If you don't need to manually connect to the internet, you could also
@@ -108,7 +109,7 @@ When you see the GRUB menu as the ISO is booting, press the `<tab>`
 key to edit the kernel command line. Add the following:
 
 ```
-script=https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/master/scripts/init
+script=https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/main/scripts/init
 ```
 
 The script will be run similarly to the curl method above as soon as

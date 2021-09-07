@@ -8,4 +8,4 @@ fi
 
 while read -r _ dir; do
     umount "$INSTALL_DIR/${dir#/}"
-done < <(tac "$BOOTSTRAP_DIR"/config/subvolumes)
+done < <(tac ./config/subvolumes)

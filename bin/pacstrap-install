@@ -2,7 +2,7 @@
 
 set -eu
 
-readarray -t packages <"$BOOTSTRAP_DIR"/config/packages
+readarray -t packages <./config/packages
 
 if [[ -v INSTALL_CPU_VENDOR ]]; then
     packages+=("$INSTALL_CPU_VENDOR"-ucode)

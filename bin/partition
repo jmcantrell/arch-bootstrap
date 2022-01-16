@@ -2,7 +2,7 @@
 
 set -eu
 
-if ((${INSTALL_EFI:-0})); then
+if [[ -v INSTALL_EFI_DIR ]]; then
     boot_size=512
     boot_type=esp
 else

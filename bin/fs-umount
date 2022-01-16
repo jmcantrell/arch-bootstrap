@@ -2,8 +2,8 @@
 
 set -eu
 
-if ((${INSTALL_EFI:-0})); then
-    umount "$INSTALL_DIR"/boot/efi
+if [[ -v INSTALL_EFI_DIR ]]; then
+    umount "$INSTALL_EFI_DIR"
 fi
 
 while read -r _ dir; do

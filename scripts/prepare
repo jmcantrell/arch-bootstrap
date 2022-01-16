@@ -31,7 +31,7 @@ INSTALL_VM_TYPE=$(systemd-detect-virt)
 export INSTALL_VM_TYPE
 
 if [[ -d /sys/firmware/efi/efivars ]]; then
-    export INSTALL_EFI=1
+    export INSTALL_EFI_DIR=$INSTALL_DIR/boot/efi
 fi
 
 if [[ ! -v INSTALL_LANG ]]; then

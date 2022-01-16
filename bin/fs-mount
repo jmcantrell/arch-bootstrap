@@ -10,8 +10,7 @@ while read -r subvol dir; do
     mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt_dir"
 done <./config/subvolumes
 
-if ((${INSTALL_EFI:-0})); then
-    efi_dir=$INSTALL_DIR/boot/efi
-    mkdir -p "$efi_dir"
-    mount "$INSTALL_BOOT_DEVICE" "$efi_dir"
+if [[ -v INSTALL_EFI_DIR ]]; then
+    mkdir -p "$INSTALL_EFI_DIR"
+    mount "$INSTALL_BOOT_DEVICE" "$INSTALL_EFI_DIR"
 fi

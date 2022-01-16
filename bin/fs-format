@@ -2,7 +2,7 @@
 
 set -eu
 
-if ((${INSTALL_EFI:-0})); then
+if [[ -v INSTALL_EFI_DIR ]]; then
     mkfs.fat -F32 "$INSTALL_BOOT_DEVICE"
 fi
 

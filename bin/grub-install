@@ -4,7 +4,7 @@ set -eu
 
 grub_preload_modules=(part_gpt part_msdos lvm)
 grub_cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
-grub_cmdline_linux_default=(loglevel=3 quiet)
+grub_cmdline_linux_default=(loglevel=3)
 
 if [[ -v INSTALL_CONSOLE_BLANK ]]; then
     grub_cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLE_BLANK")

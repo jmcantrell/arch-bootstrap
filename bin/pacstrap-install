@@ -28,4 +28,3 @@ if [[ -v INSTALL_PACMAN_CACHE ]]; then
 fi
 
 pacstrap "$INSTALL_DIR" "${packages[@]}"
-arch-chroot "$INSTALL_DIR" pacman-key --init

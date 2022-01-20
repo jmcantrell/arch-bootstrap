@@ -44,6 +44,11 @@ enabled and the privileged user will be added to the `vboxsf` group.
 
 ## Configuration
 
+An example configuration directory is provided in `./config`. This can
+be used as a template to create presets. By default, the script
+`./scripts/prepare` will look in `./config`, but this can be
+overridden by providing a different directory as the first argument.
+
 The installation environment is defined in `./config/environment`. It
 illustrates the recognized environment variables with some default
 values. Every uncommented line in this file is a required variable.
@@ -55,11 +60,11 @@ The packages to be installed are defined in `./config/packages`.
 Packages can be added, but if any are removed, the installation will
 probably fail.
 
-File system tree modifications are defined in `./rootfs/`. This
+File system tree modifications are defined in `./config/rootfs/`. This
 directory will be `rsync`ed to `/` with the permissions (but not
 ownership) intact.
 
-The script `./rootfs/install` contains additional configuration
+The script `./config/rootfs/install` contains additional configuration
 performed during the `chroot` step and is removed from the resulting
 system after the installation is completed.
 
@@ -72,7 +77,8 @@ In general, the installation steps are as follows:
 1. Copy this repository to the live environment
 1. Change the directory to this repository
 1. Customize the files in `./config/`
-1. Prepare the environment: `. ./scripts/prepare`
+1. Prepare the environment: `. ./scripts/prepare [/path/to/config/dir]`
+1. Optionally, declare a package cache: `export INSTALL_PACMAN_CACHE=/path/to/pacman/pkg`
 1. Run the installation script: `./scripts/install`
 
 After installation, the system is left mounted.

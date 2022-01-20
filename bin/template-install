@@ -4,4 +4,4 @@ set -eu
 
 path=${1#/}
 
-envsubst <./templates/"$path" >"$INSTALL_DIR/$path"
+envsubst <"$CONFIG_DIR"/templates/"$path" >"$INSTALL_DIR/$path"

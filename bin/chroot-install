@@ -2,7 +2,7 @@
 
 set -eu
 
-rsync -rv ./rootfs/ "$INSTALL_DIR"
+rsync -rv "$CONFIG_DIR"/rootfs/ "$INSTALL_DIR"
 
 rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
 

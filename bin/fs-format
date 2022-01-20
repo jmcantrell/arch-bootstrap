@@ -14,6 +14,6 @@ mount "$INSTALL_ROOT_DEVICE" "$INSTALL_DIR"
 
 while read -r subvol _; do
     btrfs subvolume create "$INSTALL_DIR/$subvol"
-done <./config/subvolumes
+done <"$CONFIG_DIR"/subvolumes
 
 umount "$INSTALL_DIR"

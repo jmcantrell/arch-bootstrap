@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-. ./config/environment
+export CONFIG_DIR=${1:-$PWD/config}
+
+. "$CONFIG_DIR"/environment
 
 export PATH=$PWD/bin:$PATH
 

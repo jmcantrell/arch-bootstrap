@@ -8,7 +8,7 @@ while read -r subvol dir; do
     mnt_dir=$INSTALL_DIR/${dir#/}
     mkdir -p "$mnt_dir"
     mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt_dir"
-done <./config/subvolumes
+done <"$CONFIG_DIR"/subvolumes
 
 if [[ -v INSTALL_EFI_DIR ]]; then
     mkdir -p "$INSTALL_EFI_DIR"

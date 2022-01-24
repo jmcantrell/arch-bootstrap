@@ -2,25 +2,25 @@
 
 set -eu
 
-grub_preload_modules=(part_gpt part_msdos lvm)
-grub_cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
-grub_cmdline_linux_default=(loglevel=3)
+preload_modules=(part_gpt part_msdos lvm)
+cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
+cmdline_linux_default=(loglevel=3)
 
 if [[ -v INSTALL_CONSOLE_BLANK ]]; then
-    grub_cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLE_BLANK")
+    cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLE_BLANK")
 fi
 
 if [[ -v INSTALL_LUKS_DEVICE ]]; then
     export GRUB_ENABLE_CRYPTODISK=y
-    grub_preload_modules+=(cryptodisk luks)
-    grub_cmdline_linux+=(cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
+    preload_modules+=(cryptodisk luks)
+    cmdline_linux+=(cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
 else
     export GRUB_ENABLE_CRYPTODISK=n
 fi
 
-export GRUB_PRELOAD_MODULES=${grub_preload_modules[*]}
-export GRUB_CMDLINE_LINUX=${grub_cmdline_linux[*]}
-export GRUB_CMDLINE_LINUX_DEFAULT=${grub_cmdline_linux_default[*]}
+export GRUB_PRELOAD_MODULES=${preload_modules[*]}
+export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
+export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 template-install /etc/default/grub
 
 arch-chroot "$INSTALL_DIR" grub-install "$INSTALL_DEVICE" --recheck

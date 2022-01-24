@@ -2,4 +2,4 @@
 
 set -eu
 
-cryptsetup luksFormat --type luks1 "$INSTALL_LUKS_DEVICE" <<<"$INSTALL_LUKS_PASSPHRASE"
+cryptsetup luksFormat "$INSTALL_LUKS_DEVICE" <<<"$INSTALL_LUKS_PASSPHRASE"

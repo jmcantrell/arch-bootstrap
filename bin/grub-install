@@ -12,7 +12,7 @@ fi
 
 if [[ -v INSTALL_LUKS_DEVICE ]]; then
     export GRUB_ENABLE_CRYPTODISK=y
-    preload_modules+=(cryptodisk luks2)
+    preload_modules+=(cryptodisk luks)
     cmdline_linux+=(cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
 else
     export GRUB_ENABLE_CRYPTODISK=n

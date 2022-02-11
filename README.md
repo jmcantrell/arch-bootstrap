@@ -72,13 +72,13 @@ system after the installation is completed.
 
 In general, the installation steps are as follows:
 
-1. Boot into a copy of the latest [Arch Linux ISO][archiso]
+1. Boot into a copy of the [Arch Linux ISO][archiso]
 1. Connect to the internet
 1. Copy this repository to the live environment
 1. Change the directory to this repository
 1. Customize the files in `./config/`
 1. Prepare the environment: `. ./scripts/prepare [/path/to/config/dir]`
-1. Optionally, declare a package cache: `export INSTALL_PACMAN_CACHE=/path/to/pacman/pkg`
+1. Optionally, add a package cache: `export INSTALL_PACMAN_CACHE=/path/to/pacman/pkg`
 1. Run the installation script: `./scripts/install`
 
 After installation, the system is left mounted.

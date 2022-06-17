@@ -1,6 +1,6 @@
 base
 btrfs-progs
-doas
+opendoas
 iwd
 linux
 linux-firmware

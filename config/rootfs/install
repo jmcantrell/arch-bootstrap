@@ -2,6 +2,9 @@
 
 set -eu
 
+# Pretend doas is sudo.
+ln -sfv /usr/bin/{doas,sudo}
+
 echo "LANG=$INSTALL_LANG" >/etc/locale.conf
 sed -i -e "/#$INSTALL_LANG/s/^#//" /etc/locale.gen
 locale-gen
@@ -16,14 +19,14 @@ echo "$INSTALL_HOSTNAME" >/etc/hostname
 ln -sf "/usr/share/zoneinfo/$INSTALL_TIMEZONE" /etc/localtime
 hwclock --systohc --utc
 
-echo "%wheel ALL=(ALL) ${INSTALL_SUDO_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
+echo "permit ${INSTALL_DOAS_NOPASS:+nopass }:wheel" >/etc/doas.conf
 
 useradd \
     --create-home --groups users,wheel \
-    ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
-    "$INSTALL_SUDOER_USERNAME"
+    ${INSTALL_DOAS_SHELL:+--shell "$INSTALL_DOAS_SHELL"} \
+    "$INSTALL_DOAS_USERNAME"
 
-chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
+chpasswd <<<"$INSTALL_DOAS_USERNAME:$INSTALL_DOAS_PASSWORD"
 
 passwd --delete root
 
@@ -37,5 +40,5 @@ systemctl enable fstrim.timer
 
 if [[ $INSTALL_VM_TYPE == oracle ]]; then
     systemctl enable vboxservice.service
-    gpasswd --add "$INSTALL_SUDOER_USERNAME" vboxsf
+    gpasswd --add "$INSTALL_DOAS_USERNAME" vboxsf
 fi

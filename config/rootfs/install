@@ -19,14 +19,14 @@ echo "$INSTALL_HOSTNAME" >/etc/hostname
 ln -sf "/usr/share/zoneinfo/$INSTALL_TIMEZONE" /etc/localtime
 hwclock --systohc --utc
 
-echo "permit ${INSTALL_DOAS_NOPASS:+nopass }:wheel" >/etc/doas.conf
+echo "permit ${INSTALL_SUDOER_NOPASS:+nopass }:wheel" >/etc/doas.conf
 
 useradd \
     --create-home --groups users,wheel \
-    ${INSTALL_DOAS_SHELL:+--shell "$INSTALL_DOAS_SHELL"} \
-    "$INSTALL_DOAS_USERNAME"
+    ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
+    "$INSTALL_SUDOER_USERNAME"
 
-chpasswd <<<"$INSTALL_DOAS_USERNAME:$INSTALL_DOAS_PASSWORD"
+chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 
 passwd --delete root
 
@@ -40,5 +40,5 @@ systemctl enable fstrim.timer
 
 if [[ $INSTALL_VM_TYPE == oracle ]]; then
     systemctl enable vboxservice.service
-    gpasswd --add "$INSTALL_DOAS_USERNAME" vboxsf
+    gpasswd --add "$INSTALL_SUDOER_USERNAME" vboxsf
 fi

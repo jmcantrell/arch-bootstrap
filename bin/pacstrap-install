@@ -14,10 +14,6 @@ else
     packages+=(grub-bios)
 fi
 
-if [[ $INSTALL_VM_TYPE == oracle ]]; then
-    packages+=(virtualbox-guest-utils-nox)
-fi
-
 # Enable parallel package downloads.
 sed -i '/^#\?ParallelDownloads\b/s/#//' /etc/pacman.conf
 

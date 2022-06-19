@@ -39,9 +39,6 @@ The following kernel modules are blacklisted:
 Any wireless connections created during the install will be persisted
 to the installed system.
 
-If [installing as a VirtualBox guest][vbox-guest], the guest utilities will be
-enabled and the privileged user will be added to the `vboxsf` group.
-
 ## Configuration
 
 An example configuration directory is provided in `./config`. This can
@@ -131,5 +128,4 @@ the environment is ready.
 [timesyncd]: https://wiki.archlinux.org/title/Systemd-timesyncd
 [reflector]: https://wiki.archlinux.org/title/Reflector
 [ssd]: https://wiki.archlinux.org/title/Solid_state_drive
-[vbox-guest]: https://wiki.archlinux.org/title/VirtualBox/Install_Arch_Linux_as_a_guest
 [archiso]: https://archlinux.org/download/

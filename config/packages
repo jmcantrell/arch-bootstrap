@@ -1,6 +1,5 @@
 base
 btrfs-progs
-opendoas
 iwd
 linux
 linux-firmware
@@ -8,3 +7,4 @@ lvm2
 mkinitcpio
 openssh
 reflector
+sudo

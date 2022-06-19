@@ -17,7 +17,7 @@ export INSTALL_HOSTNAME=arch
 # export INSTALL_COUNTRY=US
 
 # Allow the wheel group password-less sudo?
-# export INSTALL_SUDOER_NOPASS=1
+# export INSTALL_SUDOER_NOPASSWD=1
 
 export INSTALL_SUDOER_USERNAME=user
 export INSTALL_SUDOER_PASSWORD=hunter2

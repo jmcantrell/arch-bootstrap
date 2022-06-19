@@ -2,9 +2,6 @@
 
 set -eu
 
-# Pretend doas is sudo.
-ln -sfv /usr/bin/{doas,sudo}
-
 echo "LANG=$INSTALL_LANG" >/etc/locale.conf
 sed -i -e "/#$INSTALL_LANG/s/^#//" /etc/locale.gen
 locale-gen
@@ -19,7 +16,7 @@ echo "$INSTALL_HOSTNAME" >/etc/hostname
 ln -sf "/usr/share/zoneinfo/$INSTALL_TIMEZONE" /etc/localtime
 hwclock --systohc --utc
 
-echo "permit ${INSTALL_SUDOER_NOPASS:+nopass }:wheel" >/etc/doas.conf
+echo "%wheel ALL=(ALL) ${INSTALL_SUDO_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
 
 useradd \
     --create-home --groups users,wheel \

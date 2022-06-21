@@ -2,7 +2,7 @@
 
 export CONFIG_DIR=${1:-$PWD/config}
 
-. "$CONFIG_DIR"/environment
+. "$CONFIG_DIR"/env
 
 export PATH=$PWD/bin:$PATH
 

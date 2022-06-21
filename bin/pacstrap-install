@@ -2,16 +2,16 @@
 
 set -eu
 
-readarray -t packages <"$CONFIG_DIR"/packages
+readarray -t pkgs <"$CONFIG_DIR"/pkgs
 
 if [[ -v INSTALL_CPU_VENDOR ]]; then
-    packages+=("$INSTALL_CPU_VENDOR"-ucode)
+    pkgs+=("$INSTALL_CPU_VENDOR"-ucode)
 fi
 
 if [[ -v INSTALL_EFI_DIR ]]; then
-    packages+=(grub efibootmgr)
+    pkgs+=(grub efibootmgr)
 else
-    packages+=(grub-bios)
+    pkgs+=(grub-bios)
 fi
 
 # Enable parallel package downloads.
@@ -23,4 +23,4 @@ if [[ -v INSTALL_PACMAN_CACHE ]]; then
     rsync -rv "$INSTALL_PACMAN_CACHE/" "$pacman_cache"
 fi
 
-pacstrap "$INSTALL_DIR" "${packages[@]}"
+pacstrap "$INSTALL_DIR" "${pkgs[@]}"

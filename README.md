@@ -46,14 +46,14 @@ be used as a template to create presets. By default, the script
 `./scripts/prepare` will look in `./config`, but this can be
 overridden by providing a different directory as the first argument.
 
-The installation environment is defined in `./config/environment`. It
+The installation environment is defined in `./config/env`. It
 illustrates the recognized environment variables with some default
 values. Every uncommented line in this file is a required variable.
 
-The file system subvolumes are defined in `./config/subvolumes`. Every
+The file system subvolumes are defined in `./config/subvols`. Every
 line must be of the form `@name /path/to/subvolume`.
 
-The packages to be installed are defined in `./config/packages`.
+The packages to be installed are defined in `./config/pkgs`.
 Packages can be added, but if any are removed, the installation will
 probably fail.
 

@@ -2,4 +2,5 @@
 
 set -eu
 
+# TODO: Use default luks type once grub supports it.
 cryptsetup luksFormat --type luks1 "$INSTALL_LUKS_DEVICE" <<<"$INSTALL_LUKS_PASSPHRASE"

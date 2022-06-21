@@ -3,5 +3,8 @@
 set -eu
 
 path=${1#/}
+template=$CONFIG_DIR/templates/$path
 
-envsubst <"$CONFIG_DIR"/templates/"$path" >"$INSTALL_DIR/$path"
+if [[ -f $template ]]; then
+    envsubst <"$template" >"$INSTALL_DIR/$path"
+fi

@@ -16,5 +16,5 @@ chmod 700 ~/.ssh
 curl -sL https://gitlab.com/jmcantrell.keys >~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 
-cp ./config/rootfs/etc/systemd/network/* /etc/systemd/network
+cp ./config/files/etc/systemd/network/* /etc/systemd/network
 systemctl restart systemd-networkd.service

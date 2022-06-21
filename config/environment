@@ -1,6 +1,12 @@
 export INSTALL_DEVICE=/dev/sda
 
+# Where should the new installation be mounted?
+# export INSTALL_DIR=/mnt/install
+
 export INSTALL_SWAP_SIZE=4G
+
+# What options should be used when mounting btrfs subvolumes?
+# export INSTALL_MOUNT_OPTIONS=autodefrag,compress=zstd
 
 # Should full disk encryption be used?
 # export INSTALL_LUKS_PASSPHRASE=hunter2
@@ -25,5 +31,8 @@ export INSTALL_SUDOER_PASSWORD=hunter2
 
 # Should the display go to sleep after a bit?
 # export INSTALL_CONSOLE_BLANK=$((10 * 60)) # 10 minutes
+
+# Use an external package cache during installation?
+# export INSTALL_PACMAN_CACHE=/var/cache/pacman/pkg
 
 # vi:ft=sh

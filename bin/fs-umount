@@ -6,6 +6,8 @@ if [[ -v INSTALL_EFI_DIR ]]; then
     umount "$INSTALL_EFI_DIR"
 fi
 
-while read -r _ dir; do
-    umount "$INSTALL_DIR/${dir#/}"
-done < <(tac "$CONFIG_DIR"/subvols)
+while read -r _ path; do
+    umount "$INSTALL_DIR/${path#/}"
+done <"$CONFIG_DIR"/subvolumes
+
+umount "$INSTALL_DIR"

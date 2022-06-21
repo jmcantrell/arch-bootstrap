@@ -4,11 +4,15 @@ set -eu
 
 mkdir -p "$INSTALL_DIR"
 
-while read -r subvol dir; do
-    mnt_dir=$INSTALL_DIR/${dir#/}
-    mkdir -p "$mnt_dir"
-    mount -o autodefrag,compress=zstd,subvol="$subvol" "$INSTALL_ROOT_DEVICE" "$mnt_dir"
-done <"$CONFIG_DIR"/subvols
+mount -o "${INSTALL_MOUNT_OPTIONS:+$INSTALL_MOUNT_OPTIONS,}subvol=@" "$INSTALL_ROOT_DEVICE" "$INSTALL_DIR"
+
+if [[ -f $CONFIG_DIR/subvolumes ]]; then
+    while read -r name path; do
+        mnt_path=$INSTALL_DIR/${path#/}
+        mkdir -p "$mnt_path"
+        mount -o "${INSTALL_MOUNT_OPTIONS:+$INSTALL_MOUNT_OPTIONS,}subvol=@$name" "$INSTALL_ROOT_DEVICE" "$mnt_path"
+    done <"$CONFIG_DIR"/subvolumes
+fi
 
 if [[ -v INSTALL_EFI_DIR ]]; then
     mkdir -p "$INSTALL_EFI_DIR"

@@ -2,7 +2,7 @@
 
 export CONFIG_DIR=${1:-$PWD/config}
 
-. "$CONFIG_DIR"/env
+. "$CONFIG_DIR"/environment
 
 export PATH=$PWD/bin:$PATH
 
@@ -23,6 +23,8 @@ fi
 
 export INSTALL_ROOT_DEVICE=/dev/mapper/vg-root
 export INSTALL_SWAP_DEVICE=/dev/mapper/vg-swap
+
+export INSTALL_MOUNT_OPTIONS=${INSTALL_MOUNT_OPTIONS:-autodefrag,compress=zstd}
 
 case $(grep -w -m1 '^vendor_id' /proc/cpuinfo | awk '{print $NF}') in
 GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;

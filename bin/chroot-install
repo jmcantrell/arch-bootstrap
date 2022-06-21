@@ -2,7 +2,9 @@
 
 set -eu
 
-rsync -rv "$CONFIG_DIR"/rootfs/ "$INSTALL_DIR"
+if [[ -d $CONFIG_DIR/files ]]; then
+    rsync -rv "$CONFIG_DIR"/files/ "$INSTALL_DIR"
+fi
 
 rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
 
@@ -13,5 +15,8 @@ rm -f "$INSTALL_DIR"/etc/machine-id
 export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 
-arch-chroot "$INSTALL_DIR" /install
-rm "$INSTALL_DIR"/install
+if [[ -x $CONFIG_DIR/install ]]; then
+    cp "$CONFIG_DIR"/install "$INSTALL_DIR"
+    arch-chroot "$INSTALL_DIR" /install
+    rm "$INSTALL_DIR"/install
+fi

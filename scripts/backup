@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -eu
+
+host_dir=$PWD/hosts/$HOSTNAME
+
+from_dirs=(
+    /var/lib/iwd
+    /var/cache/pacman/pkg
+    "${XDG_CACHE_HOME:-$HOME/.cache}"/pikaur/pkg
+    "$HOME"/.{ssh,dotfiles,password-store}
+)
+
+for from_dir in "${from_dirs[@]}"; do
+    if [[ -d $from_dir ]]; then
+        to_dir=$host_dir/${from_dir#/}
+        mkdir -p "$to_dir"
+        sudo rsync -var --delete "$from_dir"/ "$to_dir"
+    fi
+done

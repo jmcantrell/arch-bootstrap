@@ -2,4 +2,4 @@
 
 set -eu
 
-mkswap --label swap "$INSTALL_SWAP_DEVICE"
+mkswap --label "$INSTALL_FS_SWAP_LABEL" "$INSTALL_SWAP_DEVICE"

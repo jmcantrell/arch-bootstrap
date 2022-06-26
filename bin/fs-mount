@@ -2,19 +2,14 @@
 
 set -eu
 
-mkdir -p "$INSTALL_DIR"
+while read -r name path; do
+    mnt_path=$INSTALL_DIR/${path#/}
+    mkdir -p "$mnt_path"
+    mount -o "${INSTALL_FS_MOUNT_OPTIONS:+$INSTALL_FS_MOUNT_OPTIONS,}subvol=$name" "$INSTALL_ROOT_DEVICE" "$mnt_path"
+done <"$CONFIG_DIR"/subvolumes
 
-mount -o "${INSTALL_MOUNT_OPTIONS:+$INSTALL_MOUNT_OPTIONS,}subvol=@" "$INSTALL_ROOT_DEVICE" "$INSTALL_DIR"
-
-if [[ -f $CONFIG_DIR/subvolumes ]]; then
-    while read -r name path; do
-        mnt_path=$INSTALL_DIR/${path#/}
-        mkdir -p "$mnt_path"
-        mount -o "${INSTALL_MOUNT_OPTIONS:+$INSTALL_MOUNT_OPTIONS,}subvol=@$name" "$INSTALL_ROOT_DEVICE" "$mnt_path"
-    done <"$CONFIG_DIR"/subvolumes
-fi
-
-if [[ -v INSTALL_EFI_DIR ]]; then
-    mkdir -p "$INSTALL_EFI_DIR"
-    mount "$INSTALL_BOOT_DEVICE" "$INSTALL_EFI_DIR"
+if [[ $INSTALL_BOOT_TYPE == uefi ]]; then
+    uefi_dir=$INSTALL_DIR/${INSTALL_BOOT_UEFI_DIR#/}
+    mkdir -p "$uefi_dir"
+    mount "$INSTALL_BOOT_DEVICE" "$uefi_dir"
 fi

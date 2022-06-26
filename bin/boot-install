@@ -10,10 +10,13 @@ if [[ -v INSTALL_CONSOLE_BLANK ]]; then
     cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLE_BLANK")
 fi
 
-if [[ -v INSTALL_LUKS_DEVICE ]]; then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
-    cmdline_linux+=(cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_NAME")
+    cmdline_linux+=(
+        cryptkey=rootfs:"$INSTALL_LUKS_KEYFILE"
+        cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME"
+    )
 else
     export GRUB_ENABLE_CRYPTODISK=n
 fi

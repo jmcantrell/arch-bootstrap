@@ -2,12 +2,10 @@
 
 set -eu
 
-if [[ -v INSTALL_EFI_DIR ]]; then
-    umount "$INSTALL_EFI_DIR"
+if [[ $INSTALL_BOOT_TYPE == uefi ]]; then
+    umount "$INSTALL_DIR/${INSTALL_BOOT_UEFI_DIR#/}"
 fi
 
 while read -r _ path; do
     umount "$INSTALL_DIR/${path#/}"
-done <"$CONFIG_DIR"/subvolumes
-
-umount "$INSTALL_DIR"
+done < <(tac "$CONFIG_DIR"/subvolumes)

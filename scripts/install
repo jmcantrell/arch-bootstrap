@@ -6,9 +6,8 @@ localize
 
 partition
 
-if [[ -v INSTALL_LUKS_DEVICE ]]; then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     luks-format
-    luks-addkey
     luks-open
 fi
 
@@ -20,8 +19,23 @@ swap-open
 fs-format
 fs-mount
 
-pacstrap-install
+if ((INSTALL_DEVICE_IS_LUKS)); then
+    luks-addkey
+fi
+
+packages-install
 fstab-install
 chroot-install
 initrd-install
-grub-install
+boot-install
+
+# The rest is not normally necessary, but illustrates the procedure for cleanly
+# unmounting the new installation.
+
+# fs-umount
+# swap-close
+# lvm-close
+
+# if ((INSTALL_DEVICE_IS_LUKS)); then
+#     luks-close
+# fi

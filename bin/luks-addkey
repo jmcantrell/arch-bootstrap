@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
-touch "$INSTALL_LUKS_KEYFILE"
-chmod 000 "$INSTALL_LUKS_KEYFILE"
-dd bs=512 count=8 if=/dev/urandom of="$INSTALL_LUKS_KEYFILE"
+# Slot 0 is the initial passphrase.
+# Slot 1 is reserved for the keyfile.
+keyfile_slot=1
 
-cryptsetup luksAddKey "$INSTALL_LUKS_DEVICE" "$INSTALL_LUKS_KEYFILE" <<<"$INSTALL_LUKS_PASSPHRASE"
+# If the reserved key slot is taken, kill it first.
+if cryptsetup luksDump "$INSTALL_LUKS_DEVICE" | grep -q "^Key Slot $keyfile_slot: ENABLED"; then
+    cryptsetup luksKillSlot "$INSTALL_LUKS_DEVICE" "$keyfile_slot"
+fi
+
+keyfile=$INSTALL_DIR/${INSTALL_LUKS_KEYFILE#/}
+
+touch "$keyfile"
+chmod 000 "$keyfile"
+dd bs=512 count=8 if=/dev/urandom of="$keyfile"
+
+cryptsetup --key-slot "$keyfile_slot" luksAddKey "$INSTALL_LUKS_DEVICE" "$keyfile" <<<"$INSTALL_LUKS_PASSPHRASE"

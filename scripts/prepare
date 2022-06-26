@@ -12,27 +12,65 @@ export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 
 if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
+    export INSTALL_DEVICE_IS_LUKS=1
     export INSTALL_LUKS_DEVICE=$INSTALL_OS_DEVICE
-    export INSTALL_LUKS_NAME=crypt-os
-    export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_NAME
-    export INSTALL_LUKS_KEYFILE=$PWD/keyfile-$INSTALL_LUKS_NAME.bin
+    export INSTALL_LUKS_MAPPER_NAME=${INSTALL_LUKS_MAPPER_NAME:-crypt-os}
+    export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_MAPPER_NAME
+    export INSTALL_LUKS_KEYFILE=${INSTALL_LUKS_KEYFILE:-/crypto_keyfile.bin}
     export INSTALL_LVM_DEVICE=$INSTALL_LUKS_MAPPER
 else
+    export INSTALL_DEVICE_IS_LUKS=0
     export INSTALL_LVM_DEVICE=$INSTALL_OS_DEVICE
 fi
 
-export INSTALL_ROOT_DEVICE=/dev/mapper/vg-root
-export INSTALL_SWAP_DEVICE=/dev/mapper/vg-swap
+export INSTALL_ROOT_NAME=${INSTALL_ROOT_NAME:-root}
+export INSTALL_SWAP_NAME=${INSTALL_SWAP_NAME:-swap}
 
-export INSTALL_MOUNT_OPTIONS=${INSTALL_MOUNT_OPTIONS:-autodefrag,compress=zstd}
+export INSTALL_LVM_VG_NAME=${INSTALL_LVM_VG_NAME:-vg}
+export INSTALL_LVM_LV_ROOT_NAME=${INSTALL_LVM_LV_ROOT_NAME:-$INSTALL_ROOT_NAME}
+export INSTALL_LVM_LV_SWAP_NAME=${INSTALL_LVM_LV_SWAP_NAME:-$INSTALL_SWAP_NAME}
 
-case $(grep -w -m1 '^vendor_id' /proc/cpuinfo | awk '{print $NF}') in
-GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
-AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
+export INSTALL_ROOT_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_LV_ROOT_NAME
+export INSTALL_SWAP_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_LV_SWAP_NAME
+
+export INSTALL_FS_ROOT_LABEL=${INSTALL_FS_ROOT_LABEL:-$INSTALL_ROOT_NAME}
+export INSTALL_FS_SWAP_LABEL=${INSTALL_FS_SWAP_LABEL:-$INSTALL_SWAP_NAME}
+
+export INSTALL_FS_MOUNT_OPTIONS=${INSTALL_FS_MOUNT_OPTIONS:-autodefrag,compress=zstd}
+
+if [[ ! -v INSTALL_CPU_VENDOR ]]; then
+    case $(grep -w -m1 '^vendor_id' /proc/cpuinfo | awk '{print $NF}') in
+    GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
+    AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
+    esac
+fi
+
+if [[ ! -v INSTALL_BOOT_TYPE ]]; then
+    if [[ -d /sys/firmware/efi/efivars ]]; then
+        export INSTALL_BOOT_TYPE=uefi
+    else
+        export INSTALL_BOOT_TYPE=bios
+    fi
+fi
+
+case $INSTALL_BOOT_TYPE in
+uefi) export INSTALL_BOOT_UEFI_DIR=${INSTALL_BOOT_UEFI_DIR:-/boot/efi} ;;
 esac
 
-if [[ -d /sys/firmware/efi/efivars ]]; then
-    export INSTALL_EFI_DIR=$INSTALL_DIR/boot/efi
+if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
+    if (($(</sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational))); then
+        export INSTALL_DEVICE_IS_SSD=0
+    else
+        export INSTALL_DEVICE_IS_SSD=1
+    fi
+fi
+
+if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
+    if find /sys/class/net -mindepth 1 | grep -q "^wl"; then
+        export INSTALL_NET_HAS_WIRELESS=1
+    else
+        export INSTALL_NET_HAS_WIRELESS=0
+    fi
 fi
 
 if [[ ! -v INSTALL_LANG ]]; then
@@ -65,3 +103,5 @@ if [[ ! -v INSTALL_COUNTRY ]]; then
     INSTALL_COUNTRY=${INSTALL_COUNTRY#*_}
     export INSTALL_COUNTRY
 fi
+
+export INSTALL_SUDOER_GROUP=${INSTALL_SUDOER_GROUP:-wheel}

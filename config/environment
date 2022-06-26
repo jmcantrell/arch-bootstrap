@@ -1,38 +1,22 @@
 export INSTALL_DEVICE=/dev/sda
 
-# Where should the new installation be mounted?
-# export INSTALL_DIR=/mnt/install
+export INSTALL_HOSTNAME=arch
 
 export INSTALL_SWAP_SIZE=4G
 
-# What options should be used when mounting btrfs subvolumes?
-# export INSTALL_MOUNT_OPTIONS=autodefrag,compress=zstd
-
-# Should full disk encryption be used?
-# export INSTALL_LUKS_PASSPHRASE=hunter2
-
-export INSTALL_HOSTNAME=arch
-
-# export INSTALL_LANG=en_US.UTF-8
-# export INSTALL_KEYMAP=us
-# export INSTALL_FONT=Lat2-Terminus16
-# export INSTALL_TIMEZONE=UTC
-
-# Currently, only used by reflector to filter pacman mirrors.
-# If unset, the value will be parsed from INSTALL_LANG.
-# export INSTALL_COUNTRY=US
-
-# Allow the wheel group password-less sudo?
-# export INSTALL_SUDOER_NOPASSWD=1
-
 export INSTALL_SUDOER_USERNAME=user
 export INSTALL_SUDOER_PASSWORD=hunter2
-# export INSTALL_SUDOER_SHELL=/bin/zsh
+# export INSTALL_SUDOER_NOPASSWD=1
+# export INSTALL_SUDOER_SHELL=/bin/zsh # default: bash
 
-# Should the display go to sleep after a bit?
+# export INSTALL_LUKS_PASSPHRASE=hunter2
+
+# export INSTALL_KEYMAP=us
+# export INSTALL_LANG=en_US.UTF-8
+# export INSTALL_TIMEZONE=America/Chicago # default: UTC
+
 # export INSTALL_CONSOLE_BLANK=$((10 * 60)) # 10 minutes
 
-# Use an external package cache during installation?
-# export INSTALL_PACMAN_CACHE=/var/cache/pacman/pkg
+# export INSTALL_PACMAN_CACHE=/mnt/installer/pacman_pkg
 
 # vi:ft=sh

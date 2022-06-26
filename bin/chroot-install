@@ -6,17 +6,13 @@ if [[ -d $CONFIG_DIR/files ]]; then
     rsync -rv "$CONFIG_DIR"/files/ "$INSTALL_DIR"
 fi
 
-rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
+if ((INSTALL_NET_HAS_WIRELESS)); then
+    rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
+fi
 
 ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_DIR"/etc/resolv.conf
-
-rm -f "$INSTALL_DIR"/etc/machine-id
 
 export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 
-if [[ -x $CONFIG_DIR/install ]]; then
-    cp "$CONFIG_DIR"/install "$INSTALL_DIR"
-    arch-chroot "$INSTALL_DIR" /install
-    rm "$INSTALL_DIR"/install
-fi
+chroot-script-exec "$INSTALL_DIR" "$CONFIG_DIR"/install

@@ -2,13 +2,20 @@
 
 set -eu
 
-if [[ -v INSTALL_EFI_DIR ]]; then
+case $INSTALL_BOOT_TYPE in
+uefi)
     boot_size=512
     boot_type=esp
-else
+    ;;
+bios)
     boot_size=2
     boot_type=bios_grub
-fi
+    ;;
+*)
+    echo "${0##*/}: Invalid boot type: $INSTALL_BOOT_TYPE" >&2
+    exit 1
+    ;;
+esac
 
 parted -s "$INSTALL_DEVICE" \
     mklabel gpt unit MiB \

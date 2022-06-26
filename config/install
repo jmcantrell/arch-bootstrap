@@ -2,6 +2,10 @@
 
 set -eu
 
+rm -f /etc/machine-id
+
+echo "$INSTALL_HOSTNAME" >/etc/hostname
+
 echo "LANG=$INSTALL_LANG" >/etc/locale.conf
 sed -i -e "/#$INSTALL_LANG/s/^#//" /etc/locale.gen
 locale-gen
@@ -11,15 +15,13 @@ FONT=$INSTALL_FONT
 KEYMAP=$INSTALL_KEYMAP
 EOF
 
-echo "$INSTALL_HOSTNAME" >/etc/hostname
-
-ln -sf "/usr/share/zoneinfo/$INSTALL_TIMEZONE" /etc/localtime
+ln -sf /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
 hwclock --systohc --utc
 
-echo "%wheel ALL=(ALL) ${INSTALL_SUDO_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/wheel
+echo "%$INSTALL_SUDOER_GROUP ALL=(ALL) ${INSTALL_SUDOER_NOPASSWD:+NOPASSWD:}ALL" >/etc/sudoers.d/"$INSTALL_SUDOER_GROUP"
 
 useradd \
-    --create-home --groups users,wheel \
+    --create-home --groups users,"$INSTALL_SUDOER_GROUP" \
     ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
     "$INSTALL_SUDOER_USERNAME"
 
@@ -27,10 +29,14 @@ chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 
 passwd --delete root
 
+if ((INSTALL_DEVICE_IS_SSD)); then
+    systemctl enable fstrim.timer
+fi
+
+if ((INSTALL_NET_HAS_WIRELESS)); then
+    systemctl enable iwd.service
+fi
+
 systemctl enable systemd-{networkd,resolved,timesyncd}.service
-
-systemctl enable {sshd,iwd}.service
-
 systemctl enable reflector.{service,timer}
-
-systemctl enable fstrim.timer
+systemctl enable sshd.service

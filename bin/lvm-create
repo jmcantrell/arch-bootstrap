@@ -3,6 +3,6 @@
 set -eu
 
 pvcreate -ff --yes "$INSTALL_LVM_DEVICE"
-vgcreate vg "$INSTALL_LVM_DEVICE"
-lvcreate --wipesignatures y --yes --size "$INSTALL_SWAP_SIZE" vg --name swap
-lvcreate --wipesignatures y --yes --extents "+100%FREE" vg --name root
+vgcreate "$INSTALL_LVM_VG_NAME" "$INSTALL_LVM_DEVICE"
+lvcreate --wipesignatures y --yes --size "$INSTALL_SWAP_SIZE" "$INSTALL_LVM_VG_NAME" --name "$INSTALL_LVM_LV_SWAP_NAME"
+lvcreate --wipesignatures y --yes --extents "+100%FREE" "$INSTALL_LVM_VG_NAME" --name "$INSTALL_LVM_LV_ROOT_NAME"

@@ -7,14 +7,16 @@ cd ~
 if [[ ! -d bootstrap-arch-main ]]; then
     # If running this script from the output of curl, then get the rest of the repo.
     curl -sLO https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/main/bootstrap-arch-main.tar.gz
-    tar -v -x -f bootstrap-arch-main.tar.gz
-    cd bootstrap-arch-main
+    tar -xv -f bootstrap-arch-main.tar.gz
 fi
+
+cd bootstrap-arch-main
 
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 curl -sL https://gitlab.com/jmcantrell.keys >~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 
-cp ./config/files/etc/systemd/network/* /etc/systemd/network
+sed -i "/DHCP=/a MulticastDNS=yes" /etc/systemd/network/*.network
+
 systemctl restart systemd-networkd.service

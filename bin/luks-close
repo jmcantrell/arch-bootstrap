@@ -2,4 +2,4 @@
 
 set -eu
 
-cryptsetup close "$INSTALL_LUKS_NAME"
+cryptsetup close "$INSTALL_LUKS_MAPPER_NAME"

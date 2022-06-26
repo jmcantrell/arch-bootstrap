@@ -21,15 +21,18 @@ If enabled, full disk encryption is handled by [LUKS][luks], using the
 The file system is formatted using [Btrfs][btrfs] (with
 [subvolumes][btrfs-subvols]).
 
+[Processor microcode updates][microcode] will be installed according
+to the system's CPU vendor (Intel or AMD).
+
 The following services are installed and enabled:
 
-- [networkd]
-- [resolved] ([mDNS enabled][mdns])
-- [iwd]
-- [sshd]
-- [timesyncd]
+- [fstrim][ssd] (if installation disk is SSD)
+- [iwd] (if wireless devices are present)
+- [systemd-networkd]
+- [systemd-resolved] (with [mDNS][mdns] enabled)
+- [systemd-timesyncd]
 - [reflector]
-- [fstrim][ssd]
+- [sshd]
 
 The following changes are made to `/etc/pacman.conf`:
 
@@ -45,56 +48,82 @@ to the installed system.
 
 ## Configuration
 
-An example configuration directory is provided at `./config`.
-Within that directory, are the following files:
+Details of the installation can be controlled from the default
+configuration at `./config`. This directory can be used as a template
+if multiple preset configurations are needed.
+
+The preparation script will, by default, use this directory, but it
+can be overridden by passing another directory as the first argument:
+
+```sh
+. ./scripts/prepare /path/to/another/config
+```
+
+Within a configuration directory, the following files are recognized:
 
 ### `environment`
 
-This file illustrates the recognized environment variables. Every
-uncommented line in this file is a required variable. Optional
-variables are commented out with their default values.
+This file will be used by `./scripts/prepare` to initialize the
+environment variables needed for installation. Look through that
+script to see the default values and other variables that can be
+overridden.
+
+The only required variables are:
+
+- `INSTALL_DEVICE` (e.g. `/dev/sda`)
+- `INSTALL_SWAP_SIZE` (e.g. `4G`)
+- `INSTALL_HOSTNAME`
+- `INSTALL_SUDOER_USERNAME`
+- `INSTALL_SUDOER_PASSWORD`
 
 ### `subvolumes`
 
-This file, if it exists, defines the [btrfs
-subvolumes][btrfs-subvols]. Every line must be of the form:
+This file defines the [btrfs subvolumes][btrfs-subvols] that will be
+created. Every line must be of the form:
 
 ```
-name /path/to/subvolume
+@name /path/to/subvolume
 ```
 
-A root subvolume will always be created and mounted at `/`.
+At the very least, this file must contain the root subvolume (it must
+be the first line in the file).
 
 ### `packages`
 
-This file defines the packages that will be installed on the new
-system. Packages can be added, but if any are removed, the
-installation will probably fail.
-
-### `files/*`
-
-This directory tree, if it exists, will be `rsync`ed to `/` with the
-permissions (but not ownership) intact.
+This script defines the packages that will be installed on the new
+system. It should output a list of packages to stdout, one per line.
 
 ### `install`
 
 This script, if it exists and is executable, will be run in a chroot
 just after packages have been installed.
 
+### `templates/*`
+
+This directory tree contains files necessary for installation, but
+with potentially varying details.
+
+### `files/*`
+
+This directory tree, if it exists, contains static content that will
+be added to the installation. It will be `rsync`ed to `/` with the
+permissions (but not ownership) intact.
+
 ## Usage
 
 In general, the installation steps are as follows:
 
 1. Boot into a copy of the [Arch Linux ISO][archiso]
-1. Connect to the internet
+1. Connect to the internet, if needed
 1. Copy this repository to the live environment
 1. Change the directory to this repository
+1. Customize the configuration (e.g. `./config` or some derivative)
 1. Prepare the environment: `. ./scripts/prepare [/path/to/config/dir]`
 1. Run the installation script: `./scripts/install`
 
 After installation, the system is left mounted for inspection.
 
-If all is well, `poweroff`.
+If all is well, `poweroff` and eject the ISO.
 
 ### Initialize the SSH server and enable mDNS
 
@@ -143,10 +172,11 @@ the environment is ready.
 [lvm-on-luks]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
 [lvm]: https://wiki.archlinux.org/title/LVM
 [mdns]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS
-[networkd]: https://wiki.archlinux.org/title/Systemd-networkd
+[microcode]: https://wiki.archlinux.org/title/Microcode
 [reflector]: https://wiki.archlinux.org/title/Reflector
-[resolved]: https://wiki.archlinux.org/title/Systemd-resolved
 [ssd]: https://wiki.archlinux.org/title/Solid_state_drive
 [sshd]: https://wiki.archlinux.org/title/OpenSSH#Server_usage
-[timesyncd]: https://wiki.archlinux.org/title/Systemd-timesyncd
+[systemd-networkd]: https://wiki.archlinux.org/title/Systemd-networkd
+[systemd-resolved]: https://wiki.archlinux.org/title/Systemd-resolved
+[systemd-timesyncd]: https://wiki.archlinux.org/title/Systemd-timesyncd
 [uefi]: https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface

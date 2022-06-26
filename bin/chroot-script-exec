@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eu
+
+dir=$1
+script=$2
+shift 2
+
+if [[ -x $script ]]; then
+    cp "$script" "$dir"/script
+    arch-chroot "$dir" /script "$@"
+    rm "$dir"/script
+fi

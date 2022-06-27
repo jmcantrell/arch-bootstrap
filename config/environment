@@ -1,19 +1,19 @@
 export INSTALL_DEVICE=/dev/sda
 
-export INSTALL_HOSTNAME=arch
+# export INSTALL_HOSTNAME=arch
 
-export INSTALL_SWAP_SIZE=4G
-
-export INSTALL_SUDOER_USERNAME=user
-export INSTALL_SUDOER_PASSWORD=hunter2
-# export INSTALL_SUDOER_NOPASSWD=1
-# export INSTALL_SUDOER_SHELL=/bin/zsh # default: bash
+# export INSTALL_SWAP_SIZE=4G
 
 # export INSTALL_LUKS_PASSPHRASE=hunter2
 
 # export INSTALL_KEYMAP=us
 # export INSTALL_LANG=en_US.UTF-8
 # export INSTALL_TIMEZONE=America/Chicago # default: UTC
+
+# export INSTALL_SUDOER_USERNAME=admin
+# export INSTALL_SUDOER_PASSWORD=hunter2
+# export INSTALL_SUDOER_NOPASSWD=1
+# export INSTALL_SUDOER_SHELL=/bin/zsh # default: bash
 
 # export INSTALL_CONSOLE_BLANK=$((10 * 60)) # 10 minutes
 

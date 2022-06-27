@@ -32,5 +32,3 @@ if [[ -v INSTALL_SUDOER_SHELL ]]; then
 fi
 
 printf "%s\n" "${packages[@]}"
-
-# vi:ft=sh

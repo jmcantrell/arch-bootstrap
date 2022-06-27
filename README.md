@@ -46,10 +46,13 @@ The following kernel modules are blacklisted:
 Any wireless connections created during the install will be persisted
 to the installed system.
 
+A privileged user will be created and the root account will be
+disabled.
+
 ## Configuration
 
 Details of the installation can be controlled from the default
-configuration at `./config`. This directory can be used as a template
+configuration in `./config`. This directory can be used as a template
 if multiple preset configurations are needed.
 
 The preparation script will, by default, use this directory, but it
@@ -64,17 +67,13 @@ Within a configuration directory, the following files are recognized:
 ### `environment`
 
 This file will be used by `./scripts/prepare` to initialize the
-environment variables needed for installation. Look through that
-script to see the default values and other variables that can be
-overridden.
+environment variables needed for installation.
 
-The only required variables are:
-
-- `INSTALL_DEVICE` (e.g. `/dev/sda`)
-- `INSTALL_SWAP_SIZE` (e.g. `4G`)
-- `INSTALL_HOSTNAME`
-- `INSTALL_SUDOER_USERNAME`
-- `INSTALL_SUDOER_PASSWORD`
+The only required variable is `INSTALL_DEVICE` (e.g. `/dev/sda`).
+There are many other variables that you might want to set, but have
+reasonable defaults that can be changed later. Look through the
+preparation script to see the default values and other variables that
+can be overridden.
 
 ### `subvolumes`
 
@@ -105,15 +104,15 @@ with potentially varying details.
 
 ### `files/*`
 
-This directory tree, if it exists, contains static content that will
-be added to the installation. It will be `rsync`ed to `/` with the
+This directory tree, if it exists, contains files that will be added
+unchanged to the installation. It will be `rsync`ed to `/` with the
 permissions (but not ownership) intact.
 
 ## Usage
 
 In general, the installation steps are as follows:
 
-1. Boot into a copy of the [Arch Linux ISO][archiso]
+1. Boot into the [Arch Linux ISO][archiso]
 1. Connect to the internet, if needed
 1. Copy this repository to the live environment
 1. Change the directory to this repository

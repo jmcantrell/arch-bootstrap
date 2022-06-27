@@ -2,7 +2,9 @@
 
 export CONFIG_DIR=${1:-$PWD/config}
 
-. "$CONFIG_DIR"/environment
+. "$CONFIG_DIR"/environment || return 1
+
+: "${INSTALL_DEVICE:?}"
 
 export PATH=$PWD/bin:$PATH
 
@@ -14,7 +16,7 @@ export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
     export INSTALL_DEVICE_IS_LUKS=1
     export INSTALL_LUKS_DEVICE=$INSTALL_OS_DEVICE
-    export INSTALL_LUKS_MAPPER_NAME=${INSTALL_LUKS_MAPPER_NAME:-crypt-os}
+    export INSTALL_LUKS_MAPPER_NAME=${INSTALL_LUKS_MAPPER_NAME:-os}
     export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_MAPPER_NAME
     export INSTALL_LUKS_KEYFILE=${INSTALL_LUKS_KEYFILE:-/crypto_keyfile.bin}
     export INSTALL_LVM_DEVICE=$INSTALL_LUKS_MAPPER
@@ -73,6 +75,12 @@ if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
     fi
 fi
 
+if [[ ! -v INSTALL_SWAP_SIZE ]]; then
+    # The swap size should be at least as big as physical memory.
+    INSTALL_SWAP_SIZE=$(guess-mem-total) || return 1
+    export INSTALL_SWAP_SIZE
+fi
+
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
     if find /sys/class/net -mindepth 1 | grep -q "^wl"; then
         export INSTALL_NET_HAS_WIRELESS=1
@@ -80,6 +88,8 @@ if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
         export INSTALL_NET_HAS_WIRELESS=0
     fi
 fi
+
+export INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-arch}
 
 if [[ ! -v INSTALL_LANG ]]; then
     [[ ! -v LANG && -r /etc/locale.conf ]] && . /etc/locale.conf
@@ -113,3 +123,8 @@ if [[ ! -v INSTALL_COUNTRY ]]; then
 fi
 
 export INSTALL_SUDOER_GROUP=${INSTALL_SUDOER_GROUP:-wheel}
+export INSTALL_SUDOER_USERNAME=${INSTALL_SUDOER_USERNAME:-admin}
+export INSTALL_SUDOER_PASSWORD=${INSTALL_SUDOER_PASSWORD:-hunter2}
+
+# Show the current environment as a sanity check.
+set | grep '^INSTALL_' | sort

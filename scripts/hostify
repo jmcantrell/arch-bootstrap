@@ -9,7 +9,7 @@ hostnamectl set-hostname "$host"
 
 iwd_dir=$host_dir/var/lib/iwd
 if [[ -d $iwd_dir ]]; then
-    cp "$iwd_dir"/*.psk "${iwd_dir#"$host_dir"}"
+    cp -a "$iwd_dir"/*.psk "${iwd_dir#"$host_dir"}"
     systemctl restart iwd.service
 fi
 

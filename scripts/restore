@@ -5,4 +5,4 @@ set -eu
 host_dir=$PWD/hosts/${1:?Missing hostname}
 install_dir=${2:-${INSTALL_DIR:?Missing installation directory}}
 
-sudo rsync -var "$host_dir"/ "$install_dir"
+rsync -var "$host_dir"/ "$install_dir"

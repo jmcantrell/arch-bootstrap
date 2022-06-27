@@ -2,24 +2,9 @@
 
 set -eu
 
-case $INSTALL_BOOT_TYPE in
-uefi)
-    boot_size=512
-    boot_type=esp
-    ;;
-bios)
-    boot_size=2
-    boot_type=bios_grub
-    ;;
-*)
-    echo "${0##*/}: Invalid boot type: $INSTALL_BOOT_TYPE" >&2
-    exit 1
-    ;;
-esac
-
 parted -s "$INSTALL_DEVICE" \
     mklabel gpt unit MiB \
-    mkpart boot 0% "$boot_size" \
-    set 1 "$boot_type" on \
-    mkpart os "$boot_size" 100% \
+    mkpart boot 0% "$INSTALL_BOOT_PARTITION_SIZE" \
+    mkpart os "$INSTALL_BOOT_PARTITION_SIZE" 100% \
+    set 1 "$INSTALL_BOOT_PARTITION_FLAG" on \
     set 2 lvm on

@@ -54,7 +54,15 @@ if [[ ! -v INSTALL_BOOT_TYPE ]]; then
 fi
 
 case $INSTALL_BOOT_TYPE in
-uefi) export INSTALL_BOOT_UEFI_DIR=${INSTALL_BOOT_UEFI_DIR:-/boot/efi} ;;
+uefi)
+    export INSTALL_BOOT_PARTITION_FLAG=esp
+    export INSTALL_BOOT_PARTITION_SIZE=${INSTALL_BOOT_PARTITION_SIZE:-512}
+    export INSTALL_BOOT_UEFI_DIR=${INSTALL_BOOT_UEFI_DIR:-/boot/efi}
+    ;;
+bios)
+    export INSTALL_BOOT_PARTITION_FLAG=bios_grub
+    export INSTALL_BOOT_PARTITION_SIZE=${INSTALL_BOOT_PARTITION_SIZE:-2}
+    ;;
 esac
 
 if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then

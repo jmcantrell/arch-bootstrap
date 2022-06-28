@@ -2,6 +2,44 @@
 
 set -eu
 
+packages=$(mktemp)
+printf -v cleanup "rm -f %q" "$packages"
+trap "$cleanup" INT TERM EXIT
+
+add_packages() {
+    printf "%s\n" "$@" >>"$packages"
+}
+
+add_packages \
+    base \
+    btrfs-progs \
+    linux \
+    linux-firmware \
+    lvm2 \
+    mkinitcpio \
+    reflector
+
+case $INSTALL_BOOT_TYPE in
+uefi) add_packages grub efibootmgr ;;
+bios) add_packages grub-bios ;;
+esac
+
+if ((INSTALL_NET_HAS_WIRELESS)); then
+    add_packages iwd
+fi
+
+if [[ -v INSTALL_CPU_VENDOR ]]; then
+    add_packages "$INSTALL_CPU_VENDOR"-ucode
+fi
+
+if [[ -v INSTALL_SUDOER_SHELL ]]; then
+    add_packages "${INSTALL_SUDOER_SHELL##*/}"
+fi
+
+if [[ -f $CONFIG_DIR/packages ]]; then
+    cat "$CONFIG_DIR"/packages >>"$packages"
+fi
+
 # Enable parallel package downloads during installation.
 sed -i '/^#\?ParallelDownloads\b/s/#//' /etc/pacman.conf
 
@@ -11,4 +49,4 @@ if [[ -v INSTALL_PACMAN_CACHE ]]; then
     rsync -rv "$INSTALL_PACMAN_CACHE/" "$cache_dir"
 fi
 
-pacstrap "$INSTALL_DIR" - < <("$CONFIG_DIR"/packages)
+pacstrap "$INSTALL_DIR" - <"$packages"

@@ -24,8 +24,8 @@ if ((INSTALL_DEVICE_IS_LUKS)); then
 fi
 
 packages-install
-fstab-install
 chroot-install
+fstab-install
 initrd-install
 boot-install
 

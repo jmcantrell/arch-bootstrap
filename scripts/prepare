@@ -1,27 +1,28 @@
 #!/usr/bin/env bash
 
-export CONFIG_DIR=${1:-$PWD/config}
-
-. "$CONFIG_DIR"/environment || return 1
+export PATH=$PWD/bin:$PATH
 
 : "${INSTALL_DEVICE:?}"
 
-export PATH=$PWD/bin:$PATH
+export CONFIG_DIR=${1:-$PWD/config}
 
 export INSTALL_DIR=${INSTALL_DIR:-/mnt/install}
 
 export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 
-if [[ -v INSTALL_LUKS_PASSPHRASE ]]; then
-    export INSTALL_DEVICE_IS_LUKS=1
+default_secret=${INSTALL_DEFAULT_SECRET:-hunter2}
+
+export INSTALL_DEVICE_IS_LUKS=${INSTALL_DEVICE_IS_LUKS:-0}
+
+if ((INSTALL_DEVICE_IS_LUKS)); then
     export INSTALL_LUKS_DEVICE=$INSTALL_OS_DEVICE
     export INSTALL_LUKS_MAPPER_NAME=${INSTALL_LUKS_MAPPER_NAME:-os}
     export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_MAPPER_NAME
     export INSTALL_LUKS_KEYFILE=${INSTALL_LUKS_KEYFILE:-/crypto_keyfile.bin}
+    export INSTALL_LUKS_PASSPHRASE=${INSTALL_LUKS_PASSPHRASE:-$default_secret}
     export INSTALL_LVM_DEVICE=$INSTALL_LUKS_MAPPER
 else
-    export INSTALL_DEVICE_IS_LUKS=0
     export INSTALL_LVM_DEVICE=$INSTALL_OS_DEVICE
 fi
 
@@ -124,7 +125,7 @@ fi
 
 export INSTALL_SUDOER_GROUP=${INSTALL_SUDOER_GROUP:-wheel}
 export INSTALL_SUDOER_USERNAME=${INSTALL_SUDOER_USERNAME:-admin}
-export INSTALL_SUDOER_PASSWORD=${INSTALL_SUDOER_PASSWORD:-hunter2}
+export INSTALL_SUDOER_PASSWORD=${INSTALL_SUDOER_PASSWORD:-$default_secret}
 
 # Show the current environment as a sanity check.
-set | grep '^INSTALL_' | sort
+set | grep '^INSTALL_' | sort | sed '/^[^=]*PASS\(WORD\|PHRASE\)[^=]*=/s/=.*$/=********/'

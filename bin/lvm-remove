@@ -2,6 +2,7 @@
 
 set -eu
 
+# Ensure the variable is set before doing anything destructive.
 : "$INSTALL_LVM_DEVICE"
 
 lvremove vg

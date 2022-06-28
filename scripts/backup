@@ -2,7 +2,7 @@
 
 set -eu
 
-host_dir=$PWD/hosts/$HOSTNAME
+backup_dir=$PWD/backups/$HOSTNAME
 
 from_dirs=(
     /var/lib/iwd
@@ -13,7 +13,7 @@ from_dirs=(
 
 for from_dir in "${from_dirs[@]}" "$@"; do
     if [[ -d $from_dir ]]; then
-        to_dir=$host_dir/${from_dir#/}
+        to_dir=$backup_dir/${from_dir#/}
         mkdir -p "$to_dir"
         sudo rsync -var --delete "$from_dir"/ "$to_dir"
     fi

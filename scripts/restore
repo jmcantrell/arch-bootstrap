@@ -2,7 +2,7 @@
 
 set -eu
 
-host_dir=$PWD/hosts/${1:?Missing hostname}
+backup_dir=$PWD/backups/${1:?Missing hostname}
 install_dir=${2:-${INSTALL_DIR:?Missing installation directory}}
 
-rsync -var "$host_dir"/ "$install_dir"
+rsync -var "$backup_dir"/ "$install_dir"

@@ -12,8 +12,8 @@ Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition
 table using BIOS or [UEFI][uefi] mode, depending on the detected
 hardware capabilities.
 
-Logical volume management is handled by [LVM][lvm], including a swap
-partition (allowing for hibernation).
+Logical volume management is handled by [LVM][lvm], including a
+logical volume for swap (allowing for hibernation).
 
 If enabled, full disk encryption is handled by [LUKS][luks], using the
 [LVM on LUKS][lvm-on-luks] method.
@@ -37,11 +37,10 @@ The following services are installed and enabled:
 The following changes are made to `/etc/pacman.conf`:
 
 - `ParallelDownloads = 5`
-- `CleanMethod = KeepCurrent`
 
 The following kernel modules are blacklisted:
 
-- `pcspkr`
+- `pcspkr` (because why not?)
 
 Any wireless connections created during the install will be persisted
 to the installed system.
@@ -49,48 +48,75 @@ to the installed system.
 A privileged user will be created and the root account will be
 disabled.
 
+## Usage
+
+In general, the installation steps are as follows:
+
+1. Boot into the [Arch Linux ISO][archiso]
+1. Connect to the internet, if needed
+1. Change the directory to this repository
+1. Prepare the environment: `source ./scripts/prepare`
+1. Run the installation script: `./scripts/install`
+
+After installation, the system is left mounted for inspection.
+
+If all is well, `poweroff` and eject the ISO.
+
 ## Configuration
 
-Details of the installation can be controlled from the default
-configuration in `./config`. This directory can be used as a template
-if multiple preset configurations are needed.
+The resulting system is described by a configuration directory. The
+default configuration directory at `./config` is what I consider a
+reasonable starting point based on the opinions outlined above.
 
-The preparation script will, by default, use this directory, but it
-can be overridden by passing another directory as the first argument:
+The details of a _particular_ system are controlled entirely by
+environment variables. The only explicitly required variable is
+`INSTALL_DEVICE` (e.g. `/dev/sda`). Look through the preparation
+script to see the other variables and their default values.
+
+To begin a new installation, the environment must be populated by
+sourcing the preparation script `./scripts/prepare`. By default, this
+script will look at the default configuration directory, but an
+alternate one can be used by passing it as the first argument to the
+script.
+
+To prepare the default configuration:
 
 ```sh
-. ./scripts/prepare /path/to/another/config
+source ./scripts/prepare
 ```
+
+To prepare an alternate configuration:
+
+```sh
+source ./scripts/prepare /path/to/another/config
+```
+
+If the script succeeds, a list of all the relevant environment
+variables and their values will be displayed as a sanity check (with
+sensitive information hidden).
 
 Within a configuration directory, the following files are recognized:
 
-### `environment`
-
-This file will be used by `./scripts/prepare` to initialize the
-environment variables needed for installation.
-
-The only required variable is `INSTALL_DEVICE` (e.g. `/dev/sda`).
-There are many other variables that you might want to set, but have
-reasonable defaults that can be changed later. Look through the
-preparation script to see the default values and other variables that
-can be overridden.
-
 ### `subvolumes`
 
-This file defines the [btrfs subvolumes][btrfs-subvols] that will be
-created. Every line must be of the form:
+This file, if it exists, defines the extra [btrfs
+subvolumes][btrfs-subvols] that will be created. Every line must be of
+the form:
 
 ```
 @name /path/to/subvolume
 ```
 
-At the very least, this file must contain the root subvolume (it must
-be the first line in the file).
+The root subvolume (`@`) should not be included in this file, as it is
+not optional. It will always be created and mounted at `/`
+(`INSTALL_DIR` or `/mnt/install` during installation).
 
 ### `packages`
 
-This script defines the packages that will be installed on the new
-system. It should output a list of packages to stdout, one per line.
+This file, if it exists, defines the extra packages that will be
+installed on the new system, one package per line. Aside from these
+extra packages, only the necessary packages for a functional system
+will be installed.
 
 ### `install`
 
@@ -108,32 +134,43 @@ This directory tree, if it exists, contains files that will be added
 unchanged to the installation. It will be `rsync`ed to `/` with the
 permissions (but not ownership) intact.
 
-## Usage
+## Installation
 
-In general, the installation steps are as follows:
+After the preparation script is sourced, the only other necessary step
+is to run the installation script:
 
-1. Boot into the [Arch Linux ISO][archiso]
-1. Connect to the internet, if needed
-1. Copy this repository to the live environment
-1. Change the directory to this repository
-1. Customize the configuration (e.g. `./config` or some derivative)
-1. Prepare the environment: `. ./scripts/prepare [/path/to/config/dir]`
-1. Run the installation script: `./scripts/install`
+```sh
+./scripts/install
+```
 
-After installation, the system is left mounted for inspection.
+This script is intentionally kept extremely simple and easy to read.
+It serves as a good overview of the installation process. As `./bin`
+is now in `PATH`, feel free to execute each step separately to verify
+they're working as intended.
 
-If all is well, `poweroff` and eject the ISO.
+The commands can also be useful outside of the context of
+installation. For example, the following can be used to mount an
+existing system (provided the configuration directory and environment
+match):
+
+```sh
+source ./scripts/prepare
+luks-open
+swap-open
+fs-mount
+arch-chroot "$INSTALL_DIR"
+```
 
 ### Initialize the SSH server and enable mDNS
 
 If you want or need to manage the installation over SSH, the
 `./scripts/init` script can make this easier. It does the following:
 
-- Gets a copy of this repository, if needed
 - Authorizes the SSH keys with access to this repository
 - Enables [Multicast DNS][mdns], making `archiso.local` reachable
+- Fetches a tarball of this repository into `/root` (if necessary)
 
-If you already have the repository copied to the live environment,
+If you already have access to the repository in the live environment,
 just run it:
 
 ```

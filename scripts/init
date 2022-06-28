@@ -11,6 +11,8 @@ curl -sL https://gitlab.com/jmcantrell.keys >>~/.ssh/authorized_keys
 sed -i "/DHCP=/a MulticastDNS=yes" /etc/systemd/network/*.network
 systemctl restart systemd-networkd.service
 
-cd ~
-
-curl -sLO https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/main/bootstrap-arch-main.tar.gz
+# Only download a copy of the repository if the script doesn't exist locally.
+if [[ ${0##*/} != init ]]; then
+    curl -sL -o ~/bootstrap.tar.gz \
+        https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/main/bootstrap-arch-main.tar.gz
+fi

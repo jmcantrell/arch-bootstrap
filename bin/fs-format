@@ -12,8 +12,12 @@ mkdir -p "$INSTALL_DIR"
 
 mount "$INSTALL_ROOT_DEVICE" "$INSTALL_DIR"
 
-while read -r name _; do
-    btrfs subvolume create "$INSTALL_DIR/$name"
-done <"$CONFIG_DIR"/subvolumes
+btrfs subvolume create "$INSTALL_DIR"/@
+
+if [[ -f $CONFIG_DIR/subvolumes ]]; then
+    while read -r name _; do
+        btrfs subvolume create "$INSTALL_DIR/$name"
+    done <"$CONFIG_DIR"/subvolumes
+fi
 
 umount "$INSTALL_DIR"

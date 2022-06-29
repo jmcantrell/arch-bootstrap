@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -eu
+
+backup_dir=$PWD/backups/${1:?Missing hostname}
+install_dir=${2:-${INSTALL_DIR:?Missing installation directory}}
+
+rsync -var "$backup_dir"/ "$install_dir"

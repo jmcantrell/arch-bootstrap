@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 
+export CONFIG_DIR=${1:-$PWD/config}
+
+if [[ -f $CONFIG_DIR/env ]]; then
+    source "$CONFIG_DIR"/env || return 1
+fi
+
 : "${INSTALL_DEVICE:?}"
 
 export PATH=$PWD/bin:$PATH
-
-export CONFIG_DIR=${1:-$PWD/config}
 
 export INSTALL_DIR=${INSTALL_DIR:-/mnt/install}
 

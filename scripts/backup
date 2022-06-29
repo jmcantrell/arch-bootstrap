@@ -2,19 +2,19 @@
 
 set -eu
 
-backup_dir=$PWD/backups/$HOSTNAME
+config_dir=$PWD/configs/$HOSTNAME
 
-from_dirs=(
+from_paths=(
     /var/lib/iwd
     /var/cache/pacman/pkg
-    "${XDG_CACHE_HOME:-$HOME/.cache}"/pikaur/pkg
-    "$HOME"/.{ssh,gnupg,password-store,dotfiles}
+    "${XDG_CACHE_HOME:-~/.cache}"/pikaur/pkg
+    ~/.dotfiles
 )
 
-for from_dir in "${from_dirs[@]}" "$@"; do
-    if [[ -d $from_dir ]]; then
-        to_dir=$backup_dir/${from_dir#/}
-        mkdir -p "$to_dir"
-        sudo rsync -var --delete "$from_dir"/ "$to_dir"
+for from_path in "${from_paths[@]}" "$@"; do
+    if [[ -d $from_path ]]; then
+        to_path=$config_dir/files/${from_path#/}
+        mkdir -p "$to_path"
+        sudo rsync -var --delete "$from_path"/ "$to_path"
     fi
 done

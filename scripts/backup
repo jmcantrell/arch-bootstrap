@@ -8,7 +8,6 @@ from_paths=(
     /var/lib/iwd
     /var/cache/pacman/pkg
     "${XDG_CACHE_HOME:-~/.cache}"/pikaur/pkg
-    ~/.dotfiles
 )
 
 for from_path in "${from_paths[@]}" "$@"; do

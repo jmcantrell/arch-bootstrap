@@ -2,17 +2,57 @@
 
 set -eu
 
+rm -f "$INSTALL_DIR"/etc/machine-id
+
+echo "$INSTALL_HOSTNAME" >"$INSTALL_DIR"/etc/hostname
+
 if [[ -d $CONFIG_DIR/files ]]; then
     rsync -rv "$CONFIG_DIR"/files/ "$INSTALL_DIR"
 fi
+
+echo "LANG=$INSTALL_LANG" >"$INSTALL_DIR"/etc/locale.conf
+sed -i -e "/#$INSTALL_LANG/s/^#//" "$INSTALL_DIR"/etc/locale.gen
+arch-chroot "$INSTALL_DIR" locale-gen
+
+cat >"$INSTALL_DIR"/etc/vconsole.conf <<-EOF
+FONT=$INSTALL_FONT
+KEYMAP=$INSTALL_KEYMAP
+EOF
+
+arch-chroot "$INSTALL_DIR" ln -sf /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
+arch-chroot "$INSTALL_DIR" hwclock --systohc --utc
+arch-chroot "$INSTALL_DIR" systemctl enable systemd-timesyncd.service
+
+ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_DIR"/etc/resolv.conf
+arch-chroot "$INSTALL_DIR" systemctl enable systemd-{networkd,resolved}.service
+
+export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
+template-install /etc/xdg/reflector/reflector.conf
+arch-chroot "$INSTALL_DIR" systemctl enable reflector.{service,timer}
 
 if ((INSTALL_NET_HAS_WIRELESS)); then
     rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
 fi
 
-ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_DIR"/etc/resolv.conf
+if ((INSTALL_DEVICE_IS_SSD)); then
+    arch-chroot "$INSTALL_DIR" systemctl enable fstrim.timer
+fi
 
-export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
-template-install /etc/xdg/reflector/reflector.conf
+if ((INSTALL_NET_HAS_WIRELESS)); then
+    arch-chroot "$INSTALL_DIR" systemctl enable iwd.service
+fi
+
+echo "%$INSTALL_SUDOER_GROUP ALL=(ALL) ${INSTALL_SUDOER_NOPASSWD:+NOPASSWD:}ALL" >"$INSTALL_DIR"/etc/sudoers.d/"$INSTALL_SUDOER_GROUP"
+
+arch-chroot "$INSTALL_DIR" useradd \
+    --create-home --groups users,"$INSTALL_SUDOER_GROUP" \
+    ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
+    "$INSTALL_SUDOER_USERNAME"
+
+arch-chroot "$INSTALL_DIR" chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
+
+arch-chroot "$INSTALL_DIR" passwd --delete root
+
+arch-chroot "$INSTALL_DIR" systemctl enable sshd.service
 
 chroot-script-exec "$INSTALL_DIR" "$CONFIG_DIR"/install

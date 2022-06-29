@@ -3,7 +3,8 @@
 set -eu
 
 parted -s "$INSTALL_DEVICE" \
-    mklabel gpt unit MiB \
+    unit MiB \
+    mklabel gpt \
     mkpart boot 0% "$INSTALL_BOOT_PARTITION_SIZE" \
     mkpart os "$INSTALL_BOOT_PARTITION_SIZE" 100% \
     set 1 "$INSTALL_BOOT_PARTITION_FLAG" on \

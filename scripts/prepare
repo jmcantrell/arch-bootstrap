@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-export PATH=$PWD/bin:$PATH
-
 : "${INSTALL_DEVICE:?}"
+
+export PATH=$PWD/bin:$PATH
 
 export CONFIG_DIR=${1:-$PWD/config}
 
@@ -39,7 +39,9 @@ export INSTALL_SWAP_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_LV_SWAP
 export INSTALL_FS_ROOT_LABEL=${INSTALL_FS_ROOT_LABEL:-$INSTALL_ROOT_NAME}
 export INSTALL_FS_SWAP_LABEL=${INSTALL_FS_SWAP_LABEL:-$INSTALL_SWAP_NAME}
 
-export INSTALL_FS_MOUNT_OPTIONS=${INSTALL_FS_MOUNT_OPTIONS:-autodefrag,compress=zstd}
+if [[ ! -v INSTALL_FS_MOUNT_OPTIONS ]]; then
+    export INSTALL_FS_MOUNT_OPTIONS=autodefrag,compress=zstd
+fi
 
 if [[ ! -v INSTALL_CPU_VENDOR ]]; then
     case $(grep -w -m1 '^vendor_id' /proc/cpuinfo | awk '{print $NF}') in

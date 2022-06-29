@@ -7,5 +7,4 @@ template=$CONFIG_DIR/templates/$path
 output=$INSTALL_DIR/$path
 
 mkdir -p "$(dirname "$output")"
-
 envsubst <"$template" >"$output"

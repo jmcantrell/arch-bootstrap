@@ -4,10 +4,10 @@ set -eu
 
 host=${1:?Missing hostname}
 backup_dir=$PWD/backups/$host
+iwd_dir=$backup_dir/var/lib/iwd
 
 hostnamectl set-hostname "$host"
 
-iwd_dir=$backup_dir/var/lib/iwd
 if [[ -d $iwd_dir ]]; then
     cp -a "$iwd_dir"/*.psk "${iwd_dir#"$backup_dir"}"
     systemctl restart iwd.service

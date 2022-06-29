@@ -13,7 +13,7 @@ mount_subvol @ /
 
 if [[ -f $CONFIG_DIR/subvolumes ]]; then
     while read -r name path; do
-        mount_subvol "$name" "$path"
+        mount_subvol @"$name" "$path"
     done <"$CONFIG_DIR"/subvolumes
 fi
 

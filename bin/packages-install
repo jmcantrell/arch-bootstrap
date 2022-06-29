@@ -17,11 +17,13 @@ add_packages \
     linux-firmware \
     lvm2 \
     mkinitcpio \
-    reflector
+    openssh \
+    reflector \
+    sudo
 
 case $INSTALL_BOOT_TYPE in
-uefi) add_packages grub efibootmgr ;;
 bios) add_packages grub-bios ;;
+uefi) add_packages grub efibootmgr ;;
 esac
 
 if ((INSTALL_NET_HAS_WIRELESS)); then

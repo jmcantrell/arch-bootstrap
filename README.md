@@ -29,18 +29,10 @@ The following services are installed and enabled:
 - [fstrim][ssd] (if installation disk is SSD)
 - [iwd] (if wireless devices are present)
 - [systemd-networkd]
-- [systemd-resolved] (with [mDNS][mdns] enabled)
+- [systemd-resolved]
 - [systemd-timesyncd]
 - [reflector]
 - [sshd]
-
-The following changes are made to `/etc/pacman.conf`:
-
-- `ParallelDownloads = 5`
-
-The following kernel modules are blacklisted:
-
-- `pcspkr` (because why not?)
 
 Any wireless connections created during the install will be persisted
 to the installed system.
@@ -104,12 +96,12 @@ subvolumes][btrfs-subvols] that will be created. Every line must be of
 the form:
 
 ```
-@name /path/to/subvolume
+name /path/to/subvolume
 ```
 
-The root subvolume (`@`) should not be included in this file, as it is
-not optional. It will always be created and mounted at `/`
-(`INSTALL_DIR` or `/mnt/install` during installation).
+The root subvolume should not be included in this file, as it is not
+optional. It will always be created and mounted at `/` (`INSTALL_DIR`
+or `/mnt/install` during installation).
 
 ### `packages`
 

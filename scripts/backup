@@ -5,9 +5,9 @@ set -eu
 config_dir=$PWD/configs/$HOSTNAME
 
 from_paths=(
+    /home
     /var/lib/iwd
     /var/cache/pacman/pkg
-    "${XDG_CACHE_HOME:-~/.cache}"/pikaur/pkg
 )
 
 for from_path in "${from_paths[@]}" "$@"; do

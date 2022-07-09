@@ -45,7 +45,6 @@ disabled.
 In general, the installation steps are as follows:
 
 1. Boot into the [Arch Linux ISO][archiso]
-1. Connect to the internet, if needed
 1. Change the directory to this repository
 1. Prepare the environment: `source ./scripts/prepare`
 1. Run the installation script: `./scripts/install`
@@ -68,8 +67,7 @@ script to see the other variables and their default values.
 To begin a new installation, the environment must be populated by
 sourcing the preparation script `./scripts/prepare`. By default, this
 script will look at the default configuration directory, but an
-alternate one can be used by passing it as the first argument to the
-script.
+alternate one can be used by passing it as the first argument.
 
 To prepare the default configuration:
 
@@ -107,7 +105,7 @@ or `/mnt/install` during installation).
 
 This file, if it exists, defines the extra packages that will be
 installed on the new system, one package per line. Aside from these
-extra packages, only the necessary packages for a functional system
+extra packages, only the packages necessary for a functional system
 will be installed.
 
 ### `install`

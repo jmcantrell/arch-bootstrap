@@ -2,7 +2,7 @@
 
 set -eu
 
-config_dir=$PWD/configs/$HOSTNAME
+backup_dir=$PWD/backups/$HOSTNAME
 
 from_paths=(
     /home
@@ -12,7 +12,7 @@ from_paths=(
 
 for from_path in "${from_paths[@]}" "$@"; do
     if [[ -d $from_path ]]; then
-        to_path=$config_dir/files/${from_path#/}
+        to_path=$backup_dir/${from_path#/}
         mkdir -p "$to_path"
         sudo rsync -var --delete "$from_path"/ "$to_path"
     fi

@@ -103,15 +103,21 @@ if [[ ! -v INSTALL_LANG ]]; then
     export INSTALL_LANG=${LANG:-en_US.UTF-8}
 fi
 
+export LANG=$INSTALL_LANG
+
 if [[ ! -v INSTALL_KEYMAP ]]; then
     [[ ! -v KEYMAP && -r /etc/vconsole.conf ]] && . /etc/vconsole.conf
     export INSTALL_KEYMAP=${KEYMAP:-us}
 fi
 
+export KEYMAP=$INSTALL_KEYMAP
+
 if [[ ! -v INSTALL_FONT ]]; then
     [[ ! -v FONT && -r /etc/vconsole.conf ]] && . /etc/vconsole.conf
     export INSTALL_FONT=${FONT:-Lat2-Terminus16}
 fi
+
+export FONT=$INSTALL_FONT
 
 if [[ ! -v INSTALL_TIMEZONE ]]; then
     if [[ -r /etc/localtime ]]; then

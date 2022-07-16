@@ -2,8 +2,6 @@
 
 set -eu
 
-export LANG=$INSTALL_LANG
-
 setfont "$INSTALL_FONT"
 loadkeys "$INSTALL_KEYMAP"
 

@@ -7,7 +7,7 @@ rm -f "$INSTALL_DIR"/etc/machine-id
 echo "$INSTALL_HOSTNAME" >"$INSTALL_DIR"/etc/hostname
 
 if [[ -d $CONFIG_DIR/files ]]; then
-    rsync -rv "$CONFIG_DIR"/files/ "$INSTALL_DIR"
+    rsync -va --no-owner --no-group "$CONFIG_DIR"/files/ "$INSTALL_DIR"
 fi
 
 echo "LANG=$INSTALL_LANG" >"$INSTALL_DIR"/etc/locale.conf

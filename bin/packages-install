@@ -45,10 +45,4 @@ fi
 # Enable parallel package downloads during installation.
 sed -i '/^#\?ParallelDownloads\b/s/#//' /etc/pacman.conf
 
-if [[ -v INSTALL_PACMAN_CACHE ]]; then
-    cache_dir=$INSTALL_DIR/var/cache/pacman/pkg
-    mkdir -p "$cache_dir"
-    rsync -rv "$INSTALL_PACMAN_CACHE/" "$cache_dir"
-fi
-
-pacstrap "$INSTALL_DIR" - <"$packages"
+pacstrap -c "$INSTALL_DIR" - <"$packages"

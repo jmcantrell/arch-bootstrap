@@ -89,7 +89,7 @@ if [[ ! -v INSTALL_SWAP_SIZE ]]; then
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
-    if (($(find /sys/class/net -mindepth 1 -name "wl*" | wc -l) > 0)) then
+    if (($(find /sys/class/net -mindepth 1 -name "wl*" | wc -l) > 0)); then
         export INSTALL_NET_HAS_WIRELESS=1
     else
         export INSTALL_NET_HAS_WIRELESS=0

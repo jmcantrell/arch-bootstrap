@@ -28,14 +28,3 @@ chroot-install
 fstab-install
 initrd-install
 boot-install
-
-# The rest is not normally necessary, but illustrates the procedure for cleanly
-# unmounting the new installation.
-
-# fs-umount
-# swap-close
-# lvm-close
-
-# if ((INSTALL_DEVICE_IS_LUKS)); then
-#     luks-close
-# fi

@@ -10,6 +10,7 @@ curl -sL https://gitlab.com/jmcantrell.keys >>~/.ssh/authorized_keys
 
 sed -i "/^DHCP=/a MulticastDNS=yes" /etc/systemd/network/*.network
 systemctl restart systemd-networkd.service
+/usr/lib/systemd/systemd-networkd-wait-online
 
 # Only download a copy of the repository if this script doesn't exist locally.
 if [[ ${0##*/} != init ]]; then

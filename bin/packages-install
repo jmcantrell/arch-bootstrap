@@ -45,4 +45,5 @@ fi
 # Enable parallel package downloads during installation.
 sed -i '/^#\?ParallelDownloads\b/s/#//' /etc/pacman.conf
 
+# Use package cache on host in case one is mounted.
 pacstrap -c "$INSTALL_DIR" - <"$packages"

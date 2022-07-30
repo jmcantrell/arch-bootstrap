@@ -2,6 +2,8 @@
 
 set -eu
 
+pacman -Sy --needed --noconfirm archlinux-keyring
+
 packages=$(mktemp)
 printf -v cleanup "rm -f %q" "$packages"
 trap "$cleanup" INT TERM EXIT

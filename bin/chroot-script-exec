@@ -7,7 +7,7 @@ script=$2
 shift 2
 
 if [[ -x $script ]]; then
-    cp "$script" "$dir"/script
+    cp -v "$script" "$dir"/script
+    trap 'rm -vf ${script@Q}' INT TERM EXIT
     arch-chroot "$dir" /script "$@"
-    rm "$dir"/script
 fi

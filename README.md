@@ -94,23 +94,31 @@ Within a configuration directory, the following files are recognized:
 ### `subvolumes`
 
 This file, if it exists, defines the extra [btrfs
-subvolumes][btrfs-subvols] that will be created. Every line must be of
-the form:
+subvolumes][btrfs-subvols] that will be created.
+
+If it's executable, it should output one subvolume mapping per line to stdout.
+If it's a regular file, it should contain one subvolume mapping per line.
+
+Every line must be of the form:
 
 ```
 name /path/to/subvolume
 ```
 
-The root subvolume should not be included in this file, as it is not
-optional. It will always be created and mounted at `/` (`INSTALL_DIR`
-or `/mnt/install` during installation).
+The root subvolume should not be included, as it is not optional. It
+will always be created and mounted at `/` (`INSTALL_DIR` or
+`/mnt/install` during installation).
 
 ### `packages`
 
 This file, if it exists, defines the extra packages that will be
-installed on the new system, one package per line. Aside from these
-extra packages, only the packages necessary for a functional system
-will be installed.
+installed on the new system.
+
+If it's executable, it should output one package per line to stdout.
+If it's a regular file, it should contain one package per line.
+
+Aside from these extra packages, only the packages necessary for a
+functional system will be installed.
 
 ### `install`
 

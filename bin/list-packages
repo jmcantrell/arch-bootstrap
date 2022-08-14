@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -eu
+
+packages=$(mktemp)
+trap 'rm -f ${packages@Q}' INT TERM EXIT
+
+add_packages() {
+    printf "%s\n" "$@" >>"$packages"
+}
+
+add_packages \
+    base \
+    btrfs-progs \
+    linux \
+    linux-firmware \
+    lvm2 \
+    mkinitcpio \
+    openssh \
+    reflector \
+    sudo
+
+case $INSTALL_BOOT_TYPE in
+bios) add_packages grub-bios ;;
+uefi) add_packages grub efibootmgr ;;
+esac
+
+if ((INSTALL_NET_HAS_WIRELESS)); then
+    add_packages iwd
+fi
+
+if [[ -v INSTALL_CPU_VENDOR ]]; then
+    add_packages "$INSTALL_CPU_VENDOR"-ucode
+fi
+
+if [[ -v INSTALL_SUDOER_SHELL ]]; then
+    add_packages "${INSTALL_SUDOER_SHELL##*/}"
+fi
+
+run-or-cat "$CONFIG_DIR"/packages >>"$packages"
+
+sort -u "$packages"

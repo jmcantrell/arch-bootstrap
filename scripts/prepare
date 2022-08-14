@@ -54,7 +54,7 @@ if [[ ! -v INSTALL_CPU_VENDOR ]]; then
     esac
 fi
 
-if [[ ! -v INSTALL_GPU_MODULES ]]; then
+if [[ ! -v INSTALL_GPU_MODULE ]]; then
     INSTALL_GPU_MODULE=$(detect-gpu-module)
     [[ -n $INSTALL_GPU_MODULE ]] && export INSTALL_GPU_MODULE
 fi

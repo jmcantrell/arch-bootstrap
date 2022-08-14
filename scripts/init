@@ -6,7 +6,7 @@ mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 touch ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
-curl -sL https://gitlab.com/jmcantrell.keys >>~/.ssh/authorized_keys
+curl -sL https://github.com/jmcantrell.keys >>~/.ssh/authorized_keys
 
 sed -i "/^DHCP=/a MulticastDNS=yes" /etc/systemd/network/*.network
 systemctl restart systemd-networkd.service
@@ -14,6 +14,7 @@ systemctl restart systemd-networkd.service
 
 # Only download a copy of the repository if this script doesn't exist locally.
 if [[ ${0##*/} != init ]]; then
-    curl -sL -o ~/bootstrap.tar.gz \
-        https://gitlab.com/jmcantrell/bootstrap-arch/-/archive/main/bootstrap-arch-main.tar.gz
+    /usr/lib/systemd/systemd-networkd-wait-online
+    curl -sSL --progress-bar -o ~/bootstrap.zip \
+        https://github.com/jmcantrell/bootstrap-arch/archive/refs/heads/main.zip
 fi

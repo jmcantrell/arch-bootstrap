@@ -182,7 +182,7 @@ just run it:
 If you need to download the repository too, just `curl` it:
 
 ```
-curl https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/main/scripts/init | bash -s
+curl https://github.com/jmcantrell/bootstrap-arch/archive/refs/heads/main.zip | bash -s
 ```
 
 If you don't need to manually connect to the internet, you could also
@@ -193,7 +193,7 @@ When you see the GRUB menu as the live environment is booting, press
 the `<tab>` key to edit the kernel command line and add the following:
 
 ```
-script=https://gitlab.com/jmcantrell/bootstrap-arch/-/raw/main/scripts/init
+script=https://github.com/jmcantrell/bootstrap-arch/raw/main/scripts/init
 ```
 
 The script will be run similarly to the curl method above as soon as

@@ -112,6 +112,8 @@ export KEYMAP=$INSTALL_KEYMAP
 export INSTALL_FONT=${INSTALL_FONT:-Lat2-Terminus16}
 export FONT=$INSTALL_FONT
 
+export INSTALL_COUNTRY=${INSTALL_COUNTRY:-US}
+
 if [[ ! -v INSTALL_TIMEZONE ]]; then
     if [[ -r /etc/localtime ]]; then
         INSTALL_TIMEZONE=$(realpath /etc/localtime)
@@ -120,12 +122,6 @@ if [[ ! -v INSTALL_TIMEZONE ]]; then
         INSTALL_TIMEZONE=UTC
     fi
     export INSTALL_TIMEZONE
-fi
-
-if [[ ! -v INSTALL_COUNTRY ]]; then
-    INSTALL_COUNTRY=${INSTALL_LANG%.*}
-    INSTALL_COUNTRY=${INSTALL_COUNTRY#*_}
-    export INSTALL_COUNTRY
 fi
 
 export INSTALL_SUDOER_GROUP=${INSTALL_SUDOER_GROUP:-wheel}

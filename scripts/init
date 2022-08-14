@@ -8,9 +8,8 @@ touch ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 curl -sL https://github.com/jmcantrell.keys >>~/.ssh/authorized_keys
 
-sed -i "/^DHCP=/a MulticastDNS=yes" /etc/systemd/network/*.network
-systemctl restart systemd-networkd.service
-/usr/lib/systemd/systemd-networkd-wait-online
+sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network
+systemctl restart systemd-networkd.{service,socket}
 
 # Only download a copy of the repository if this script doesn't exist locally.
 # If this script is being piped to bash, or run via the script boot parameter,

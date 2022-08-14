@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Determine the kernel modules being used for graphics.
+
+set -eu
+
+found_gpu=0
+
+while IFS=: read -r key value; do
+    if [[ -z $key ]]; then
+        # Reached a new section without finding a module, so start over.
+        found_gpu=0
+    elif ((found_gpu)) && [[ $key = Module ]]; then
+        # This section is a GPU and a module is in use.
+        tr -d '[:blank:]' <<<"$value"
+        break
+    elif [[ $key == Class && $value =~ .*(VGA|3D|Display).* ]]; then
+        # This section is a GPU, so start looking for a module.
+        found_gpu=1
+    fi
+done < <(lspci -vmmk)

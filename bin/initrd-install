@@ -7,8 +7,8 @@ modules=()
 files=()
 hooks=(base udev autodetect)
 
-if lspci | grep -q "\bVGA\b.*\bIntel\b"; then
-    modules+=(i915 intel_agp)
+if [[ -v INSTALL_GPU_MODULE ]]; then
+    modules+=("$INSTALL_GPU_MODULE")
 fi
 
 if ((INSTALL_DEVICE_IS_LUKS)); then

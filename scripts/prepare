@@ -54,6 +54,11 @@ if [[ ! -v INSTALL_CPU_VENDOR ]]; then
     esac
 fi
 
+if [[ ! -v INSTALL_GPU_MODULES ]]; then
+    INSTALL_GPU_MODULE=$(detect-gpu-module)
+    [[ -n $INSTALL_GPU_MODULE ]] && export INSTALL_GPU_MODULE
+fi
+
 if [[ ! -v INSTALL_BOOT_TYPE ]]; then
     if [[ -d /sys/firmware/efi/efivars ]]; then
         export INSTALL_BOOT_TYPE=uefi

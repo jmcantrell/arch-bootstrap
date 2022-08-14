@@ -2,8 +2,6 @@
 
 set -eu
 
-rm -f "$INSTALL_DIR"/etc/machine-id
-
 echo "$INSTALL_HOSTNAME" >"$INSTALL_DIR"/etc/hostname
 
 if [[ -d $CONFIG_DIR/files ]]; then

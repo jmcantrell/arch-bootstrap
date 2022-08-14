@@ -55,7 +55,7 @@ In general, the installation steps are as follows:
 
 After installation, the system is left mounted for inspection.
 
-If all is well, `poweroff` and eject the ISO.
+If all is well, `poweroff` and eject the installation media.
 
 ## Configuration
 
@@ -160,7 +160,7 @@ arch-chroot "$INSTALL_DIR"
 If you want or need to manage the installation over SSH, the
 `./scripts/init` script can make this easier. It does the following:
 
-- Authorizes the SSH keys with access to this repository
+- Authorizes the SSH keys with write access to this repository
 - Enables [Multicast DNS][mdns], making `archiso.local` reachable
 - Fetches a tarball of this repository into `/root` (if necessary)
 

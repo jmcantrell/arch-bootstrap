@@ -24,6 +24,10 @@ The file system is formatted using [Btrfs][btrfs] (with
 [Processor microcode updates][microcode] will be installed according
 to the system's CPU vendor (Intel or AMD).
 
+[Early KMS start][early-kms-start] is enabled for any detected
+graphics drivers (i.e. if the output of `lspci -k` for your device
+shows a kernel module).
+
 The following services are installed and enabled:
 
 - [fstrim][ssd] (if installation disk is SSD)
@@ -190,6 +194,7 @@ the environment is ready.
 [archiso]: https://archlinux.org/download/
 [btrfs-subvols]: https://wiki.archlinux.org/title/Btrfs#Subvolumes
 [btrfs]: https://wiki.archlinux.org/title/Btrfs
+[early-kms-start]: https://wiki.archlinux.org/title/Kernel_mode_setting#Early_KMS_start
 [gpt]: https://wiki.archlinux.org/title/Partitioning#GUID_Partition_Table
 [grub]: https://wiki.archlinux.org/title/GRUB
 [install]: https://wiki.archlinux.org/title/Installation_guide

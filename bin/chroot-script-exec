@@ -2,12 +2,15 @@
 
 set -eu
 
-dir=$1
-script=$2
+dir=${1:?missing directory}
+script=${2:?missing script}
 shift 2
 
-if [[ -x $script ]]; then
-    cp -v "$script" "$dir"/script
-    trap 'rm -vf ${script@Q}' INT TERM EXIT
-    arch-chroot "$dir" /script "$@"
-fi
+[[ -f $script ]] || exit 0
+
+temp_script=$(mktemp -p "$dir" -t script.XXXXXXXXXX)
+trap 'rm -vf ${temp_script@Q}' INT TERM EXIT
+cp -v "$script" "$temp_script"
+chmod +x "$temp_script"
+
+arch-chroot "$dir" /"${temp_script##*/}" "$@"

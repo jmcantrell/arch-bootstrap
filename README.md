@@ -1,6 +1,6 @@
 # bootstrap-arch
 
-My opinionated Arch Linux installer.
+My mildly-opinionated Arch Linux installer.
 
 Aside from the opinions listed below, care is taken to ensure the
 resulting system closely matches what you would get from following the
@@ -25,8 +25,8 @@ The file system is formatted using [Btrfs][btrfs] (with
 to the system's CPU vendor (Intel or AMD).
 
 [Early KMS start][early-kms-start] is enabled for any detected
-graphics drivers (i.e. if the output of `lspci -k` for your device
-shows a kernel module).
+graphics drivers (i.e. if the output of `lspci -k` shows a kernel
+module for your device).
 
 The following services are installed and enabled:
 
@@ -96,8 +96,9 @@ Within a configuration directory, the following files are recognized:
 This file, if it exists, defines the extra [btrfs
 subvolumes][btrfs-subvols] that will be created.
 
-If it's executable, it should output one subvolume mapping per line to stdout.
-If it's a regular file, it should contain one subvolume mapping per line.
+If it's executable, it should output one subvolume mapping per line to
+stdout. If it's a regular file, it should contain one subvolume
+mapping per line.
 
 Every line must be of the form:
 

@@ -37,6 +37,6 @@ if [[ -v INSTALL_SUDOER_SHELL ]]; then
     add_packages "${INSTALL_SUDOER_SHELL##*/}"
 fi
 
-run-or-cat "$CONFIG_DIR"/packages >>"$packages"
+list "$CONFIG_DIR"/packages >>"$packages"
 
 sort -u "$packages"

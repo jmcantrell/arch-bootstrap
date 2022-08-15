@@ -28,15 +28,12 @@ export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 arch-chroot "$INSTALL_DIR" systemctl enable reflector.{service,timer}
 
-if ((INSTALL_NET_HAS_WIRELESS)); then
-    rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
-fi
-
 if ((INSTALL_DEVICE_IS_SSD)); then
     arch-chroot "$INSTALL_DIR" systemctl enable fstrim.timer
 fi
 
 if ((INSTALL_NET_HAS_WIRELESS)); then
+    rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
     arch-chroot "$INSTALL_DIR" systemctl enable iwd.service
 fi
 

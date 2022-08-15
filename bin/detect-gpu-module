@@ -13,9 +13,11 @@ while IFS=: read -r key value; do
     elif ((found_gpu)) && [[ $key == Module ]]; then
         # This section is a GPU and a module is in use.
         tr -d '[:blank:]' <<<"$value"
-        break
+        exit 0
     elif [[ $key == Class && $value =~ .*(VGA|3D|Display).* ]]; then
         # This section is a GPU, so start looking for a module.
         found_gpu=1
     fi
 done < <(lspci -vmmk)
+
+exit 1

@@ -55,8 +55,9 @@ if [[ ! -v INSTALL_CPU_VENDOR ]]; then
 fi
 
 if [[ ! -v INSTALL_GPU_MODULE ]]; then
-    INSTALL_GPU_MODULE=$(detect-gpu-module)
-    [[ -n $INSTALL_GPU_MODULE ]] && export INSTALL_GPU_MODULE
+    if INSTALL_GPU_MODULE=$(detect-gpu-module); then
+        [[ -n $INSTALL_GPU_MODULE ]] && export INSTALL_GPU_MODULE
+    fi
 fi
 
 if [[ ! -v INSTALL_BOOT_TYPE ]]; then

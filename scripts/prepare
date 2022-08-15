@@ -91,7 +91,7 @@ fi
 if [[ ! -v INSTALL_SWAP_SIZE ]]; then
     # The swap size should be at least as big as physical memory.
     INSTALL_SWAP_SIZE=$(guess-mem-total) || return 1
-    export INSTALL_SWAP_SIZE
+    [[ -n $INSTALL_SWAP_SIZE ]] && export INSTALL_SWAP_SIZE
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then

@@ -3,7 +3,7 @@
 set -eu
 
 preload_modules=(part_gpt part_msdos lvm)
-cmdline_linux=(root="${INSTALL_ROOT_DEVICE}" resume="$INSTALL_SWAP_DEVICE")
+cmdline_linux=(root="$INSTALL_ROOT_DEVICE" resume="$INSTALL_SWAP_DEVICE")
 cmdline_linux_default=(loglevel=3)
 
 if [[ -v INSTALL_CONSOLEBLANK ]]; then

@@ -193,8 +193,7 @@ also run the script by using the `script` boot parameter, recognized
 by the Arch Linux ISO.
 
 When you see the GRUB menu as the live environment is booting, press
-the <kbd>Tab</kbd> key to edit the kernel command line and add the
-following:
+<kbd>Tab</kbd> to edit the kernel command line and add the following:
 
 ```
 script=https://github.com/jmcantrell/bootstrap-arch/raw/main/scripts/init

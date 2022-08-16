@@ -53,7 +53,8 @@ In general, the installation steps are as follows:
 1. Prepare the environment: `source ./scripts/prepare`
 1. Run the installation script: `./scripts/install`
 
-After installation, the system is left mounted for inspection.
+After installation, the system is left mounted for inspection. If you
+need to unmount it, use `./scripts/unmount`.
 
 If all is well, `poweroff` and eject the installation media.
 
@@ -98,7 +99,7 @@ subvolumes][btrfs-subvols] that will be created.
 
 If it's executable, it should output one subvolume mapping per line to
 stdout. If it's a regular file, it should contain one subvolume
-mapping per line.
+mapping per line with no blank lines or comments.
 
 Every line must be of the form:
 
@@ -116,7 +117,8 @@ This file, if it exists, defines the extra packages that will be
 installed on the new system.
 
 If it's executable, it should output one package per line to stdout.
-If it's a regular file, it should contain one package per line.
+If it's a regular file, it should contain one package per line with no
+blank lines or comments.
 
 Aside from these extra packages, only the packages necessary for a
 functional system will be installed.
@@ -171,27 +173,28 @@ If you want or need to manage the installation over SSH, the
 
 - Authorizes the SSH keys with write access to this repository
 - Enables [Multicast DNS][mdns], making `archiso.local` reachable
-- Fetches a tarball of this repository into `/root` (if necessary)
+- Fetches an archive of this repository into `/root` (if necessary)
 
 If you already have access to the repository in the live environment,
-just run it:
+just run the script:
 
-```
+```sh
 ./scripts/init
 ```
 
-If you need to download the repository too, just `curl` it:
+If you need to download the repository too, `curl` the script into bash:
 
-```
-curl https://github.com/jmcantrell/bootstrap-arch/archive/refs/heads/main.zip | bash -s
+```sh
+curl https://github.com/jmcantrell/bootstrap-arch/raw/main/scripts/init | bash -s
 ```
 
-If you don't need to manually connect to the internet, you could also
-run the script by using the `script` boot parameter, recognized by the
-Arch Linux ISO.
+If the network is available automatically after booting, you could
+also run the script by using the `script` boot parameter, recognized
+by the Arch Linux ISO.
 
 When you see the GRUB menu as the live environment is booting, press
-the `<tab>` key to edit the kernel command line and add the following:
+the <kbd>Tab</kbd> key to edit the kernel command line and add the
+following:
 
 ```
 script=https://github.com/jmcantrell/bootstrap-arch/raw/main/scripts/init

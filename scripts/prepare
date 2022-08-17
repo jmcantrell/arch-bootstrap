@@ -10,42 +10,43 @@ fi
 
 export PATH=$PWD/bin:$PATH
 
-export INSTALL_DIR=${INSTALL_DIR:-/mnt/install}
+export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}
 
 export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_OS_DEVICE=${INSTALL_DEVICE}2
 
-default_secret=${INSTALL_DEFAULT_SECRET:-hunter2}
+export INSTALL_DEVICE_IS_ENCRYPTED=${INSTALL_DEVICE_IS_ENCRYPTED:-0}
 
-export INSTALL_DEVICE_IS_LUKS=${INSTALL_DEVICE_IS_LUKS:-0}
-
-if ((INSTALL_DEVICE_IS_LUKS)); then
+if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export INSTALL_LUKS_DEVICE=$INSTALL_OS_DEVICE
     export INSTALL_LUKS_MAPPER_NAME=${INSTALL_LUKS_MAPPER_NAME:-os}
     export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_MAPPER_NAME
-    export INSTALL_LUKS_KEYFILE=${INSTALL_LUKS_KEYFILE:-/crypto_keyfile.bin}
-    export INSTALL_LUKS_PASSPHRASE=${INSTALL_LUKS_PASSPHRASE:-$default_secret}
+    export INSTALL_LUKS_ROOT_KEYFILE=${INSTALL_LUKS_ROOT_KEYFILE:-/crypto_keyfile.bin}
+    export INSTALL_LUKS_PASSPHRASE=${INSTALL_LUKS_PASSPHRASE:-hunter2}
     export INSTALL_LVM_DEVICE=$INSTALL_LUKS_MAPPER
 else
     export INSTALL_LVM_DEVICE=$INSTALL_OS_DEVICE
 fi
 
-export INSTALL_ROOT_NAME=${INSTALL_ROOT_NAME:-root}
-export INSTALL_SWAP_NAME=${INSTALL_SWAP_NAME:-swap}
-
 export INSTALL_LVM_VG_NAME=${INSTALL_LVM_VG_NAME:-vg}
-export INSTALL_LVM_LV_ROOT_NAME=${INSTALL_LVM_LV_ROOT_NAME:-$INSTALL_ROOT_NAME}
-export INSTALL_LVM_LV_SWAP_NAME=${INSTALL_LVM_LV_SWAP_NAME:-$INSTALL_SWAP_NAME}
 
-export INSTALL_ROOT_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_LV_ROOT_NAME
-export INSTALL_SWAP_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_LV_SWAP_NAME
+export INSTALL_LVM_SWAP_LV_NAME=${INSTALL_LVM_SWAP_LV_NAME:-swap}
 
-export INSTALL_FS_ROOT_LABEL=${INSTALL_FS_ROOT_LABEL:-$INSTALL_ROOT_NAME}
-export INSTALL_FS_SWAP_LABEL=${INSTALL_FS_SWAP_LABEL:-$INSTALL_SWAP_NAME}
-
-if [[ ! -v INSTALL_FS_MOUNT_OPTIONS ]]; then
-    export INSTALL_FS_MOUNT_OPTIONS=autodefrag,compress=zstd
+if [[ ! -v INSTALL_LVM_SWAP_LV_SIZE ]]; then
+    # The swap size should be at least as big as physical memory.
+    INSTALL_LVM_SWAP_LV_SIZE=+$(guess-mem-total) || return 1
+    [[ -n $INSTALL_LVM_SWAP_LV_SIZE ]] && export INSTALL_LVM_SWAP_LV_SIZE
 fi
+
+export INSTALL_LVM_ROOT_LV_NAME=${INSTALL_LVM_ROOT_LV_NAME:-root}
+export INSTALL_LVM_ROOT_LV_EXTENTS=${INSTALL_LVM_ROOT_LV_EXTENTS:-+100%FREE}
+
+export INSTALL_ROOT_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_ROOT_LV_NAME
+export INSTALL_SWAP_DEVICE=/dev/mapper/$INSTALL_LVM_VG_NAME-$INSTALL_LVM_SWAP_LV_NAME
+
+export INSTALL_FS_ROOT_LABEL=${INSTALL_FS_ROOT_LABEL:-root}
+export INSTALL_FS_SWAP_LABEL=${INSTALL_FS_SWAP_LABEL:-swap}
+export INSTALL_FS_MOUNT_OPTIONS=${INSTALL_FS_MOUNT_OPTIONS:-autodefrag,compress=zstd}
 
 if [[ ! -v INSTALL_CPU_VENDOR ]]; then
     case $(grep -w -m1 '^vendor_id' /proc/cpuinfo | awk '{print $NF}') in
@@ -60,25 +61,30 @@ if [[ ! -v INSTALL_GPU_MODULE ]]; then
     fi
 fi
 
-if [[ ! -v INSTALL_BOOT_TYPE ]]; then
+if [[ ! -v INSTALL_BOOT_FIRMWARE ]]; then
     if [[ -d /sys/firmware/efi/efivars ]]; then
-        export INSTALL_BOOT_TYPE=uefi
+        export INSTALL_BOOT_FIRMWARE=uefi
     else
-        export INSTALL_BOOT_TYPE=bios
+        export INSTALL_BOOT_FIRMWARE=bios
     fi
 fi
 
-case $INSTALL_BOOT_TYPE in
+export INSTALL_BOOT_PART_NAME=${INSTALL_BOOT_PART_NAME:-boot}
+
+case $INSTALL_BOOT_FIRMWARE in
 uefi)
-    export INSTALL_BOOT_PARTITION_FLAG=esp
-    export INSTALL_BOOT_PARTITION_SIZE=${INSTALL_BOOT_PARTITION_SIZE:-512}
+    export INSTALL_BOOT_PART_FLAG=esp
+    export INSTALL_BOOT_PART_SIZE=${INSTALL_BOOT_PART_SIZE:-512MiB}
     export INSTALL_BOOT_UEFI_DIR=${INSTALL_BOOT_UEFI_DIR:-/boot/efi}
     ;;
 bios)
-    export INSTALL_BOOT_PARTITION_FLAG=bios_grub
-    export INSTALL_BOOT_PARTITION_SIZE=${INSTALL_BOOT_PARTITION_SIZE:-2}
+    export INSTALL_BOOT_PART_FLAG=bios_grub
+    export INSTALL_BOOT_PART_SIZE=${INSTALL_BOOT_PART_SIZE:-2MiB}
     ;;
 esac
+
+export INSTALL_OS_PART_NAME=${INSTALL_OS_PART_NAME:-os}
+export INSTALL_OS_PART_SIZE=${INSTALL_OS_PART_SIZE:-100%}
 
 if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
     if (($(</sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational))); then
@@ -86,12 +92,6 @@ if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
     else
         export INSTALL_DEVICE_IS_SSD=1
     fi
-fi
-
-if [[ ! -v INSTALL_SWAP_SIZE ]]; then
-    # The swap size should be at least as big as physical memory.
-    INSTALL_SWAP_SIZE=$(guess-mem-total) || return 1
-    [[ -n $INSTALL_SWAP_SIZE ]] && export INSTALL_SWAP_SIZE
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
@@ -113,8 +113,6 @@ export KEYMAP=$INSTALL_KEYMAP
 export INSTALL_FONT=${INSTALL_FONT:-Lat2-Terminus16}
 export FONT=$INSTALL_FONT
 
-export INSTALL_COUNTRY=${INSTALL_COUNTRY:-US}
-
 if [[ ! -v INSTALL_TIMEZONE ]]; then
     if [[ -r /etc/localtime ]]; then
         INSTALL_TIMEZONE=$(realpath /etc/localtime)
@@ -125,9 +123,11 @@ if [[ ! -v INSTALL_TIMEZONE ]]; then
     export INSTALL_TIMEZONE
 fi
 
+export INSTALL_REFLECTOR_COUNTRY=${INSTALL_REFLECTOR_COUNTRY:-US}
+
 export INSTALL_SUDOER_GROUP=${INSTALL_SUDOER_GROUP:-wheel}
 export INSTALL_SUDOER_USERNAME=${INSTALL_SUDOER_USERNAME:-admin}
-export INSTALL_SUDOER_PASSWORD=${INSTALL_SUDOER_PASSWORD:-$default_secret}
+export INSTALL_SUDOER_PASSWORD=${INSTALL_SUDOER_PASSWORD:-hunter2}
 
 # Show the current environment as a sanity check.
 set | grep '^INSTALL_' | sort | sed '/^[^=]*PASS\(WORD\|PHRASE\)[^=]*=/s/=.*$/=********/'

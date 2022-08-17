@@ -3,13 +3,13 @@
 set -eu
 
 while read -r name path; do
-    install_path=$INSTALL_DIR/${path#/}
+    install_path=$INSTALL_MOUNT/${path#/}
     mkdir -p "$install_path"
     mount -o "${INSTALL_FS_MOUNT_OPTIONS:+$INSTALL_FS_MOUNT_OPTIONS,}subvol=$name" "$INSTALL_ROOT_DEVICE" "$install_path"
 done < <(list-subvolumes)
 
-if [[ $INSTALL_BOOT_TYPE == uefi ]]; then
-    uefi_dir=$INSTALL_DIR/${INSTALL_BOOT_UEFI_DIR#/}
+if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
+    uefi_dir=$INSTALL_MOUNT/${INSTALL_UEFI_MOUNT#/}
     mkdir -p "$uefi_dir"
     mount "$INSTALL_BOOT_DEVICE" "$uefi_dir"
 fi

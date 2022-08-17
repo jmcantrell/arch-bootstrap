@@ -2,10 +2,10 @@
 
 set -eu
 
-if [[ $INSTALL_BOOT_TYPE == uefi ]]; then
-    umount "$INSTALL_DIR/${INSTALL_BOOT_UEFI_DIR#/}"
+if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
+    umount "$INSTALL_MOUNT/${INSTALL_UEFI_MOUNT#/}"
 fi
 
 while read -r _ path; do
-    umount "$INSTALL_DIR/${path#/}"
+    umount "$INSTALL_MOUNT/${path#/}"
 done < <(list-subvolumes | tac)

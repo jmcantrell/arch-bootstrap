@@ -7,10 +7,4 @@ pacman -Sy --needed --noconfirm archlinux-keyring
 # Enable parallel package downloads during installation.
 sed -i '/^#\?ParallelDownloads\b/s/#//' /etc/pacman.conf
 
-# Optionally, use a custom pacman repository.
-if [[ -v INSTALL_PACMAN_REPO ]] && ! grep -q "^\[custom\]" /etc/pacman.conf; then
-    sed -i '/^\[\(core\|extra\|community\)\]/,+1s/^/#/' /etc/pacman.conf
-    printf "[custom]\nSigLevel = Optional TrustAll\nServer = file://%s\n" "$INSTALL_PACMAN_REPO" >>/etc/pacman.conf
-fi
-
-pacstrap "$INSTALL_DIR" - < <(list-packages)
+pacstrap "$INSTALL_MOUNT" - < <(list-packages)

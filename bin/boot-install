@@ -10,11 +10,11 @@ if [[ -v INSTALL_CONSOLEBLANK ]]; then
     cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLEBLANK")
 fi
 
-if ((INSTALL_DEVICE_IS_LUKS)); then
+if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
-        cryptkey=rootfs:"$INSTALL_LUKS_KEYFILE"
+        cryptkey=rootfs:"$INSTALL_LUKS_ROOT_KEYFILE"
         cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME"
     )
 else
@@ -26,5 +26,5 @@ export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 template-install /etc/default/grub
 
-arch-chroot "$INSTALL_DIR" grub-install "$INSTALL_DEVICE" --recheck
-arch-chroot "$INSTALL_DIR" grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot "$INSTALL_MOUNT" grub-install "$INSTALL_DEVICE" --recheck
+arch-chroot "$INSTALL_MOUNT" grub-mkconfig -o /boot/grub/grub.cfg

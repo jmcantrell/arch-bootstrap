@@ -11,8 +11,9 @@ if cryptsetup luksDump "$INSTALL_LUKS_DEVICE" | grep -q "^Key Slot $keyfile_slot
     cryptsetup luksKillSlot "$INSTALL_LUKS_DEVICE" "$keyfile_slot"
 fi
 
-keyfile=$INSTALL_DIR/${INSTALL_LUKS_KEYFILE#/}
+keyfile=$INSTALL_MOUNT/${INSTALL_LUKS_ROOT_KEYFILE#/}
 
+mkdir -p "$(dirname "$keyfile")"
 touch "$keyfile"
 chmod 000 "$keyfile"
 dd bs=512 count=8 if=/dev/urandom of="$keyfile"

@@ -11,20 +11,20 @@ if [[ -v INSTALL_GPU_MODULE ]]; then
     modules+=("$INSTALL_GPU_MODULE")
 fi
 
-if ((INSTALL_DEVICE_IS_LUKS)); then
+if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     hooks+=(keyboard keymap consolefont)
-    files+=("$INSTALL_LUKS_KEYFILE")
+    files+=("$INSTALL_LUKS_ROOT_KEYFILE")
 fi
 
 hooks+=(modconf block)
 
-if ((INSTALL_DEVICE_IS_LUKS)); then
+if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     hooks+=(encrypt)
 fi
 
 hooks+=(resume lvm2 filesystems btrfs)
 
-if ((INSTALL_DEVICE_IS_LUKS)); then
+if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     hooks+=(keyboard)
 fi
 
@@ -36,4 +36,4 @@ export INITRD_HOOKS=${hooks[*]}
 export INITRD_FILES=${files[*]}
 template-install /etc/mkinitcpio.conf
 
-arch-chroot "$INSTALL_DIR" mkinitcpio --allpresets
+arch-chroot "$INSTALL_MOUNT" mkinitcpio --allpresets

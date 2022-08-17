@@ -2,7 +2,7 @@
 
 set -eu
 
-if ((INSTALL_DEVICE_IS_LUKS)); then
+if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     luks-open
 fi
 

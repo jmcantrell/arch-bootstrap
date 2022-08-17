@@ -2,52 +2,52 @@
 
 set -eu
 
-echo "$INSTALL_HOSTNAME" >"$INSTALL_DIR"/etc/hostname
+echo "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
 
 if [[ -d $CONFIG_DIR/files ]]; then
-    rsync -va --no-owner --no-group "$CONFIG_DIR"/files/ "$INSTALL_DIR"
+    rsync -va --no-owner --no-group "$CONFIG_DIR"/files/ "$INSTALL_MOUNT"
 fi
 
-echo "LANG=$INSTALL_LANG" >"$INSTALL_DIR"/etc/locale.conf
-sed -i -e "/#$INSTALL_LANG/s/^#//" "$INSTALL_DIR"/etc/locale.gen
-arch-chroot "$INSTALL_DIR" locale-gen
+echo "LANG=$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
+sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
+arch-chroot "$INSTALL_MOUNT" locale-gen
 
-cat >"$INSTALL_DIR"/etc/vconsole.conf <<-EOF
+cat >"$INSTALL_MOUNT"/etc/vconsole.conf <<-EOF
 FONT=$INSTALL_FONT
 KEYMAP=$INSTALL_KEYMAP
 EOF
 
-arch-chroot "$INSTALL_DIR" ln -sf /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
-arch-chroot "$INSTALL_DIR" hwclock --systohc --utc
-arch-chroot "$INSTALL_DIR" systemctl enable systemd-timesyncd.service
+arch-chroot "$INSTALL_MOUNT" ln -sf /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
+arch-chroot "$INSTALL_MOUNT" hwclock --systohc --utc
+arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service
 
-ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_DIR"/etc/resolv.conf
-arch-chroot "$INSTALL_DIR" systemctl enable systemd-{networkd,resolved}.service
+ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
+arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-{networkd,resolved}.service
 
-export REFLECTOR_COUNTRY=$INSTALL_COUNTRY
+export REFLECTOR_COUNTRY=$INSTALL_REFLECTOR_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
-arch-chroot "$INSTALL_DIR" systemctl enable reflector.{service,timer}
+arch-chroot "$INSTALL_MOUNT" systemctl enable reflector.{service,timer}
 
 if ((INSTALL_DEVICE_IS_SSD)); then
-    arch-chroot "$INSTALL_DIR" systemctl enable fstrim.timer
+    arch-chroot "$INSTALL_MOUNT" systemctl enable fstrim.timer
 fi
 
 if ((INSTALL_NET_HAS_WIRELESS)); then
-    rsync -rv /var/lib/iwd/ "$INSTALL_DIR"/var/lib/iwd
-    arch-chroot "$INSTALL_DIR" systemctl enable iwd.service
+    rsync -rv /var/lib/iwd/ "$INSTALL_MOUNT"/var/lib/iwd
+    arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 
-echo "%$INSTALL_SUDOER_GROUP ALL=(ALL) ${INSTALL_SUDOER_NOPASSWD:+NOPASSWD:}ALL" >"$INSTALL_DIR"/etc/sudoers.d/"$INSTALL_SUDOER_GROUP"
+echo "%$INSTALL_SUDOER_GROUP ALL=(ALL) ${INSTALL_SUDOER_GROUP_NOPASSWD:+NOPASSWD:}ALL" >"$INSTALL_MOUNT"/etc/sudoers.d/group
 
-arch-chroot "$INSTALL_DIR" useradd \
+arch-chroot "$INSTALL_MOUNT" useradd \
     --create-home --groups users,"$INSTALL_SUDOER_GROUP" \
     ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
     "$INSTALL_SUDOER_USERNAME"
 
-arch-chroot "$INSTALL_DIR" chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
+arch-chroot "$INSTALL_MOUNT" chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
 
-arch-chroot "$INSTALL_DIR" passwd --delete root
+arch-chroot "$INSTALL_MOUNT" passwd --delete root
 
-arch-chroot "$INSTALL_DIR" systemctl enable sshd.service
+arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 
-chroot-script-exec "$INSTALL_DIR" "$CONFIG_DIR"/install
+arch-chroot-script "$INSTALL_MOUNT" "$CONFIG_DIR"/install

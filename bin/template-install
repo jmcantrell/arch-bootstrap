@@ -4,7 +4,7 @@ set -eu
 
 path=${1#/}
 template=$CONFIG_DIR/templates/$path
-output=$INSTALL_DIR/$path
+output=$INSTALL_MOUNT/$path
 
 mkdir -p "$(dirname "$output")"
 envsubst <"$template" >"$output"

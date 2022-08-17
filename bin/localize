@@ -10,4 +10,4 @@ timedatectl set-ntp true
 reflector \
     --protocol https --latest 5 --sort age \
     --save /etc/pacman.d/mirrorlist \
-    --country "$INSTALL_COUNTRY"
+    --country "$INSTALL_REFLECTOR_COUNTRY"

@@ -20,7 +20,7 @@ add_packages \
     reflector \
     sudo
 
-case $INSTALL_BOOT_TYPE in
+case $INSTALL_BOOT_FIRMWARE in
 bios) add_packages grub-bios ;;
 uefi) add_packages grub efibootmgr ;;
 esac

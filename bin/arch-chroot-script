@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+# Execute the given script in an arch chroot.
+# Usage: arch-chroot-script DIRECTORY SCRIPT
+
 set -eu
 
 dir=${1:?missing directory}
 script=${2:?missing script}
 shift 2
-
-[[ -f $script ]] || exit 0
 
 temp_script=$(mktemp -p "$dir" -t script.XXXXXXXXXX)
 trap 'rm -vf ${temp_script@Q}' INT TERM EXIT

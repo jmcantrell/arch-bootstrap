@@ -2,7 +2,7 @@
 
 set -eu
 
-packages=$(mktemp)
+packages=$(mktemp -t packages.XXXXXXXXXX)
 trap 'rm -f ${packages@Q}' INT TERM EXIT
 
 add_packages() {

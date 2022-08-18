@@ -4,11 +4,7 @@ set -eu
 
 preload_modules=(part_gpt part_msdos lvm)
 cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
-cmdline_linux_default=(loglevel=3)
-
-if [[ -v INSTALL_CONSOLEBLANK ]]; then
-    cmdline_linux_default+=(consoleblank="$INSTALL_CONSOLEBLANK")
-fi
+cmdline_linux_default=(loglevel=3 ${INSTALL_CONSOLEBLANK:+consoleblank="$INSTALL_CONSOLEBLANK"})
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export GRUB_ENABLE_CRYPTODISK=y
@@ -27,4 +23,4 @@ export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 template-install /etc/default/grub
 
 arch-chroot "$INSTALL_MOUNT" grub-install "$INSTALL_DEVICE" --recheck
-arch-chroot "$INSTALL_MOUNT" grub-mkconfig -o /boot/grub/grub.cfg
+arch-chroot "$INSTALL_MOUNT" grub-mkconfig --output=/boot/grub/grub.cfg

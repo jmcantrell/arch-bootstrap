@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
 # Get a human-readable size for the total amount of memory.
-# This is necessary because /proc/meminfo under reports the total memory.
-# It's assumed that physical memory is a standard size (i.e. power of two).
+#
+# This is necessary because /proc/meminfo (and consequently `free -h`) under
+# reports the total memory. It's assumed that physical memory is a standard
+# size (i.e. power of two).
 
 set -eu
 
 units=(K M G T P E)
+unit_index=0
 
 mem_total_kb=$(grep "^MemTotal" /proc/meminfo | awk '{print $2}')
 mem_total=$mem_total_kb
-unit_index=0
 
 # Find the largest unit such that the floor value is non-zero.
 # For example, floor(0.1G) == 0, so report size in M (megabytes).

@@ -5,7 +5,7 @@ set -eu
 echo "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
 
 if [[ -d $CONFIG_DIR/files ]]; then
-    rsync -va --no-owner --no-group "$CONFIG_DIR"/files/ "$INSTALL_MOUNT"
+    rsync -v --archive --no-{owner,group} "$CONFIG_DIR"/files/ "$INSTALL_MOUNT"
 fi
 
 echo "LANG=$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
@@ -17,7 +17,7 @@ FONT=$INSTALL_FONT
 KEYMAP=$INSTALL_KEYMAP
 EOF
 
-arch-chroot "$INSTALL_MOUNT" ln -sf /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
+arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
 arch-chroot "$INSTALL_MOUNT" hwclock --systohc --utc
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service
 
@@ -50,4 +50,6 @@ arch-chroot "$INSTALL_MOUNT" passwd --delete root
 
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 
-arch-chroot-script "$INSTALL_MOUNT" "$CONFIG_DIR"/install
+if [[ -f $CONFIG_DIR/install ]]; then
+    arch-chroot-script "$INSTALL_MOUNT" "$CONFIG_DIR"/install
+fi

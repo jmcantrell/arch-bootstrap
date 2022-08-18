@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
+# Installs a copy of the given file with environment variables substituted.
+# Usage: template-install FILE
+#
+# The FILE should be specified as it would appear to the new system (e.g.
+# `/etc/default/grub`, not `./config/templates/etc/default/grub`).
+
 set -eu
 
-path=${1#/}
-template=$CONFIG_DIR/templates/$path
-output=$INSTALL_MOUNT/$path
+file=${1#/}
+template=$CONFIG_DIR/templates/$file
+output=$INSTALL_MOUNT/$file
 
 mkdir -p "$(dirname "$output")"
 envsubst <"$template" >"$output"

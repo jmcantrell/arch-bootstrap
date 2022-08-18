@@ -8,6 +8,6 @@ loadkeys "$INSTALL_KEYMAP"
 timedatectl set-ntp true
 
 reflector \
-    --protocol https --latest 5 --sort age \
     --save /etc/pacman.d/mirrorlist \
+    --protocol https --latest 5 --sort age \
     --country "$INSTALL_REFLECTOR_COUNTRY"

@@ -56,9 +56,9 @@ if [[ ! -v INSTALL_CPU_VENDOR ]]; then
 fi
 
 if [[ ! -v INSTALL_GPU_MODULES ]]; then
-    reply=$(detect-gpu-modules) || return 1
-    readarray -t gpu_modules <<<"$reply"
-    export INSTALL_GPU_MODULES=${gpu_modules[*]}
+    INSTALL_GPU_MODULES=$(detect-gpu-modules) || return 1
+    INSTALL_GPU_MODULES=$(paste -sd' ' <<<"$INSTALL_GPU_MODULES")
+    export INSTALL_GPU_MODULES
 fi
 
 if [[ ! -v INSTALL_BOOT_FIRMWARE ]]; then

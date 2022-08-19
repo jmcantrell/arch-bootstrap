@@ -4,4 +4,4 @@ set -eu
 
 echo @ /
 
-list "$CONFIG_DIR"/subvolumes | sed 's/^/@/'
+list "$INSTALL_CONFIG"/subvolumes | sed 's/^/@/'

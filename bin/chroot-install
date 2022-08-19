@@ -4,8 +4,8 @@ set -eu
 
 echo "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
 
-if [[ -d $CONFIG_DIR/files ]]; then
-    rsync -v --archive --no-{owner,group} "$CONFIG_DIR"/files/ "$INSTALL_MOUNT"
+if [[ -d $INSTALL_CONFIG/files ]]; then
+    rsync -v --archive --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"
 fi
 
 echo "LANG=$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
@@ -50,6 +50,6 @@ arch-chroot "$INSTALL_MOUNT" passwd --delete root
 
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 
-if [[ -f $CONFIG_DIR/install ]]; then
-    arch-chroot-script "$INSTALL_MOUNT" "$CONFIG_DIR"/install
+if [[ -f $INSTALL_CONFIG/install ]]; then
+    arch-chroot-script "$INSTALL_MOUNT" "$INSTALL_CONFIG"/install
 fi

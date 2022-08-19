@@ -8,7 +8,8 @@ files=()
 hooks=(base udev autodetect)
 
 if [[ -v INSTALL_GPU_MODULES ]]; then
-    modules+=("$INSTALL_GPU_MODULES")
+    read -ra gpu_modules <<<"$INSTALL_GPU_MODULES"
+    modules+=("${gpu_modules[@]}")
 fi
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then

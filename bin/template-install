@@ -9,7 +9,7 @@
 set -eu
 
 file=${1#/}
-template=$CONFIG_DIR/templates/$file
+template=$INSTALL_CONFIG/templates/$file
 output=$INSTALL_MOUNT/$file
 
 mkdir -p "$(dirname "$output")"

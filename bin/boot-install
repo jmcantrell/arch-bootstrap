@@ -4,7 +4,7 @@ set -eu
 
 preload_modules=(part_gpt part_msdos lvm)
 cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
-cmdline_linux_default=(loglevel=3 ${INSTALL_CONSOLEBLANK:+consoleblank="$INSTALL_CONSOLEBLANK"})
+cmdline_linux_default=(loglevel=3 consoleblank="$INSTALL_CONSOLEBLANK")
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export GRUB_ENABLE_CRYPTODISK=y

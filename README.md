@@ -39,7 +39,7 @@ In general, the installation steps are as follows:
 1. Boot into the [Arch Linux ISO][archiso]
 1. Change the directory to this repository
 1. Set `INSTALL_DEVICE` and any overrides (see [environment variables](#environment-variables))
-1. Prepare the environment: `source ./scripts/prepare [DIRECTORY]`
+1. Prepare the environment: `source ./scripts/prepare`
 1. Run the installation script: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
@@ -60,13 +60,6 @@ If the script succeeds, a list of all the relevant environment variables and the
 To prepare the environment for the default configuration:
 
 ```sh
-source ./scripts/prepare
-```
-
-To prepare the environment for an alternate configuration:
-
-```sh
-export INSTALL_CONFIG=/path/to/config
 source ./scripts/prepare
 ```
 
@@ -158,7 +151,7 @@ It's treated as a bash script, and any variables relevant to installation (see [
 #### `$INSTALL_CONFIG/subvolumes`
 
 This file, if it exists, defines the extra btrfs subvolumes that will be created.
-This should not include the root subvolume, as its presence and mount point is not optional.
+This should **not** include the root subvolume, as its presence and mount point is not optional.
 It will always be created and mounted at `/`.
 
 If it's executable, it should output one subvolume mapping per line to stdout.

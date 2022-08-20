@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Execute the given script in an arch chroot.
-# Usage: arch-chroot-script DIRECTORY SCRIPT
+# Usage: arch-chroot-script DIRECTORY SCRIPT [ARGUMENT...]
 
 set -eu
 

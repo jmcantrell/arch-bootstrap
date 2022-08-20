@@ -37,7 +37,13 @@ if ((INSTALL_NET_HAS_WIRELESS)); then
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 
-echo "%$INSTALL_SUDOER_GROUP ALL=(ALL) ${INSTALL_SUDOER_GROUP_NOPASSWD:+NOPASSWD:}ALL" >"$INSTALL_MOUNT"/etc/sudoers.d/group
+{
+    printf "%$INSTALL_SUDOER_GROUP ALL=(ALL) "
+    if ((INSTALL_SUDOER_GROUP_NOPASSWD)); then
+        printf "NOPASSWD:"
+    fi
+    printf "ALL\n"
+} >"$INSTALL_MOUNT"/etc/sudoers.d/group
 
 arch-chroot "$INSTALL_MOUNT" useradd \
     --create-home --groups users,"$INSTALL_SUDOER_GROUP" \

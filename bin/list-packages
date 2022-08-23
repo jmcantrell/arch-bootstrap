@@ -3,7 +3,7 @@
 set -eu
 
 packages=$(mktemp -t packages.XXXXXXXXXX)
-trap 'rm -f ${packages@Q}' INT TERM EXIT
+trap 'rm -f ${packages@Q}' EXIT
 
 add_packages() {
     printf "%s\n" "$@" >>"$packages"

@@ -6,7 +6,7 @@
 # The FILE should be specified as it would appear to the new system (e.g.
 # `/etc/default/grub`, not `./config/templates/etc/default/grub`).
 
-set -eu
+set -euo pipefail
 
 file=${1#/}
 template=$INSTALL_CONFIG/templates/$file

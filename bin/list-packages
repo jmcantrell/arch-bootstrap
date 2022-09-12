@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 packages=$(mktemp -t packages.XXXXXXXXXX)
 trap 'rm -f ${packages@Q}' EXIT

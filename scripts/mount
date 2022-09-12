@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     luks-open

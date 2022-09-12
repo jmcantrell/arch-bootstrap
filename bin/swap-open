@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 swapon "$INSTALL_SWAP_DEVICE"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 swapoff "$INSTALL_SWAP_DEVICE"

@@ -3,7 +3,7 @@
 # Determine the kernel modules being used for graphics.
 # Outputs one module per line to stdout.
 
-set -eu
+set -euo pipefail
 
 found_gpu=0
 

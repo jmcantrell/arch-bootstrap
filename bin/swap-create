@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 mkswap --label "$INSTALL_FS_SWAP_LABEL" "$INSTALL_SWAP_DEVICE"

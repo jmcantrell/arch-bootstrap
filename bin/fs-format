@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
     mkfs.fat -F32 "$INSTALL_BOOT_DEVICE"

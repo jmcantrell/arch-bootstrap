@@ -6,7 +6,7 @@
 # reports the total memory. It's assumed that physical memory is a standard
 # size (i.e. power of two).
 
-set -eu
+set -euo pipefail
 
 units=(K M G T P E)
 unit_index=0

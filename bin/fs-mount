@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 while read -r name path; do
     subvolume_mount=$INSTALL_MOUNT/${path#/}

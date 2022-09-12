@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 setfont "$INSTALL_FONT"
 loadkeys "$INSTALL_KEYMAP"

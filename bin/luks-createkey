@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+keyfile=$1
+
+mkdir -p "$(dirname "$keyfile")"
+touch "$keyfile"
+chmod 000 "$keyfile"
+dd bs=512 count=8 if=/dev/urandom of="$keyfile"

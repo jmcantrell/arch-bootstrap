@@ -13,9 +13,6 @@ fi
 
 keyfile=$INSTALL_MOUNT/${INSTALL_LUKS_ROOT_KEYFILE#/}
 
-mkdir -p "$(dirname "$keyfile")"
-touch "$keyfile"
-chmod 000 "$keyfile"
-dd bs=512 count=8 if=/dev/urandom of="$keyfile"
+luks-createkey "$keyfile"
 
 cryptsetup --key-slot "$keyfile_slot" luksAddKey "$INSTALL_LUKS_DEVICE" "$keyfile" <<<"$INSTALL_LUKS_PASSPHRASE"

@@ -3,17 +3,17 @@
 set -euo pipefail
 
 if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
-    mkfs.fat -F32 "$INSTALL_BOOT_DEVICE"
+    mkfs.fat -v -F32 "$INSTALL_BOOT_DEVICE"
 fi
 
-mkfs.btrfs --label "$INSTALL_FS_ROOT_LABEL" "$INSTALL_ROOT_DEVICE"
+mkfs.btrfs --verbose --label "$INSTALL_FS_ROOT_LABEL" "$INSTALL_ROOT_DEVICE"
 
 mkdir -p "$INSTALL_MOUNT"
 
-mount "$INSTALL_ROOT_DEVICE" "$INSTALL_MOUNT"
+mount --verbose "$INSTALL_ROOT_DEVICE" "$INSTALL_MOUNT"
 
 while read -r name _; do
     btrfs subvolume create "$INSTALL_MOUNT/$name"
 done < <(list-subvolumes)
 
-umount "$INSTALL_MOUNT"
+umount --verbose "$INSTALL_MOUNT"

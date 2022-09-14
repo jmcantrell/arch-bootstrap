@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-swapoff "$INSTALL_SWAP_DEVICE"
+swapoff --verbose "$INSTALL_SWAP_DEVICE"

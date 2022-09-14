@@ -21,7 +21,7 @@ arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /e
 arch-chroot "$INSTALL_MOUNT" hwclock --systohc --utc
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service
 
-ln -sfv /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
+ln -vsfn /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-{networkd,resolved}.service
 
 export REFLECTOR_COUNTRY=$INSTALL_REFLECTOR_COUNTRY
@@ -33,7 +33,7 @@ if ((INSTALL_DEVICE_IS_SSD)); then
 fi
 
 if ((INSTALL_NET_HAS_WIRELESS)); then
-    rsync -rv /var/lib/iwd/ "$INSTALL_MOUNT"/var/lib/iwd
+    rsync -v --recursive /var/lib/iwd/ "$INSTALL_MOUNT"/var/lib/iwd
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 

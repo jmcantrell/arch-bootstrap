@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-swapon "$INSTALL_SWAP_DEVICE"
+swapon --verbose "$INSTALL_SWAP_DEVICE"

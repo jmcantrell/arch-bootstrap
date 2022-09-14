@@ -12,7 +12,7 @@ Logical volume management is handled by [LVM][lvm], including a volume for swap 
 
 If enabled, full disk encryption is handled by [LUKS][luks], using the [LVM on LUKS][lvm-on-luks] method.
 
-The file system is formatted using [btrfs][btrfs] with [subvolumes][btrfs-subvolumes].
+The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes].
 
 [Processor microcode updates][microcode] will be installed according to the system's CPU vendor.
 

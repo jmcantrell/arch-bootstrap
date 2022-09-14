@@ -3,7 +3,8 @@
 set -euo pipefail
 
 packages=$(mktemp -t packages.XXXXXXXXXX)
-trap 'rm -f ${packages@Q}' EXIT
+printf -v cleanup "rm %q" "$packages"
+trap '$cleanup' EXIT
 
 add_packages() {
     printf "%s\n" "$@" >>"$packages"

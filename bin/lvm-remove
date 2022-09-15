@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-# Ensure the variable is set before doing anything destructive.
-: "$INSTALL_LVM_DEVICE"
-
 lvremove --verbose "$INSTALL_LVM_VG_NAME"
 vgremove --verbose "$INSTALL_LVM_VG_NAME"
 pvremove --verbose "$INSTALL_LVM_DEVICE"

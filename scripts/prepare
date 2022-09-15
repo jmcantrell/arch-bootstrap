@@ -6,8 +6,6 @@ if [[ -f $INSTALL_CONFIG/env ]]; then
     source "$INSTALL_CONFIG"/env || return 1
 fi
 
-: "${INSTALL_DEVICE:?}"
-
 export PATH=$PWD/bin:$PATH
 
 export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}

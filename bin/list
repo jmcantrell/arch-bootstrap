@@ -4,8 +4,10 @@ set -euo pipefail
 
 file=$1
 
+[[ -f $file ]] || exit 1
+
 if [[ -x $file ]]; then
     "$file"
-elif [[ -f $file ]]; then
+else
     cat "$file"
 fi

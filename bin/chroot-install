@@ -38,7 +38,7 @@ if ((INSTALL_NET_HAS_WIRELESS)); then
 fi
 
 {
-    printf "%%$INSTALL_SUDOER_GROUP ALL=(ALL) "
+    printf "%%%s ALL=(ALL) " "$INSTALL_SUDOER_GROUP"
     if ((INSTALL_SUDOER_GROUP_NOPASSWD)); then
         printf "NOPASSWD:"
     fi

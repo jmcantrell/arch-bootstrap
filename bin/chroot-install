@@ -2,13 +2,13 @@
 
 set -euo pipefail
 
-echo "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
+printf "%s\n" "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
 
 if [[ -d $INSTALL_CONFIG/files ]]; then
     rsync -v --archive --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"
 fi
 
-echo "LANG=$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
+printf "LANG=%s\n" "$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
 sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
 arch-chroot "$INSTALL_MOUNT" locale-gen
 

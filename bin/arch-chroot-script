@@ -7,6 +7,12 @@ set -euo pipefail
 
 dir=${1:?missing directory}
 script=${2:?missing script}
+
+if ! head -n1 "$script" | grep -q "^#!"; then
+    printf "Invalid script: %q (missing shebang line)\n" "$script" >&2
+    exit 1
+fi
+
 shift 2
 
 temp_script=$(mktemp -p "$dir" -t script.XXXXXXXXXX)

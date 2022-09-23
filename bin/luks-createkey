@@ -2,9 +2,10 @@
 
 set -euo pipefail
 
-keyfile=$1
+keyfile=${1:?missing key file}
 
 mkdir -p "$(dirname "$keyfile")"
-touch "$keyfile"
-chmod 000 "$keyfile"
+
+umask 777
+
 dd bs=512 count=8 if=/dev/urandom of="$keyfile"

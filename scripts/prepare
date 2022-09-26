@@ -32,7 +32,10 @@ export INSTALL_LVM_SWAP_LV_NAME=${INSTALL_LVM_SWAP_LV_NAME:-swap}
 
 if [[ ! -v INSTALL_LVM_SWAP_LV_SIZE ]]; then
     # The swap size should be at least as big as physical memory.
-    INSTALL_LVM_SWAP_LV_SIZE=$(guess-mem-total) || return 1
+    if ! INSTALL_LVM_SWAP_LV_SIZE=$(guess-mem-total); then
+        printf "Unable to guess physical memory size\n" >&2
+        return 1
+    fi
     [[ -n $INSTALL_LVM_SWAP_LV_SIZE ]] && export INSTALL_LVM_SWAP_LV_SIZE
 fi
 
@@ -47,14 +50,22 @@ export INSTALL_FS_SWAP_LABEL=${INSTALL_FS_SWAP_LABEL:-swap}
 export INSTALL_FS_MOUNT_OPTIONS=${INSTALL_FS_MOUNT_OPTIONS:-autodefrag,compress=zstd}
 
 if [[ ! -v INSTALL_CPU_VENDOR ]]; then
-    case $(grep -w -m1 '^vendor_id\b' /proc/cpuinfo | awk '{print $NF}') in
+    vendor_id=$(grep -w -m1 '^vendor_id\b' /proc/cpuinfo | awk '{print $NF}')
+    case $vendor_id in
     GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
     AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
+    *)
+        printf "Unknown vendor ID: %s\n" "$vendor_id" >&2
+        return 1
+        ;;
     esac
 fi
 
 if [[ ! -v INSTALL_GPU_MODULES ]]; then
-    INSTALL_GPU_MODULES=$(detect-gpu-modules) || return 1
+    if ! INSTALL_GPU_MODULES=$(detect-gpu-modules); then
+        printf "Unable to get GPU kernel modules\n" >&2
+        return 1
+    fi
     INSTALL_GPU_MODULES=$(paste -sd' ' <<<"$INSTALL_GPU_MODULES")
     export INSTALL_GPU_MODULES
 fi
@@ -92,7 +103,7 @@ if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
-    INSTALL_NET_HAS_WIRELESS=$(find /sys/class/net -mindepth 1 -maxdepth 1 -name "wl*" | head -n1 | wc -l)
+    INSTALL_NET_HAS_WIRELESS=$(find /sys/class/net -mindepth 1 -maxdepth 1 -name "wl*" | wc -l)
     export INSTALL_NET_HAS_WIRELESS
 fi
 

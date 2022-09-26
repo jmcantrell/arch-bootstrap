@@ -59,11 +59,10 @@ if [[ ! -v INSTALL_CPU_VENDOR ]]; then
 fi
 
 if [[ ! -v INSTALL_GPU_MODULES ]]; then
-    if ! INSTALL_GPU_MODULES=$(detect-gpu-modules); then
+    if ! INSTALL_GPU_MODULES=$(detect-gpu-modules | paste -sd' '); then
         printf "Unable to get GPU kernel modules\n" >&2
         return 1
     fi
-    INSTALL_GPU_MODULES=$(paste -sd' ' <<<"$INSTALL_GPU_MODULES")
     export INSTALL_GPU_MODULES
 fi
 

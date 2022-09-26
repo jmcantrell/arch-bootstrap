@@ -4,12 +4,8 @@ set -euo pipefail
 
 file=${1:?missing file}
 
-if [[ ! -f $file ]]; then
-    exit 1
-fi
-
 if [[ -x $file ]]; then
     "$file"
-else
+elif [[ -f $file ]]; then
     cat "$file"
 fi

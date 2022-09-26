@@ -32,11 +32,8 @@ export INSTALL_LVM_SWAP_LV_NAME=${INSTALL_LVM_SWAP_LV_NAME:-swap}
 
 if [[ ! -v INSTALL_LVM_SWAP_LV_SIZE ]]; then
     # The swap size should be at least as big as physical memory.
-    if ! INSTALL_LVM_SWAP_LV_SIZE=$(guess-mem-total); then
-        printf "Unable to guess physical memory size\n" >&2
-        return 1
-    fi
-    [[ -n $INSTALL_LVM_SWAP_LV_SIZE ]] && export INSTALL_LVM_SWAP_LV_SIZE
+    INSTALL_LVM_SWAP_LV_SIZE=$(dmidecode --type 19 | awk '/\<Range Size\>/ {sum+=$3; unit=substr($4,0,1)} END {print sum unit}')
+    export INSTALL_LVM_SWAP_LV_SIZE
 fi
 
 export INSTALL_LVM_ROOT_LV_NAME=${INSTALL_LVM_ROOT_LV_NAME:-root}

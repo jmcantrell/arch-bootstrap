@@ -81,7 +81,7 @@ case $INSTALL_BOOT_FIRMWARE in
 uefi)
     export INSTALL_BOOT_PART_FLAG=esp
     export INSTALL_BOOT_PART_END=${INSTALL_BOOT_PART_END:-512MiB}
-    export INSTALL_BOOT_UEFI_DIR=${INSTALL_BOOT_UEFI_DIR:-/boot/efi}
+    export INSTALL_UEFI_MOUNT=${INSTALL_UEFI_MOUNT:-/boot/efi}
     ;;
 bios)
     export INSTALL_BOOT_PART_FLAG=bios_grub

@@ -94,13 +94,13 @@ export INSTALL_OS_PART_START=${INSTALL_OS_PART_START:-$INSTALL_BOOT_PART_END}
 export INSTALL_OS_PART_END=${INSTALL_OS_PART_END:-100%}
 
 if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
-    INSTALL_DEVICE_IS_SSD=$(</sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational)
-    export INSTALL_DEVICE_IS_SSD=$((!INSTALL_DEVICE_IS_SSD))
+    is_hdd=$(</sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational)
+    export INSTALL_DEVICE_IS_SSD=$((!is_hdd)) # invert b/c hdd is not ssd
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
     INSTALL_NET_HAS_WIRELESS=$(find /sys/class/net -mindepth 1 -maxdepth 1 -name "wl*" | wc -l)
-    export INSTALL_NET_HAS_WIRELESS
+    export INSTALL_NET_HAS_WIRELESS # is actually the total number of devices
 fi
 
 export INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-arch}

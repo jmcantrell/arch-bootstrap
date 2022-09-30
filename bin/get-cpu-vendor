@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+vendor_id=$(grep -w -m1 '^vendor_id\b' /proc/cpuinfo | awk '{print $NF}')
+
+unset vendor_name
+
+case $vendor_id in
+GenuineIntel) vendor_name=intel ;;
+AuthenticAMD) vendor_name=amd ;;
+*)
+    printf "Unknown vendor ID: %s\n" "$vendor_id" >&2
+    exit 1
+    ;;
+esac
+
+printf "%s" "$vendor_name"

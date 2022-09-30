@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+dmidecode --type 19 | awk '/\<Range Size\>/ {sum+=$3; unit=substr($4,0,1)} END {print sum unit}'

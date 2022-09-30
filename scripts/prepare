@@ -32,7 +32,10 @@ export INSTALL_LVM_SWAP_LV_NAME=${INSTALL_LVM_SWAP_LV_NAME:-swap}
 
 if [[ ! -v INSTALL_LVM_SWAP_LV_SIZE ]]; then
     # The swap size should be at least as big as physical memory.
-    INSTALL_LVM_SWAP_LV_SIZE=$(dmidecode --type 19 | awk '/\<Range Size\>/ {sum+=$3; unit=substr($4,0,1)} END {print sum unit}')
+    if ! INSTALL_LVM_SWAP_LV_SIZE=$(get-memory-size); then
+        printf "Unable to get information about physical memory\n" >&2
+        return 1
+    fi
     export INSTALL_LVM_SWAP_LV_SIZE
 fi
 
@@ -47,19 +50,15 @@ export INSTALL_FS_SWAP_LABEL=${INSTALL_FS_SWAP_LABEL:-swap}
 export INSTALL_FS_MOUNT_OPTIONS=${INSTALL_FS_MOUNT_OPTIONS:-autodefrag,compress=zstd}
 
 if [[ ! -v INSTALL_CPU_VENDOR ]]; then
-    vendor_id=$(grep -w -m1 '^vendor_id\b' /proc/cpuinfo | awk '{print $NF}')
-    case $vendor_id in
-    GenuineIntel) export INSTALL_CPU_VENDOR=intel ;;
-    AuthenticAMD) export INSTALL_CPU_VENDOR=amd ;;
-    *)
-        printf "Unknown vendor ID: %s\n" "$vendor_id" >&2
+    if ! INSTALL_CPU_VENDOR=$(get-cpu-vendor); then
+        printf "Unable to get CPU vendor\n" >&2
         return 1
-        ;;
-    esac
+    fi
+    export INSTALL_CPU_VENDOR
 fi
 
 if [[ ! -v INSTALL_GPU_MODULES ]]; then
-    if ! INSTALL_GPU_MODULES=$(detect-gpu-modules | paste -sd' '); then
+    if ! INSTALL_GPU_MODULES=$(get-gpu-modules | paste -sd' '); then
         printf "Unable to get GPU kernel modules\n" >&2
         return 1
     fi
@@ -94,13 +93,20 @@ export INSTALL_OS_PART_START=${INSTALL_OS_PART_START:-$INSTALL_BOOT_PART_END}
 export INSTALL_OS_PART_END=${INSTALL_OS_PART_END:-100%}
 
 if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
-    is_hdd=$(</sys/block/"${INSTALL_DEVICE##*/}"/queue/rotational)
-    export INSTALL_DEVICE_IS_SSD=$((!is_hdd)) # invert b/c hdd is not ssd
+    if ! INSTALL_DEVICE_IS_SSD=$(is-device-ssd "$INSTALL_DEVICE"); then
+        printf "Unable to determine if device is an SSD: %q\n" "$INSTALL_DEVICE" >&2
+        return 1
+    fi
+    export INSTALL_DEVICE_IS_SSD
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
-    INSTALL_NET_HAS_WIRELESS=$(find /sys/class/net -mindepth 1 -maxdepth 1 -name "wl*" | wc -l)
-    export INSTALL_NET_HAS_WIRELESS # is actually the total number of devices
+    if ! INSTALL_NET_HAS_WIRELESS=$(get-wireless-network-devices | wc -l); then
+        printf "Unable to get wireless network devices\n" >&2
+        return 1
+    fi
+    # This is actually the number of devices, but means the same in boolean.
+    export INSTALL_NET_HAS_WIRELESS
 fi
 
 export INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-arch}
@@ -115,11 +121,9 @@ export INSTALL_FONT=${INSTALL_FONT:-Lat2-Terminus16}
 export FONT=$INSTALL_FONT
 
 if [[ ! -v INSTALL_TIMEZONE ]]; then
-    if [[ -r /etc/localtime ]]; then
-        INSTALL_TIMEZONE=$(realpath /etc/localtime)
-        INSTALL_TIMEZONE=${INSTALL_TIMEZONE#/usr/share/zoneinfo/}
-    else
-        INSTALL_TIMEZONE=UTC
+    if ! INSTALL_TIMEZONE=$(get-timezone); then
+        printf "Unable to get timezone\n" >&2
+        return 1
     fi
     export INSTALL_TIMEZONE
 fi

@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+pacman-key --init
+pacman-key --populate
 pacman --sync --refresh --needed --noconfirm archlinux-keyring
 
 # Enable parallel package downloads during installation.

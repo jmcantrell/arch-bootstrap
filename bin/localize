@@ -12,4 +12,6 @@ if ping -q -w1 -c1 1.1.1.1; then
         --save /etc/pacman.d/mirrorlist \
         --protocol https --latest 5 --sort age \
         --country "$INSTALL_REFLECTOR_COUNTRY"
+else
+    systemctl stop reflector.service
 fi

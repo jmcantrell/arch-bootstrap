@@ -102,7 +102,7 @@ if [[ ! -v INSTALL_DEVICE_IS_SSD ]]; then
 fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
-    if ! INSTALL_NET_HAS_WIRELESS=$(get-wireless-network-devices | wc -l); then
+    if ! INSTALL_NET_HAS_WIRELESS=$(get-wireless-network-interfaces | wc -l); then
         printf "Unable to get wireless network devices\n" >&2
         return 1
     fi

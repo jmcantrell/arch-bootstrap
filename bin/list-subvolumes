@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-printf "@ /\n"
+printf "@ /\n" # the root subvolume
 
 list "$INSTALL_CONFIG"/subvolumes | sed 's/^/@/'

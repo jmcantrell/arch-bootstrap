@@ -12,7 +12,7 @@ Logical volume management is handled by [LVM][lvm], including a volume for swap 
 
 If enabled, full disk encryption is handled by [LUKS][luks], using the [LVM on LUKS][lvm-on-luks] method.
 
-The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes].
+The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/subvolumes`).
 
 [Processor microcode updates][microcode] will be installed according to the system's CPU vendor.
 
@@ -49,10 +49,10 @@ If all is well, `poweroff` and eject the installation media.
 ## Configuration
 
 The desired system is described by a [configuration directory](#configuration-files).
-The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier.
+The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a template for customization.
 The details of that system are controlled entirely by [environment variables](#environment-variables).
-These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced from another file.
-The only required variable is `INSTALL_DEVICE`, but you'll probably want to set more.
+These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced manually from another file before sourcing the prepare script.
+The only required variable is `INSTALL_DEVICE`. There are reasonable defaults for everything else, but you'll probably want to set more.
 
 Once the necessary variable overrides are set, source the preparation script to fill in the blanks.
 If the script succeeds, a list of all the relevant environment variables and their values will be displayed as a sanity check (with sensitive information hidden).
@@ -60,6 +60,13 @@ If the script succeeds, a list of all the relevant environment variables and the
 To prepare the environment for the default configuration:
 
 ```sh
+source ./scripts/prepare
+```
+
+To prepare the environment for a different configuration:
+
+```sh
+export INSTALL_CONFIG=/path/to/config/dir
 source ./scripts/prepare
 ```
 
@@ -84,7 +91,8 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_LANG`: The default language (default: `en_US.UTF-8`)
 - `INSTALL_FONT`: The default console font (default: `Lat2-Terminus16`)
 - `INSTALL_KEYMAP`: The default keyboard mapping (default: `us`)
-- `INSTALL_TIMEZONE`: The system time zone (default: `UTC`)
+- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set
+  in the archiso environment, i.e. from `/etc/localtime`, or "UTC" if it's not set)
 - `INSTALL_REFLECTOR_COUNTRY`: The country used for pacman mirror selection by reflector (default: `US`, possible values: run `reflector --list-countries`)
 
 #### Privileged User
@@ -97,11 +105,11 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Hardware
 
-- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: automatically determined from `vendor_id` in `/proc/cpuinfo`, possible values: `intel` or `amd`)
-- `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, multiple values should be separated with a space)
+- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: automatically determined from `vendor_id` in `/proc/cpuinfo`, see `./bin/get-cpu-vendor`, possible values: `intel` or `amd`)
+- `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/get-gpu-modules`, multiple values should be separated with a space)
 - `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: automatically determined based on the presence of `/sys/firmware/efi/efivars`, possible values: `bios` or `uefi`)
-- `INSTALL_DEVICE_IS_SSD`: A boolean indicating whether or not the installation disk is a solid-state drive (default: automatically determined based on the value in `/sys/block/$(basename $INSTALL_DEVICE)/queue/rotational`)
-- `INSTALL_NET_HAS_WIRELESS`: A boolean indicating the presence of a wireless network device (default: automatically determined based on the presence of devices named like `wl*`)
+- `INSTALL_DEVICE_IS_SSD`: A boolean indicating whether or not the installation disk is a solid-state drive (default: automatically determined based on the value in `/sys/block/$(basename $INSTALL_DEVICE)/queue/rotational`, see `./bin/is-device-ssd`)
+- `INSTALL_NET_HAS_WIRELESS`: A boolean indicating the presence of a wireless network device (default: automatically determined based on the presence of network interfaces named like `wl*`, see `./bin/get-wireless-network-interfaces`)
 - `INSTALL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled) (corresponds to the `consoleblank` kernel parameter)
 
 #### Partition Table
@@ -129,7 +137,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 - `INSTALL_LVM_VG_NAME`: The volume group name (default: `vg`)
 - `INSTALL_LVM_SWAP_LV_NAME`: The name for the swap logical volume (default: `swap`)
-- `INSTALL_LVM_SWAP_LV_SIZE`: The size of the swap logical volume (default: the same size as physical memory, i.e., the output of `./bin/guess-mem-total`)
+- `INSTALL_LVM_SWAP_LV_SIZE`: The size of the swap logical volume (default: the same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/get-memory-size`)
 - `INSTALL_LVM_ROOT_LV_NAME`: The name for the root logical volume (default: `root`)
 - `INSTALL_LVM_ROOT_LV_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 
@@ -163,6 +171,8 @@ Every line must be of the form:
 name /path/to/subvolume
 ```
 
+See `./config/subvolumes` for the default list.
+
 #### `$INSTALL_CONFIG/packages`
 
 This file, if it exists, defines the extra packages that will be installed on the new system.
@@ -170,7 +180,9 @@ This file, if it exists, defines the extra packages that will be installed on th
 If it's executable, it should output one package per line to stdout.
 If it's a regular file, it should contain one package per line with no blank lines or comments.
 
-Aside from these extra packages, only the packages necessary for a functional system will be installed.
+Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/list-packages`).
+
+By default, `./config/packages` does not exist, i.e., no extra packages are installed.
 
 #### `$INSTALL_CONFIG/install`
 

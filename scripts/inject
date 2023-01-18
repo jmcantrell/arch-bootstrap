@@ -14,8 +14,8 @@ systemctl restart systemd-networkd.{service,socket}
 
 # Only download a copy of the repository if this script doesn't exist locally.
 # If this script is being piped to bash, or run via the script boot parameter,
-# the script name will be something other than `init`.
-if [[ ${0##*/} != init ]]; then
+# the script name will be something other than `inject`.
+if [[ ${0##*/} != inject ]]; then
     curl -sSL -o ~/bootstrap.zip \
         https://github.com/jmcantrell/bootstrap-arch/archive/refs/heads/main.zip
 fi

@@ -7,11 +7,13 @@ loadkeys "$INSTALL_KEYMAP"
 
 timedatectl set-ntp true
 
+# Update the pacman mirrorlist, if possible.
 if ping -q -w1 -c1 1.1.1.1; then
     reflector \
         --save /etc/pacman.d/mirrorlist \
         --protocol https --latest 5 --sort age \
         --country "$INSTALL_REFLECTOR_COUNTRY"
 else
+    # If there's no network, stop trying to update it automatically.
     systemctl stop reflector.service
 fi

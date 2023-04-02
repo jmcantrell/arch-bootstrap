@@ -9,10 +9,12 @@ cmdline_linux_default=(loglevel=3 consoleblank="$INSTALL_CONSOLEBLANK")
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
-    cmdline_linux+=(
-        cryptkey=rootfs:"$INSTALL_LUKS_ROOT_KEYFILE"
-        cryptdevice=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME"
-    )
+    cmdline_linux+=(cryptkey=rootfs:"$INSTALL_LUKS_ROOT_KEYFILE")
+    cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME
+    if ((INSTALL_DEVICE_IS_SSD)); then
+        cryptdevice+=':allow-discards'
+    fi
+    cmdline_linux+=(cryptdevice="$cryptdevice")
 else
     export GRUB_ENABLE_CRYPTODISK=n
 fi

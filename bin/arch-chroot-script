@@ -9,7 +9,7 @@ dir=${1:?missing directory}
 script=${2:?missing script}
 
 if ! head -n1 "$script" | grep -q "^#!"; then
-    printf "Invalid script: %q (missing shebang line)\n" "$script" >&2
+    printf "invalid script: %q (missing shebang line)\n" "$script" >&2
     exit 1
 fi
 

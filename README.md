@@ -38,7 +38,7 @@ In general, the installation steps are as follows:
 
 1. Boot into the [Arch Linux ISO][archiso]
 1. Change the directory to this repository
-1. Set `INSTALL_DEVICE` and any overrides (see [environment variables](#environment-variables))
+1. Set `INSTALL_DEVICE` and any overrides (see [environment](#environment))
 1. Prepare the environment: `source ./scripts/prepare`
 1. Run the installation script: `./scripts/install`
 
@@ -50,7 +50,7 @@ If all is well, `poweroff` and eject the installation media.
 
 The desired system is described by a [configuration directory](#configuration-files).
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a template for customization.
-The details of that system are controlled entirely by [environment variables](#environment-variables).
+The details of that system are controlled entirely by [environment](#environment).
 These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced manually from another file before sourcing the prepare script.
 The only required variable is `INSTALL_DEVICE`. There are reasonable defaults for everything else, but you'll probably want to set more.
 
@@ -70,7 +70,7 @@ export INSTALL_CONFIG=/path/to/config/dir
 source ./scripts/prepare
 ```
 
-### Environment Variables
+### Environment
 
 The following variables can be defined anywhere, as long as they're exported in the environment used to perform the installation.
 
@@ -154,7 +154,7 @@ Within a configuration directory, the following files are recognized:
 #### `$INSTALL_CONFIG/env`
 
 This file, if it exists, will be sourced at the beginning of the preparation script.
-It's treated as a bash script, and any variables relevant to installation (see [environment variables](#environment-variables)) should be exported.
+It's treated as a bash script, and any variables relevant to installation (see [environment](#environment)) should be exported.
 
 #### `$INSTALL_CONFIG/subvolumes`
 

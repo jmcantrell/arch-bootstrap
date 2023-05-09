@@ -33,7 +33,7 @@ export INSTALL_LVM_SWAP_LV_NAME=${INSTALL_LVM_SWAP_LV_NAME:-swap}
 if [[ ! -v INSTALL_LVM_SWAP_LV_SIZE ]]; then
     # The swap size should be at least as big as physical memory.
     if ! INSTALL_LVM_SWAP_LV_SIZE=$(get-memory-size); then
-        printf "Unable to get information about physical memory\n" >&2
+        printf "unable to get information about physical memory\n" >&2
         return 1
     fi
     export INSTALL_LVM_SWAP_LV_SIZE
@@ -51,7 +51,7 @@ export INSTALL_FS_MOUNT_OPTIONS=${INSTALL_FS_MOUNT_OPTIONS:-autodefrag,compress=
 
 if [[ ! -v INSTALL_CPU_VENDOR ]]; then
     if ! INSTALL_CPU_VENDOR=$(get-cpu-vendor); then
-        printf "Unable to get CPU vendor\n" >&2
+        printf "unable to get cpu vendor\n" >&2
         return 1
     fi
     export INSTALL_CPU_VENDOR
@@ -59,7 +59,7 @@ fi
 
 if [[ ! -v INSTALL_GPU_MODULES ]]; then
     if ! INSTALL_GPU_MODULES=$(get-gpu-modules | paste -sd' '); then
-        printf "Unable to get GPU kernel modules\n" >&2
+        printf "unable to get gpu kernel modules\n" >&2
         return 1
     fi
     export INSTALL_GPU_MODULES
@@ -103,7 +103,7 @@ fi
 
 if [[ ! -v INSTALL_NET_HAS_WIRELESS ]]; then
     if ! INSTALL_NET_HAS_WIRELESS=$(get-wireless-network-interfaces | wc -l); then
-        printf "Unable to get wireless network devices\n" >&2
+        printf "unable to get wireless network devices\n" >&2
         return 1
     fi
     # This is actually the number of devices, but means the same in boolean.
@@ -123,7 +123,7 @@ export FONT=$INSTALL_FONT
 
 if [[ ! -v INSTALL_TIMEZONE ]]; then
     if ! INSTALL_TIMEZONE=$(get-timezone); then
-        printf "Unable to get timezone\n" >&2
+        printf "unable to get timezone\n" >&2
         return 1
     fi
     export INSTALL_TIMEZONE

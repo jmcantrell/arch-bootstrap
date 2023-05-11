@@ -2,4 +2,6 @@
 
 set -euo pipefail
 
-dmidecode --type 19 | awk '/\<Range Size\>/ {sum+=$3; unit=substr($4,0,1)} END {print sum unit}'
+read -r _ memory_kb _ < <(grep -m1 '^MemTotal:' /proc/meminfo)
+
+numfmt --from-unit=1000 --to=iec "$memory_kb"

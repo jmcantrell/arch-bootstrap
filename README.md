@@ -89,10 +89,9 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Locale
 
 - `INSTALL_LANG`: The default language (default: `en_US.UTF-8`)
-- `INSTALL_FONT`: The default console font (default: `Lat2-Terminus16`)
 - `INSTALL_KEYMAP`: The default keyboard mapping (default: `us`)
-- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set
-  in the archiso environment, i.e. from `/etc/localtime`, or "UTC" if it's not set)
+- `INSTALL_FONT`: The default console font (default: unset)
+- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the archiso environment, i.e. from `/etc/localtime`, or "UTC" if it's not set)
 - `INSTALL_REFLECTOR_COUNTRY`: The country used for pacman mirror selection by reflector (default: `US`, possible values: run `reflector --list-countries`)
 
 #### Privileged User

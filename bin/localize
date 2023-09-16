@@ -2,8 +2,11 @@
 
 set -euo pipefail
 
-setfont "$INSTALL_FONT"
 loadkeys "$INSTALL_KEYMAP"
+
+if [[ -v INSTALL_FONT ]]; then
+    setfont "$INSTALL_FONT"
+fi
 
 timedatectl set-ntp true
 

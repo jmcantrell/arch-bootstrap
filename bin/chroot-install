@@ -12,10 +12,12 @@ printf "LANG=%s\n" "$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
 sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
 arch-chroot "$INSTALL_MOUNT" locale-gen
 
-cat >"$INSTALL_MOUNT"/etc/vconsole.conf <<-EOF
-FONT=$INSTALL_FONT
-KEYMAP=$INSTALL_KEYMAP
-EOF
+{
+    printf "KEYMAP=%s\n" "$INSTALL_KEYMAP"
+    if [[ -v INSTALL_FONT ]]; then
+        print "FONT=%s\n" "$INSTALL_FONT"
+    fi
+} >"$INSTALL_MOUNT"/etc/vconsole.conf
 
 arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
 arch-chroot "$INSTALL_MOUNT" hwclock --systohc --utc

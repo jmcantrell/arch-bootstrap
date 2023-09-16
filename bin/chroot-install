@@ -13,6 +13,7 @@ sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
 arch-chroot "$INSTALL_MOUNT" locale-gen
 
 cat >"$INSTALL_MOUNT"/etc/vconsole.conf <<-EOF
+FONT=$INSTALL_FONT
 KEYMAP=$INSTALL_KEYMAP
 EOF
 

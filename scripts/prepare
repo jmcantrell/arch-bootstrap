@@ -118,6 +118,9 @@ export LANG=$INSTALL_LANG
 export INSTALL_KEYMAP=${INSTALL_KEYMAP:-us}
 export KEYMAP=$INSTALL_KEYMAP
 
+export INSTALL_FONT=${INSTALL_FONT:-Lat2-Terminus16}
+export FONT=$INSTALL_FONT
+
 if [[ ! -v INSTALL_TIMEZONE ]]; then
     if ! INSTALL_TIMEZONE=$(get-timezone); then
         printf "unable to get timezone\n" >&2

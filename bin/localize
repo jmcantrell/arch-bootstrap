@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+setfont "$INSTALL_FONT"
 loadkeys "$INSTALL_KEYMAP"
 
 timedatectl set-ntp true

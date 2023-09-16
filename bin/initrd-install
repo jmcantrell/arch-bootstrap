@@ -5,7 +5,7 @@ set -euo pipefail
 binaries=(/usr/bin/btrfs)
 modules=()
 files=()
-hooks=(base udev autodetect)
+hooks=(base udev autodetect modconf kms)
 
 if [[ -v INSTALL_GPU_MODULES ]]; then
     read -ra gpu_modules <<<"$INSTALL_GPU_MODULES"
@@ -17,19 +17,13 @@ if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     files+=("$INSTALL_LUKS_ROOT_KEYFILE")
 fi
 
-hooks+=(modconf block)
+hooks+=(block)
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     hooks+=(encrypt)
 fi
 
-hooks+=(resume lvm2 filesystems btrfs)
-
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
-    hooks+=(keyboard)
-fi
-
-hooks+=(fsck)
+hooks+=(resume lvm2 filesystems btrfs fsck)
 
 export INITRD_BINARIES=${binaries[*]}
 export INITRD_MODULES=${modules[*]}

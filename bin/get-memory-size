@@ -3,5 +3,4 @@
 set -euo pipefail
 
 dmidecode --type 19 |
-    grep '\bRange Size\b' |
-    awk '{sum+=$3; unit=substr($4,0,1)} END {print sum unit}'
+    awk '/\<Range Size:/ { sum += $3; unit = substr($4,0,1) } END { print sum unit }'

@@ -235,7 +235,7 @@ If you already have access to the repository in the live environment, just run t
 If you need to download the repository too, `curl` the script into bash:
 
 ```sh
-curl https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject | bash -s
+curl $REPO_URL/path/to/scripts/inject | bash -s
 ```
 
 If the network is available automatically after booting, you could also run the script by using the `script` boot parameter, recognized by the Arch Linux ISO.
@@ -243,7 +243,7 @@ If the network is available automatically after booting, you could also run the 
 When you see the GRUB menu as the live environment is booting, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
 
 ```
-script=https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject
+script=$REPO_URL/path/to/scripts/inject
 ```
 
 The script will be run similarly to the curl method above as soon as the environment is ready.

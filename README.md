@@ -118,9 +118,9 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_BOOT_PART_NAME`: The name of the boot partition (default: `boot`)
 - `INSTALL_BOOT_PART_START`: The start of the boot partition (default: `0%`)
 - `INSTALL_BOOT_PART_END`: The end of the boot partition (default: `512MiB` for UEFI, `2MiB` for BIOS)
-- `INSTALL_OS_PART_NAME`: The name of the operating system partition (default: `os`)
-- `INSTALL_OS_PART_START`: The start of the operating system partition (default: `$INSTALL_BOOT_PART_END`)
-- `INSTALL_OS_PART_END`: The end of the operating system partition (default: `100%`)
+- `INSTALL_SYS_PART_NAME`: The name of the operating system partition (default: `sys`)
+- `INSTALL_SYS_PART_START`: The start of the operating system partition (default: `$INSTALL_BOOT_PART_END`)
+- `INSTALL_SYS_PART_END`: The end of the operating system partition (default: `100%`)
 - `INSTALL_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/boot/efi`)
 
 #### Full Disk Encryption
@@ -128,7 +128,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_DEVICE_IS_ENCRYPTED`: A boolean dictating whether or not to use full disk encryption
 - `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
 - `INSTALL_LUKS_ROOT_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the root file system without asking for the passphrase again (default: `/crypto_keyfile.bin`, which is the default value used by `mkinitcpio`, occupies key slot 1)
-- `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `os`)
+- `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
 #### Volume Management
 

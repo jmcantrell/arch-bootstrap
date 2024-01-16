@@ -5,6 +5,6 @@ set -euo pipefail
 parted --script "$INSTALL_DEVICE" \
     mklabel gpt \
     mkpart "$INSTALL_BOOT_PART_NAME" "$INSTALL_BOOT_PART_START" "$INSTALL_BOOT_PART_END" \
-    mkpart "$INSTALL_OS_PART_NAME" "$INSTALL_OS_PART_START" "$INSTALL_OS_PART_END" \
+    mkpart "$INSTALL_SYS_PART_NAME" "$INSTALL_SYS_PART_START" "$INSTALL_SYS_PART_END" \
     set 1 "$INSTALL_BOOT_PART_FLAG" on \
     set 2 lvm on

@@ -3,14 +3,14 @@
 set -euo pipefail
 
 preload_modules=(part_gpt part_msdos lvm)
-cmdline_linux=(resume=PARTUUID="$(blkid -s PARTUUID -o value "$INSTALL_SWAP_DEVICE")")
+cmdline_linux=(resume=UUID="$(blkid -s UUID -o value "$INSTALL_SWAP_DEVICE")")
 cmdline_linux_default=(quiet loglevel=3 consoleblank="$INSTALL_CONSOLEBLANK")
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(cryptkey=rootfs:"$INSTALL_LUKS_ROOT_KEYFILE")
-    cryptdevice=PARTUUID=$(blkid -s PARTUUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME
+    cryptdevice=UUID=$(blkid -s UUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME
     if ((INSTALL_DEVICE_IS_SSD)); then
         cryptdevice+=':allow-discards'
     fi

@@ -3,8 +3,8 @@
 set -euo pipefail
 
 preload_modules=(part_gpt part_msdos lvm)
-cmdline_linux=(resume=UUID="$(blkid -s UUID -o value "$INSTALL_SWAP_DEVICE")")
 cmdline_linux_default=(quiet loglevel=3 consoleblank="$INSTALL_CONSOLEBLANK")
+cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
 
 if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
     export GRUB_ENABLE_CRYPTODISK=y

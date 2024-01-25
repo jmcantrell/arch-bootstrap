@@ -6,7 +6,7 @@ mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 touch ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
-curl -sL https://github.com/jmcantrell.keys >>~/.ssh/authorized_keys
+curl -sL https://meta.sr.ht/~jmcantrell.keys >>~/.ssh/authorized_keys
 
 sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network
 systemctl restart systemd-networkd.{service,socket}
@@ -16,5 +16,5 @@ systemctl restart systemd-networkd.{service,socket}
 # If this script is being piped to bash, or run via the script boot parameter,
 # the script name will be something other than `inject`.
 if [[ ${0##*/} != inject ]]; then
-    git clone https://github.com/jmcantrell/bootstrap-arch.git bootstrap
+    git clone https://git.sr.ht/~jmcantrell/bootstrap-arch bootstrap
 fi

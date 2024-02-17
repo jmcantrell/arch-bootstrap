@@ -2,5 +2,5 @@
 
 set -euo pipefail
 
-dmidecode --type 19 |
+dmidecode --type memory |
     awk '/\<Range Size:/ { sum += $3; unit = substr($4,0,1) } END { print sum unit }'

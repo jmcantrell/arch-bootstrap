@@ -2,18 +2,24 @@
 
 set -euo pipefail
 
-printf "%s\n" "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
+if [[ -v INSTALL_HOSTNAME ]]; then
+    printf "%s\n" "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
+fi
 
 if [[ -d $INSTALL_CONFIG/files ]]; then
     rsync -v --archive --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"
 fi
 
-printf "LANG=%s\n" "$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
-sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
-arch-chroot "$INSTALL_MOUNT" locale-gen
+if [[ -v INSTALL_LANG ]]; then
+    printf "LANG=%s\n" "$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
+    sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
+    arch-chroot "$INSTALL_MOUNT" locale-gen
+fi
 
 {
-    printf "KEYMAP=%s\n" "$INSTALL_KEYMAP"
+    if [[ -v INSTALL_KEYMAP ]]; then
+        printf "KEYMAP=%s\n" "$INSTALL_KEYMAP"
+    fi
     if [[ -v INSTALL_FONT ]]; then
         print "FONT=%s\n" "$INSTALL_FONT"
     fi
@@ -31,6 +37,7 @@ template-install /etc/xdg/reflector/reflector.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable reflector.{service,timer}
 
 if ((INSTALL_DEVICE_IS_SSD)); then
+    sed -i '/[[:space:]]*#\?[[:space:]]*issue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$INSTALL_MOUNT"/etc/lvm/lvm.conf
     arch-chroot "$INSTALL_MOUNT" systemctl enable fstrim.timer
 fi
 
@@ -39,25 +46,30 @@ if ((INSTALL_NET_HAS_WIRELESS)); then
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 
-{
-    printf "%%%s ALL=(ALL) " "$INSTALL_SUDOER_GROUP"
-    if ((INSTALL_SUDOER_GROUP_NOPASSWD)); then
-        printf "NOPASSWD:"
-    fi
-    printf "ALL\n"
-} >"$INSTALL_MOUNT"/etc/sudoers.d/group
+if [[ -v INSTALL_SUDOER_USERNAME ]]; then
+    {
+        printf "%%%s ALL=(ALL) " "$INSTALL_SUDOER_GROUP"
+        if ((INSTALL_SUDOER_GROUP_NOPASSWD)); then
+            printf "NOPASSWD:"
+        fi
+        printf "ALL\n"
+    } >"$INSTALL_MOUNT"/etc/sudoers.d/group
 
-arch-chroot "$INSTALL_MOUNT" useradd \
-    --create-home --groups users,"$INSTALL_SUDOER_GROUP" \
-    ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
-    "$INSTALL_SUDOER_USERNAME"
+    arch-chroot "$INSTALL_MOUNT" useradd \
+        --create-home --groups users,"$INSTALL_SUDOER_GROUP" \
+        ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
+        "$INSTALL_SUDOER_USERNAME"
 
-arch-chroot "$INSTALL_MOUNT" chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
-
-arch-chroot "$INSTALL_MOUNT" passwd --delete root
+    arch-chroot "$INSTALL_MOUNT" chpasswd <<<"$INSTALL_SUDOER_USERNAME:$INSTALL_SUDOER_PASSWORD"
+    arch-chroot "$INSTALL_MOUNT" passwd --delete root
+else
+    arch-chroot "$INSTALL_MOUNT" chpasswd <<<"root:$INSTALL_ROOT_PASSWORD"
+fi
 
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 
 if [[ -f $INSTALL_CONFIG/install ]]; then
     arch-chroot-script "$INSTALL_MOUNT" "$INSTALL_CONFIG"/install
 fi
+
+genfstab -t UUID "$INSTALL_MOUNT" >>"$INSTALL_MOUNT"/etc/fstab

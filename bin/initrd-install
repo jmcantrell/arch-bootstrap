@@ -12,14 +12,14 @@ if [[ -v INSTALL_GPU_MODULES ]]; then
     modules+=("${gpu_modules[@]}")
 fi
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     hooks+=(keyboard keymap consolefont)
     files+=("$INSTALL_LUKS_ROOT_KEYFILE")
 fi
 
 hooks+=(block)
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     hooks+=(encrypt)
 fi
 

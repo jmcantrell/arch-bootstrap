@@ -6,7 +6,7 @@ localize
 
 partition
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     luks-format
     luks-open
 fi
@@ -19,12 +19,11 @@ swap-open
 fs-format
 fs-mount
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     luks-addkey
 fi
 
 packages-install
 chroot-install
-fstab-install
 initrd-install
 boot-install

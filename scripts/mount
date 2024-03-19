@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     luks-open
 fi
 

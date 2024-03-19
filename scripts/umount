@@ -6,6 +6,6 @@ fs-umount
 swap-close
 lvm-close
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     luks-close
 fi

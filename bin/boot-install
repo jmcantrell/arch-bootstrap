@@ -2,11 +2,16 @@
 
 set -euo pipefail
 
-preload_modules=(part_gpt part_msdos lvm)
-cmdline_linux_default=(quiet loglevel=3 consoleblank="$INSTALL_CONSOLEBLANK")
+preload_modules=(part_gpt lvm)
+
+if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
+    preload_modules+=(part_msdos)
+fi
+
+cmdline_linux_default=(quiet loglevel="$INSTALL_LOGLEVEL" consoleblank="$INSTALL_CONSOLEBLANK")
 cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
 
-if ((INSTALL_DEVICE_IS_ENCRYPTED)); then
+if ((INSTALL_DEVICE_IS_LUKS)); then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(cryptkey=rootfs:"$INSTALL_LUKS_ROOT_KEYFILE")

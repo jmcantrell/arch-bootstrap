@@ -2,7 +2,7 @@
 
 A mildly-opinionated Arch Linux installer.
 
-Aside from the opinions listed below, care is taken to ensure the resulting system closely matches what you would get from following the [official installation guide][installation-guide].
+Aside from the opinions listed below, care is taken to ensure the resulting system closely matches what you would get from following the [official installation guide][install].
 
 ## Opinions
 
@@ -36,10 +36,10 @@ The following services are installed and enabled:
 
 In general, the installation steps are as follows:
 
-1. Boot into the [Arch Linux ISO][archiso]
+1. Boot into the [Arch Linux ISO][iso]
 1. Change the directory to this repository
-1. Set `INSTALL_DEVICE` and any overrides (see [environment](#environment))
-1. Prepare the environment: `source ./scripts/prepare`
+1. Set required [environment](#environment) variables
+1. Prepare the environment: `. ./scripts/prepare`
 1. Run the installation script: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
@@ -52,7 +52,6 @@ The desired system is described by a [configuration directory](#configuration-fi
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a template for customization.
 The details of that system are controlled entirely by [environment](#environment).
 These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced manually from another file before sourcing the prepare script.
-The only required variable is `INSTALL_DEVICE`. There are reasonable defaults for everything else, but you'll probably want to set more.
 
 Once the necessary variable overrides are set, source the preparation script to fill in the blanks.
 If the script succeeds, a list of all the relevant environment variables and their values will be displayed as a sanity check (with sensitive information hidden).
@@ -60,14 +59,14 @@ If the script succeeds, a list of all the relevant environment variables and the
 To prepare the environment for the default configuration:
 
 ```sh
-source ./scripts/prepare
+. ./scripts/prepare
 ```
 
 To prepare the environment for a different configuration:
 
 ```sh
 export INSTALL_CONFIG=/path/to/config/dir
-source ./scripts/prepare
+. ./scripts/prepare
 ```
 
 ### Environment
@@ -76,27 +75,28 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 **NOTE**: Boolean values must be specified as `0` (false) or `1` (true).
 
+#### Required
+
+- `INSTALL_DEVICE`: The disk that will contain the new system (e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
+
 #### Metadata
 
-- `INSTALL_DEVICE`: The disk that will contain the new system (required, e.g. `/dev/sda`, **WARNING**: all data will be destroyed without confirmation)
 - `INSTALL_CONFIG`: The directory containing [configuration files](#configuration-files) (default: `./config`)
 - `INSTALL_MOUNT`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
-#### Host Identification
+#### Host Details
 
 - `INSTALL_HOSTNAME`: The system host name (default: `arch`)
-
-#### Locale
-
 - `INSTALL_LANG`: The default language (default: `en_US.UTF-8`)
 - `INSTALL_KEYMAP`: The default keyboard mapping (default: `us`)
-- `INSTALL_FONT`: The default console font (default: unset)
-- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the archiso environment, i.e. from `/etc/localtime`, or "UTC" if it's not set)
+- `INSTALL_FONT`: The default console font
+- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e. from `/etc/localtime`, or "UTC" if it's not set)
 - `INSTALL_REFLECTOR_COUNTRY`: The country used for pacman mirror selection by reflector (default: `US`, possible values: run `reflector --list-countries`)
 
-#### Privileged User
+#### Users
 
-- `INSTALL_SUDOER_USERNAME`: The primary privileged user's name (default: `admin`)
+- `INSTALL_ROOT_PASSWORD`: The root account password (only set if not setting a privileged user, default: `hunter2`)
+- `INSTALL_SUDOER_USERNAME`: The primary privileged user's name (if set, the root account will be disabled)
 - `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
 - `INSTALL_SUDOER_GROUP`: The group name used to determine privileged user status (default: `wheel`)
@@ -109,23 +109,24 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: automatically determined based on the presence of `/sys/firmware/efi/efivars`, possible values: `bios` or `uefi`)
 - `INSTALL_DEVICE_IS_SSD`: A boolean indicating whether or not the installation disk is a solid-state drive (default: automatically determined based on the value in `/sys/block/$(basename $INSTALL_DEVICE)/queue/rotational`, see `./bin/is-device-ssd`)
 - `INSTALL_NET_HAS_WIRELESS`: A boolean indicating the presence of a wireless network device (default: automatically determined based on the presence of network interfaces named like `wl*`, see `./bin/get-wireless-network-interfaces`)
+- `INSTALL_LOGLEVEL`: Kernel log level (default: `3`)
 - `INSTALL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled) (corresponds to the `consoleblank` kernel parameter)
 
 #### Partition Table
 
-**NOTE**: Values for partition start and end must be specified in a way that [parted(8)][parted] can understand
+**NOTE**: Values for partition start and end must be specified in a way that [sfdisk(8)][sfdisk] can understand
 
 - `INSTALL_BOOT_PART_NAME`: The name of the boot partition (default: `boot`)
-- `INSTALL_BOOT_PART_START`: The start of the boot partition (default: `0%`)
-- `INSTALL_BOOT_PART_END`: The end of the boot partition (default: `512MiB` for UEFI, `2MiB` for BIOS)
+- `INSTALL_BOOT_PART_START`: The start of the boot partition
+- `INSTALL_BOOT_PART_SIZE`: The end of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
 - `INSTALL_SYS_PART_NAME`: The name of the operating system partition (default: `sys`)
-- `INSTALL_SYS_PART_START`: The start of the operating system partition (default: `$INSTALL_BOOT_PART_END`)
-- `INSTALL_SYS_PART_END`: The end of the operating system partition (default: `100%`)
-- `INSTALL_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/boot/efi`)
+- `INSTALL_SYS_PART_START`: The start of the operating system partition
+- `INSTALL_SYS_PART_SIZE`: The end of the operating system partition (default: `+`)
+- `INSTALL_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
 #### Full Disk Encryption
 
-- `INSTALL_DEVICE_IS_ENCRYPTED`: A boolean dictating whether or not to use full disk encryption
+- `INSTALL_DEVICE_IS_LUKS`: A boolean dictating whether or not to use full disk encryption
 - `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
 - `INSTALL_LUKS_ROOT_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the root file system without asking for the passphrase again (default: `/crypto_keyfile.bin`, which is the default value used by `mkinitcpio`, occupies key slot 1)
 - `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
@@ -248,13 +249,13 @@ script=https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject
 
 The script will be run similarly to the curl method above as soon as the environment is ready.
 
-[archiso]: https://archlinux.org/download/
 [btrfs-subvolumes]: https://wiki.archlinux.org/title/Btrfs#Subvolumes
 [btrfs]: https://wiki.archlinux.org/title/Btrfs
 [early-kms-start]: https://wiki.archlinux.org/title/Kernel_mode_setting#Early_KMS_start
 [gpt]: https://wiki.archlinux.org/title/Partitioning#GUID_Partition_Table
 [grub]: https://wiki.archlinux.org/title/GRUB
-[installation-guide]: https://wiki.archlinux.org/title/Installation_guide
+[install]: https://wiki.archlinux.org/title/Installation_guide
+[iso]: https://archlinux.org/download/
 [iwd]: https://wiki.archlinux.org/title/Iwd
 [luks]: https://wiki.archlinux.org/title/Dm-crypt
 [lvcreate]: https://man.archlinux.org/man/core/lvm2/lvcreate.8.en
@@ -262,8 +263,8 @@ The script will be run similarly to the curl method above as soon as the environ
 [lvm]: https://wiki.archlinux.org/title/LVM
 [mdns]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS
 [microcode]: https://wiki.archlinux.org/title/Microcode
-[parted]: https://man.archlinux.org/man/extra/parted/parted.8.en
 [reflector]: https://wiki.archlinux.org/title/Reflector
+[sfdisk]: https://man.archlinux.org/man/sfdisk.8
 [ssd]: https://wiki.archlinux.org/title/Solid_state_drive
 [sshd]: https://wiki.archlinux.org/title/OpenSSH#Server_usage
 [systemd-networkd]: https://wiki.archlinux.org/title/Systemd-networkd

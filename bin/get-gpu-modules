@@ -13,7 +13,7 @@ while IFS=: read -r key value; do
         found_gpu=0
     elif ((found_gpu)) && [[ $key == Module ]]; then
         # This section is a GPU and a module is in use.
-        tr -d '[:blank:]' <<<"$value"
+        tr -d '[:space:]' <<<"$value"
     elif [[ $key == Class && $value =~ .*(VGA|3D|Display).* ]]; then
         # This section is a GPU, so start looking for a module.
         found_gpu=1

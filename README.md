@@ -95,7 +95,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Users
 
-- `INSTALL_ROOT_PASSWORD`: The root account password (only set if not setting a privileged user, default: `hunter2`)
+- `INSTALL_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
 - `INSTALL_SUDOER_USERNAME`: The primary privileged user's name (if set, the root account will be disabled)
 - `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
@@ -186,7 +186,7 @@ By default, `./config/packages` does not exist, i.e., no extra packages are inst
 
 #### `$INSTALL_CONFIG/install`
 
-This script, if it exists, will be run in a chroot just after packages have been installed.
+This script, if it exists, will be run in a chroot just before finalization steps (boot loader configuration and initrd creation)
 
 #### `$INSTALL_CONFIG/templates/*`
 

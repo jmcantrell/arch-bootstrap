@@ -29,6 +29,8 @@ arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /e
 arch-chroot "$INSTALL_MOUNT" hwclock --systohc --utc
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service
 
+genfstab -t UUID "$INSTALL_MOUNT" >>"$INSTALL_MOUNT"/etc/fstab
+
 ln -vsfn /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-{networkd,resolved}.service
 
@@ -71,5 +73,3 @@ arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 if [[ -f $INSTALL_CONFIG/install ]]; then
     arch-chroot-script "$INSTALL_MOUNT" "$INSTALL_CONFIG"/install
 fi
-
-genfstab -t UUID "$INSTALL_MOUNT" >>"$INSTALL_MOUNT"/etc/fstab

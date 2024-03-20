@@ -49,15 +49,16 @@ if ((INSTALL_NET_HAS_WIRELESS)); then
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 
-if [[ -v INSTALL_SUDOER_USERNAME ]]; then
-    {
-        printf "%%%s ALL=(ALL) " "$INSTALL_SUDOER_GROUP"
-        if ((INSTALL_SUDOER_GROUP_NOPASSWD)); then
-            printf "NOPASSWD:"
-        fi
-        printf "ALL\n"
-    } >"$INSTALL_MOUNT"/etc/sudoers.d/group
+if [[ -v INSTALL_SUDOER_GROUP ]]; then
+    entry="%$INSTALL_SUDOER_GROUP ALL=(ALL) "
+    if ((INSTALL_SUDOER_GROUP_NOPASSWD)); then
+        entry+="NOPASSWD:"
+    fi
+    entry+="ALL"
+    printf "%s\n" "$entry" >"$INSTALL_MOUNT"/etc/sudoers.d/group
+fi
 
+if [[ -v INSTALL_SUDOER_USERNAME ]]; then
     arch-chroot "$INSTALL_MOUNT" useradd \
         --create-home --groups users,"$INSTALL_SUDOER_GROUP" \
         ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \

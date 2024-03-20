@@ -2,7 +2,9 @@
 
 set -euo pipefail
 
-loadkeys "$INSTALL_KEYMAP"
+if [[ -v INSTALL_KEYMAP ]]; then
+    loadkeys "$INSTALL_KEYMAP"
+fi
 
 if [[ -v INSTALL_FONT ]]; then
     setfont "$INSTALL_FONT"

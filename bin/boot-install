@@ -14,7 +14,7 @@ cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
 if ((INSTALL_DEVICE_IS_LUKS)); then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
-    cmdline_linux+=(cryptkey=rootfs:"$INSTALL_LUKS_ROOT_KEYFILE")
+    cmdline_linux+=(cryptkey=rootfs:"$INSTALL_LUKS_KEYFILE")
     cryptdevice=UUID=$(blkid -s UUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME
     if ((INSTALL_DEVICE_IS_SSD)); then
         cryptdevice+=':allow-discards'

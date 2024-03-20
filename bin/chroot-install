@@ -70,6 +70,8 @@ fi
 
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 
-if [[ -f $INSTALL_CONFIG/install ]]; then
-    arch-chroot-script "$INSTALL_MOUNT" "$INSTALL_CONFIG"/install
+if [[ -f $INSTALL_CONFIG/install && -x $INSTALL_CONFIG/install ]]; then
+    cp "$INSTALL_CONFIG"/install "$INSTALL_MOUNT"/script
+    arch-chroot "$INSTALL_MOUNT" /script
+    rm "$INSTALL_MOUNT"/script
 fi

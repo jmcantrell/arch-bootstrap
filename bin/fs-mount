@@ -6,7 +6,7 @@ while read -r name path; do
     subvolume_mount=$INSTALL_MOUNT/${path#/}
     mkdir -p "$subvolume_mount"
     mount --verbose --options \
-        "${INSTALL_FS_MOUNT_OPTIONS:+$INSTALL_FS_MOUNT_OPTIONS,}subvol=$name" \
+        "${INSTALL_FS_ROOT_OPTIONS:+$INSTALL_FS_ROOT_OPTIONS,}subvol=$name" \
         "$INSTALL_ROOT_DEVICE" "$subvolume_mount"
 done < <(list-subvolumes)
 

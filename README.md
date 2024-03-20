@@ -20,9 +20,7 @@ The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (
 
 Any wireless connections created in the installation environment will be persisted to the installed system.
 
-A privileged user, i.e., a user allowed to use `sudo`, will be created and the root account will be disabled.
-
-The following services are installed and enabled:
+The following services/timers are enabled:
 
 - [fstrim][ssd] (if installation disk is a solid-state drive)
 - [iwd] (if wireless devices are present)
@@ -51,29 +49,31 @@ If all is well, `poweroff` and eject the installation media.
 The desired system is described by a [configuration directory](#configuration-files).
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a template for customization.
 The details of that system are controlled entirely by [environment](#environment).
-These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced manually from another file before sourcing the prepare script.
+These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced from another file before sourcing the prepare script.
 
 Once the necessary variable overrides are set, source the preparation script to fill in the blanks.
 If the script succeeds, a list of all the relevant environment variables and their values will be displayed as a sanity check (with sensitive information hidden).
 
 To prepare the environment for the default configuration:
-
 ```sh
 . ./scripts/prepare
 ```
 
 To prepare the environment for a different configuration:
-
 ```sh
-export INSTALL_CONFIG=/path/to/config/dir
-. ./scripts/prepare
+. ./scripts/prepare /path/to/config/dir
+```
+
+Which is equivalent to:
+```sh
+INSTALL_CONFIG=/path/to/config/dir . ./scripts/prepare
 ```
 
 ### Environment
 
 The following variables can be defined anywhere, as long as they're exported in the environment used to perform the installation.
 
-**NOTE**: Boolean values must be specified as `0` (false) or `1` (true).
+**NOTE**: Boolean values are either set (true) or unset (false).
 
 #### Required
 
@@ -90,17 +90,19 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_LANG`: The default language (default: `en_US.UTF-8`)
 - `INSTALL_KEYMAP`: The default keyboard mapping (default: `us`)
 - `INSTALL_FONT`: The default console font
-- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e. from `/etc/localtime`, or "UTC" if it's not set)
-- `INSTALL_REFLECTOR_COUNTRY`: The country used for pacman mirror selection by reflector (default: `US`, possible values: run `reflector --list-countries`)
+- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
+- `INSTALL_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
+- `INSTALL_NUM_PARALLEL_DOWNLOADS`: The number of parallel downloads to perform when downloading packages (set to a positive integer, or `0` to use the default value)
 
 #### Users
 
 - `INSTALL_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
-- `INSTALL_SUDOER_USERNAME`: The primary privileged user's name (if set, the root account will be disabled)
+- `INSTALL_SUDOER_LOGIN`: The primary privileged user's login (if set, the root account will be disabled)
 - `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
-- `INSTALL_SUDOER_GROUP`: The group name used to determine privileged user status (default: `wheel`)
-- `INSTALL_SUDOER_GROUP_NOPASSWD`: A boolean indicating that users in the group `$INSTALL_SUDOER_GROUP` should be allowed to use `sudo` without authenticating
+- `INSTALL_SUDOER_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
+- `INSTALL_SUDOER_GROUP_NOPASSWD`: A boolean indicating that users in the group should be allowed to use `sudo` without authenticating
+- `INSTALL_SUDOER_GROUP_SPEC`: The sudoer specification that will be put in `/etc/sudoers.d/group` (default: `%<group> ALL=(ALL) ALL` or `%<group> ALL=(ALL) NOPASSWD:ALL` depending on the previous setting)
 
 #### Hardware
 
@@ -108,27 +110,27 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/get-gpu-modules`, multiple values should be separated with a space)
 - `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: automatically determined based on the presence of `/sys/firmware/efi/efivars`, possible values: `bios` or `uefi`)
 - `INSTALL_DEVICE_IS_SSD`: A boolean indicating whether or not the installation disk is a solid-state drive (default: automatically determined based on the value in `/sys/block/$(basename $INSTALL_DEVICE)/queue/rotational`, see `./bin/is-device-ssd`)
-- `INSTALL_NET_HAS_WIRELESS`: A boolean indicating the presence of a wireless network device (default: automatically determined based on the presence of network interfaces named like `wl*`, see `./bin/get-wireless-network-interfaces`)
+- `INSTALL_NET_USE_WIRELESS`: If set, enable wireless networking (default: depends on the presence of network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
 - `INSTALL_LOGLEVEL`: Kernel log level (default: `3`)
-- `INSTALL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled) (corresponds to the `consoleblank` kernel parameter)
+- `INSTALL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
 
 #### Partition Table
 
-**NOTE**: Values for partition start and end must be specified in a way that [sfdisk(8)][sfdisk] can understand
+**NOTE**: Values for partition start and size must be specified in a way that [sfdisk(8)][sfdisk] can understand
 
 - `INSTALL_PART_BOOT_NAME`: The name of the boot partition (default: `boot`)
 - `INSTALL_PART_BOOT_START`: The start of the boot partition
 - `INSTALL_PART_BOOT_SIZE`: The end of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
 - `INSTALL_PART_SYS_NAME`: The name of the operating system partition (default: `sys`)
 - `INSTALL_PART_SYS_START`: The start of the operating system partition
-- `INSTALL_PART_SYS_SIZE`: The end of the operating system partition (default: `+`)
+- `INSTALL_PART_SYS_SIZE`: The end of the operating system partition (default: `+`, i.e., use all remaining space)
 - `INSTALL_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
 #### Full Disk Encryption
 
-- `INSTALL_DEVICE_IS_LUKS`: A boolean dictating whether or not to use full disk encryption
+- `INSTALL_DEVICE_USE_LUKS`: A boolean dictating whether or not to use full disk encryption
 - `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
-- `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, which is the default value used by `mkinitcpio`, occupies key slot 1)
+- `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/.keyfile`, occupies key slot 1)
 - `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
 #### Volume Management
@@ -145,7 +147,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 - `INSTALL_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 - `INSTALL_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
-- `INSTALL_FS_MOUNT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
+- `INSTALL_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
 
 ### Configuration Files
 
@@ -166,7 +168,6 @@ If it's executable, it should output one subvolume mapping per line to stdout.
 If it's a regular file, it should contain one subvolume mapping per line with no blank lines or comments.
 
 Every line must be of the form:
-
 ```
 name /path/to/subvolume
 ```
@@ -195,12 +196,11 @@ This directory tree contains files necessary for installation, but with potentia
 #### `$INSTALL_CONFIG/files/*`
 
 This directory tree, if it exists, contains files that will be added unchanged to the installation.
-It will be `rsync`ed to `/` with the permissions (but not ownership) intact.
+It will be copied to `/` with the permissions (but not ownership) intact.
 
 ## Installation
 
 After the preparation script is sourced, the only other necessary step is to run the installation script:
-
 ```sh
 ./scripts/install
 ```
@@ -211,7 +211,6 @@ As `./bin` is now in `PATH`, feel free to execute each step separately to verify
 
 The commands can also be useful outside of the context of installation.
 For example, the following can be used to mount an existing system (provided the configuration directory and environment match):
-
 ```sh
 luks-open
 swap-open
@@ -228,13 +227,11 @@ It does the following:
 - Fetches an archive of this repository into `/root` (if necessary)
 
 If you already have access to the repository in the live environment, just run the script:
-
 ```sh
 ./scripts/inject
 ```
 
 If you need to download the repository too, `curl` the script into bash:
-
 ```sh
 curl https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject | bash -s
 ```
@@ -242,7 +239,6 @@ curl https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject | bas
 If the network is available automatically after booting, you could also run the script by using the `script` boot parameter, recognized by the Arch Linux ISO.
 
 When you see the GRUB menu as the live environment is booting, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
-
 ```
 script=https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject
 ```

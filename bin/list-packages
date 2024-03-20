@@ -2,42 +2,34 @@
 
 set -euo pipefail
 
-packages=$(mktemp -t packages.XXXXXXXXXX)
-printf -v cleanup "rm %q" "$packages"
-trap '$cleanup' EXIT
-
-add_packages() {
-    printf "%s\n" "$@" >>"$packages"
-}
-
-add_packages \
-    base \
-    btrfs-progs \
-    linux \
-    linux-firmware \
-    lvm2 \
-    mkinitcpio \
-    openssh \
-    reflector \
+packages=(
+    base
+    btrfs-progs
+    lvm2
+    openssh
+    reflector
     sudo
+)
 
 case $INSTALL_BOOT_FIRMWARE in
-bios) add_packages grub-bios ;;
-uefi) add_packages grub efibootmgr ;;
+bios) packages+=(grub-bios) ;;
+uefi) packages+=(grub efibootmgr) ;;
 esac
 
-if ((INSTALL_NET_HAS_WIRELESS)); then
-    add_packages iwd
+if ! systemd-detect-virt -q --container; then
+    packages+=(linux)
+fi
+
+if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
+    packages+=(iwd)
 fi
 
 if [[ -v INSTALL_CPU_VENDOR ]]; then
-    add_packages "$INSTALL_CPU_VENDOR"-ucode
+    packages+=("$INSTALL_CPU_VENDOR"-ucode)
 fi
 
 if [[ -v INSTALL_SUDOER_SHELL ]]; then
-    add_packages "${INSTALL_SUDOER_SHELL##*/}"
+    packages+=("${INSTALL_SUDOER_SHELL##*/}")
 fi
 
-list "$INSTALL_CONFIG"/packages >>"$packages"
-
-sort -u "$packages"
+sort -u <(list "$INSTALL_CONFIG"/packages) <(printf "%s\n" "${packages[@]}")

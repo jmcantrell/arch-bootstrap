@@ -2,9 +2,6 @@
 
 set -euo pipefail
 
-timedatectl
-hwclock --systohc
-
 if [[ -v INSTALL_KEYMAP ]]; then
     loadkeys "$INSTALL_KEYMAP"
 fi
@@ -14,12 +11,12 @@ if [[ -v INSTALL_FONT ]]; then
 fi
 
 # Update the pacman mirrorlist, if possible.
-if ping -q -w1 -c1 1.1.1.1 &>/dev/null; then
+if ping -q -w1 -c1 archlinux.org &>/dev/null; then
     reflector \
         --save /etc/pacman.d/mirrorlist \
         --protocol https --latest 5 --sort age \
-        --country "$INSTALL_REFLECTOR_COUNTRY"
+        --country "$INSTALL_MIRROR_COUNTRY"
 else
-    # If there's no network, stop trying to update it automatically.
+    # If there's no network access, stop trying to update the mirror list.
     systemctl stop reflector.service
 fi

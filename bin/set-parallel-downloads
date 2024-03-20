@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+config_file=${1:?missing config file}
+count=${2:-0}
+
+config_key=ParallelDownloads
+
+sed -i "/^#$config_key\\b/s/#//" "$config_file"
+
+if ((count > 0)); then
+    sed -i "/^$config_key\\b/s/[[:digit:]]\+/$count/" "$config_file"
+fi

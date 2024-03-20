@@ -4,8 +4,8 @@ set -euo pipefail
 
 binaries=(/usr/bin/btrfs)
 modules=()
-files=()
 hooks=(base udev autodetect modconf kms)
+files=()
 
 if [[ -v INSTALL_GPU_MODULES ]]; then
     read -ra gpu_modules <<<"$INSTALL_GPU_MODULES"

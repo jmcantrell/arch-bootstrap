@@ -2,10 +2,12 @@
 
 set -euo pipefail
 
-keyfile=${1:?missing key file}
+keyfile=$INSTALL_MOUNT/${INSTALL_LUKS_KEYFILE#/}
 
 mkdir -p "$(dirname "$keyfile")"
 
 umask 777
 
 dd bs=512 count=4 if=/dev/random of="$keyfile" iflag=fullblock
+
+printf "%s" "$keyfile"

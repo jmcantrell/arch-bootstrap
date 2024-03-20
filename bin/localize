@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+timedatectl
+hwclock --systohc
+
 if [[ -v INSTALL_KEYMAP ]]; then
     loadkeys "$INSTALL_KEYMAP"
 fi
@@ -10,10 +13,8 @@ if [[ -v INSTALL_FONT ]]; then
     setfont "$INSTALL_FONT"
 fi
 
-timedatectl set-ntp true
-
 # Update the pacman mirrorlist, if possible.
-if ping -q -w1 -c1 1.1.1.1; then
+if ping -q -w1 -c1 1.1.1.1 &>/dev/null; then
     reflector \
         --save /etc/pacman.d/mirrorlist \
         --protocol https --latest 5 --sort age \

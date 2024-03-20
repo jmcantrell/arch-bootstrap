@@ -2,12 +2,14 @@
 
 set -euo pipefail
 
-if [[ -v INSTALL_HOSTNAME ]]; then
-    printf "%s\n" "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
-fi
+genfstab -t UUID "$INSTALL_MOUNT" >"$INSTALL_MOUNT"/etc/fstab
 
 if [[ -d $INSTALL_CONFIG/files ]]; then
     rsync -v --archive --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"
+fi
+
+if [[ -v INSTALL_HOSTNAME ]]; then
+    printf "%s\n" "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
 fi
 
 if [[ -v INSTALL_LANG ]]; then
@@ -16,20 +18,19 @@ if [[ -v INSTALL_LANG ]]; then
     arch-chroot "$INSTALL_MOUNT" locale-gen
 fi
 
-{
-    if [[ -v INSTALL_KEYMAP ]]; then
-        printf "KEYMAP=%s\n" "$INSTALL_KEYMAP"
-    fi
-    if [[ -v INSTALL_FONT ]]; then
-        print "FONT=%s\n" "$INSTALL_FONT"
-    fi
-} >"$INSTALL_MOUNT"/etc/vconsole.conf
+rm -f "$INSTALL_MOUNT"/etc/vconsole.conf
+
+if [[ -v INSTALL_KEYMAP ]]; then
+    printf "KEYMAP=%s\n" "$INSTALL_KEYMAP" >>"$INSTALL_MOUNT"/etc/vconsole.conf
+fi
+
+if [[ -v INSTALL_FONT ]]; then
+    print "FONT=%s\n" "$INSTALL_FONT" >>"$INSTALL_MOUNT"/etc/vconsole.conf
+fi
 
 arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
-arch-chroot "$INSTALL_MOUNT" hwclock --systohc --utc
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service
-
-genfstab -t UUID "$INSTALL_MOUNT" >>"$INSTALL_MOUNT"/etc/fstab
+arch-chroot "$INSTALL_MOUNT" hwclock --systohc
 
 ln -vsfn /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-{networkd,resolved}.service

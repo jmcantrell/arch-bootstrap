@@ -116,12 +116,12 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 **NOTE**: Values for partition start and end must be specified in a way that [sfdisk(8)][sfdisk] can understand
 
-- `INSTALL_BOOT_PART_NAME`: The name of the boot partition (default: `boot`)
-- `INSTALL_BOOT_PART_START`: The start of the boot partition
-- `INSTALL_BOOT_PART_SIZE`: The end of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
-- `INSTALL_SYS_PART_NAME`: The name of the operating system partition (default: `sys`)
-- `INSTALL_SYS_PART_START`: The start of the operating system partition
-- `INSTALL_SYS_PART_SIZE`: The end of the operating system partition (default: `+`)
+- `INSTALL_PART_BOOT_NAME`: The name of the boot partition (default: `boot`)
+- `INSTALL_PART_BOOT_START`: The start of the boot partition
+- `INSTALL_PART_BOOT_SIZE`: The end of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
+- `INSTALL_PART_SYS_NAME`: The name of the operating system partition (default: `sys`)
+- `INSTALL_PART_SYS_START`: The start of the operating system partition
+- `INSTALL_PART_SYS_SIZE`: The end of the operating system partition (default: `+`)
 - `INSTALL_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
 #### Full Disk Encryption

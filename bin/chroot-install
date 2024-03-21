@@ -4,8 +4,11 @@ set -euo pipefail
 
 genfstab -t UUID "$INSTALL_MOUNT" >"$INSTALL_MOUNT"/etc/fstab
 
+rsync -va {,"$INSTALL_MOUNT"}/etc/systemd/network/
+rsync -va {,"$INSTALL_MOUNT"}/etc/systemd/network.conf.d/
+
 if [[ -d $INSTALL_CONFIG/files ]]; then
-    rsync -v --archive --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"/
+    rsync -va --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"/
 fi
 
 if [[ -v INSTALL_HOSTNAME ]]; then

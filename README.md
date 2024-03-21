@@ -92,17 +92,17 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Packages
 
 - `INSTALL_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
-- `INSTALL_PARALLEL_DOWNLOADS`: If set, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `on` or `5`)
+- `INSTALL_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `0` or `5`)
 
 #### Users
 
 - `INSTALL_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
-- `INSTALL_SUDOER_LOGIN`: The primary privileged user's login (if set, the root account will be disabled)
+- `INSTALL_SUDOER_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will be disabled)
 - `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
-- `INSTALL_SUDOER_USE_GROUP`: If set, the sudoer group will be configured, regardless of whether or not a privileged user is created.
+- `INSTALL_SUDOER_USE_GROUP`: If set to a non-empty value, the sudoer group will be configured, regardless of whether or not a privileged user is created.
 - `INSTALL_SUDOER_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
-- `INSTALL_SUDOER_GROUP_NOPASSWD`: If set, users in the group will be allowed to use `sudo` without authenticating
+- `INSTALL_SUDOER_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to use `sudo` without authenticating
 - `INSTALL_SUDOER_GROUP_SPEC`: The sudoer specification that will be put in `/etc/sudoers.d/group` (default: `%<group> ALL=(ALL) ALL` or `%<group> ALL=(ALL) NOPASSWD:ALL` depending on the previous setting)
 
 #### Hardware
@@ -110,8 +110,8 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/get-cpu-vendor`, choices: `intel` or `amd`)
 - `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/get-gpu-modules`, multiple values should be separated with a space)
 - `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
-- `INSTALL_DEVICE_USE_TRIM`: If set, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/is-device-ssd`)
-- `INSTALL_NET_USE_WIRELESS`: If set, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
+- `INSTALL_DEVICE_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/is-device-ssd`)
+- `INSTALL_NET_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
 
 #### Partition Table
 
@@ -125,7 +125,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Full Disk Encryption
 
-- `INSTALL_DEVICE_USE_LUKS`: If set, use full disk encryption for `$INSTALL_DEVICE`
+- `INSTALL_DEVICE_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$INSTALL_DEVICE`
 - `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
 - `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
@@ -135,10 +135,10 @@ The following variables can be defined anywhere, as long as they're exported in 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
 
 - `INSTALL_LVM_VG_NAME`: The volume group name (default: `sys`)
-- `INSTALL_LVM_SWAP_LV_NAME`: The name for the swap logical volume (default: `swap`)
-- `INSTALL_LVM_SWAP_LV_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/get-memory-size`)
-- `INSTALL_LVM_ROOT_LV_NAME`: The name for the root logical volume (default: `root`)
-- `INSTALL_LVM_ROOT_LV_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
+- `INSTALL_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
+- `INSTALL_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/get-memory-size`)
+- `INSTALL_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
+- `INSTALL_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 
 #### File System
 
@@ -149,8 +149,8 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Kernel
 
 - `INSTALL_KERNEL_VARIANT`: [Kernel variant][kernel] to use (e.g., `zen` or `lts`)
-- `INSTALL_KERNEL_QUIET`: If set, include `quiet` in kernel parameters
-- `INSTALL_KERNEL_LOGLEVEL`: Kernel log level (default: `3`)
+- `INSTALL_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
+- `INSTALL_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `INSTALL_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
 - `INSTALL_KERNEL_EXTRA_PARAMS`: Extra kernel parameters to include 
 
@@ -170,9 +170,10 @@ This should **not** include the root subvolume, as its presence and mount point 
 It will always be created and mounted at `/`.
 
 If it's executable, it should output one subvolume mapping per line to stdout.
-If it's a regular file, it should contain one subvolume mapping per line with no blank lines or comments.
+If it's a regular file, it should contain one subvolume mapping per line.
+In either case, empty lines or text beginning with a `#` will be ignored.
 
-Every line must be of the form:
+A submodule mapping must be of the form:
 ```
 name /path/to/subvolume
 ```
@@ -184,7 +185,8 @@ See `./config/subvolumes` for the default list.
 This file, if it exists, defines the extra packages that will be installed on the new system.
 
 If it's executable, it should output one package per line to stdout.
-If it's a regular file, it should contain one package per line with no blank lines or comments.
+If it's a regular file, it should contain one package per line.
+In either case, empty lines or text beginning with a `#` will be ignored.
 
 Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/list-packages`).
 

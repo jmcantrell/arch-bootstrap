@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cryptsetup erase -q "$INSTALL_LUKS_DEVICE"

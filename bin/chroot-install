@@ -39,7 +39,7 @@ export REFLECTOR_COUNTRY=$INSTALL_MIRROR_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable reflector.{service,timer}
 
-if [[ -v INSTALL_DEVICE_IS_SSD ]]; then
+if [[ -v INSTALL_DEVICE_USE_TRIM ]]; then
     sed -i '/[[:space:]]*#\?[[:space:]]*issue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$INSTALL_MOUNT"/etc/lvm/lvm.conf
     arch-chroot "$INSTALL_MOUNT" systemctl enable fstrim.timer
 fi
@@ -47,6 +47,11 @@ fi
 if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
     rsync -v --recursive /var/lib/iwd/ "$INSTALL_MOUNT"/var/lib/iwd/
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
+fi
+
+if [[ -v INSTALL_SUDOER_LOGIN || -v INSTALL_SUDOER_USE_GROUP ]]; then
+    arch-chroot "$INSTALL_MOUNT" groupadd -f "$INSTALL_SUDOER_GROUP_NAME"
+    printf "%s\n" "$INSTALL_SUDOER_GROUP_SPEC" >"$INSTALL_MOUNT"/etc/sudoers.d/group
 fi
 
 if [[ -v INSTALL_SUDOER_LOGIN ]]; then
@@ -59,10 +64,6 @@ if [[ -v INSTALL_SUDOER_LOGIN ]]; then
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
     arch-chroot "$INSTALL_MOUNT" chpasswd <<<"root:$INSTALL_ROOT_PASSWORD"
-fi
-
-if [[ -v INSTALL_SUDOER_GROUP_SPEC ]]; then
-    printf "%s\n" "$INSTALL_SUDOER_GROUP_SPEC" >"$INSTALL_MOUNT"/etc/sudoers.d/group
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then

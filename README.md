@@ -20,6 +20,8 @@ The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (
 
 Any wireless connections created in the installation environment will be persisted to the installed system.
 
+Optionally, a privileged user can be created, in which case the root account will be disabled.
+
 The following services/timers are enabled:
 
 - [fstrim][ssd] (if installation disk is a solid-state drive)
@@ -56,31 +58,26 @@ If the script succeeds, a list of all the relevant environment variables and the
 
 To prepare the environment for the default configuration:
 ```sh
-. ./scripts/prepare
+source ./scripts/prepare
 ```
 
 To prepare the environment for a different configuration:
 ```sh
-. ./scripts/prepare /path/to/config/dir
+source ./scripts/prepare /path/to/config/dir
 ```
 
 Which is equivalent to:
 ```sh
-INSTALL_CONFIG=/path/to/config/dir . ./scripts/prepare
+INSTALL_CONFIG=/path/to/config/dir source ./scripts/prepare
 ```
 
 ### Environment
 
 The following variables can be defined anywhere, as long as they're exported in the environment used to perform the installation.
 
-**NOTE**: Boolean values are either set (true) or unset (false).
-
-#### Required
-
-- `INSTALL_DEVICE`: The disk that will contain the new system (e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
-
 #### Metadata
 
+- `INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
 - `INSTALL_CONFIG`: The directory containing [configuration files](#configuration-files) (default: `./config`)
 - `INSTALL_MOUNT`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
@@ -91,8 +88,11 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_KEYMAP`: The default keyboard mapping (default: `us`)
 - `INSTALL_FONT`: The default console font
 - `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
+
+#### Packages
+
 - `INSTALL_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
-- `INSTALL_NUM_PARALLEL_DOWNLOADS`: The number of parallel downloads to perform when downloading packages (set to a positive integer, or `0` to use the default value)
+- `INSTALL_PARALLEL_DOWNLOADS`: If set, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads
 
 #### Users
 
@@ -101,18 +101,16 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
 - `INSTALL_SUDOER_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
-- `INSTALL_SUDOER_GROUP_NOPASSWD`: A boolean indicating that users in the group should be allowed to use `sudo` without authenticating
+- `INSTALL_SUDOER_GROUP_NOPASSWD`: If set, users in the group will be allowed to use `sudo` without authenticating
 - `INSTALL_SUDOER_GROUP_SPEC`: The sudoer specification that will be put in `/etc/sudoers.d/group` (default: `%<group> ALL=(ALL) ALL` or `%<group> ALL=(ALL) NOPASSWD:ALL` depending on the previous setting)
 
 #### Hardware
 
-- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: automatically determined from `vendor_id` in `/proc/cpuinfo`, see `./bin/get-cpu-vendor`, possible values: `intel` or `amd`)
+- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/get-cpu-vendor`, choices: `intel` or `amd`)
 - `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/get-gpu-modules`, multiple values should be separated with a space)
-- `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: automatically determined based on the presence of `/sys/firmware/efi/efivars`, possible values: `bios` or `uefi`)
-- `INSTALL_DEVICE_IS_SSD`: A boolean indicating whether or not the installation disk is a solid-state drive (default: automatically determined based on the value in `/sys/block/$(basename $INSTALL_DEVICE)/queue/rotational`, see `./bin/is-device-ssd`)
-- `INSTALL_NET_USE_WIRELESS`: If set, enable wireless networking (default: depends on the presence of network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
-- `INSTALL_LOGLEVEL`: Kernel log level (default: `3`)
-- `INSTALL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
+- `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
+- `INSTALL_DEVICE_USE_TRIM`: If set, enable trim support where possible (default: set if device is an SSD, see `./bin/is-device-ssd`)
+- `INSTALL_NET_USE_WIRELESS`: If set, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
 
 #### Partition Table
 
@@ -128,9 +126,9 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Full Disk Encryption
 
-- `INSTALL_DEVICE_USE_LUKS`: A boolean dictating whether or not to use full disk encryption
+- `INSTALL_DEVICE_USE_LUKS`: Set to indicate use of full disk encryption for `$INSTALL_DEVICE`
 - `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
-- `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/.keyfile`, occupies key slot 1)
+- `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1)
 - `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
 #### Volume Management
@@ -139,7 +137,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 - `INSTALL_LVM_VG_NAME`: The volume group name (default: `vg`)
 - `INSTALL_LVM_SWAP_LV_NAME`: The name for the swap logical volume (default: `swap`)
-- `INSTALL_LVM_SWAP_LV_SIZE`: The size of the swap logical volume (default: the same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/get-memory-size`)
+- `INSTALL_LVM_SWAP_LV_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/get-memory-size`)
 - `INSTALL_LVM_ROOT_LV_NAME`: The name for the root logical volume (default: `root`)
 - `INSTALL_LVM_ROOT_LV_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 
@@ -148,6 +146,14 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 - `INSTALL_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
 - `INSTALL_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
+
+#### Kernel
+
+- `INSTALL_KERNEL_VARIANT`: Kernel variant to use (e.g., `zen` or `lts`)
+- `INSTALL_KERNEL_QUIET`: If set, include `quiet` in kernel parameters
+- `INSTALL_KERNEL_LOGLEVEL`: Kernel log level (default: `3`)
+- `INSTALL_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
+- `INSTALL_KERNEL_EXTRA_PARAMS`: Extra kernel parameters to include 
 
 ### Configuration Files
 

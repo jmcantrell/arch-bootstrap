@@ -6,8 +6,8 @@ pacman-key --init
 pacman-key --populate
 pacman --sync --refresh --needed --noconfirm archlinux-keyring
 
-if [[ -v INSTALL_NUM_PARALLEL_DOWNLOADS ]]; then
-    set-parallel-downloads /etc/pacman.conf "$INSTALL_NUM_PARALLEL_DOWNLOADS"
+if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
+    set-parallel-downloads /etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
 fi
 
 list-packages | pacstrap "$INSTALL_MOUNT" -

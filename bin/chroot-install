@@ -65,8 +65,8 @@ if [[ -v INSTALL_SUDOER_GROUP_SPEC ]]; then
     printf "%s\n" "$INSTALL_SUDOER_GROUP_SPEC" >"$INSTALL_MOUNT"/etc/sudoers.d/group
 fi
 
-if [[ -v INSTALL_NUM_PARALLEL_DOWNLOADS ]]; then
-    set-parallel-downloads "$INSTALL_MOUNT"/etc/pacman.conf "$INSTALL_NUM_PARALLEL_DOWNLOADS"
+if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
+    set-parallel-downloads "$INSTALL_MOUNT"/etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
 fi
 
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service

@@ -4,21 +4,19 @@ set -euo pipefail
 
 packages=(
     base
-    btrfs-progs
     lvm2
+    btrfs-progs
     openssh
     reflector
     sudo
 )
 
+packages+=(linux"${INSTALL_KERNEL_VARIANT:+-$INSTALL_KERNEL_VARIANT}")
+
 case $INSTALL_BOOT_FIRMWARE in
 bios) packages+=(grub-bios) ;;
 uefi) packages+=(grub efibootmgr) ;;
 esac
-
-if ! systemd-detect-virt -q --container; then
-    packages+=(linux)
-fi
 
 if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
     packages+=(iwd)

@@ -4,7 +4,12 @@ set -euo pipefail
 
 preload_modules=(part_{gpt,msdos} lvm)
 
-cmdline_linux_default=(quiet loglevel="$INSTALL_LOGLEVEL" consoleblank="$INSTALL_CONSOLEBLANK")
+cmdline_linux_default=(
+    ${INSTALL_KERNEL_QUIET:+quiet}
+    loglevel="$INSTALL_KERNEL_LOGLEVEL"
+    consoleblank="$INSTALL_KERNEL_CONSOLEBLANK"
+)
+
 cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
 
 if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
@@ -21,6 +26,11 @@ fi
 export GRUB_PRELOAD_MODULES=${preload_modules[*]}
 export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
+
+if [[ -v INSTALL_KERNEL_EXTRA_PARAMS ]]; then
+    GRUB_CMDLINE_LINUX_DEFAULT+=" $INSTALL_KERNEL_EXTRA_PARAMS"
+fi
+
 template-install /etc/default/grub
 
 arch-chroot "$INSTALL_MOUNT" grub-install "$INSTALL_DEVICE" --recheck

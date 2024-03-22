@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+lvm-remove
+
+if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
+    luks-erase
+fi

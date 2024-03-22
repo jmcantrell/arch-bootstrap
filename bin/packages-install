@@ -6,6 +6,10 @@ pacman-key --init
 pacman-key --populate
 pacman --sync --refresh --needed --noconfirm archlinux-keyring
 
+if [[ -v INSTALL_PACKAGE_CACHE ]]; then
+    rsync -avz "${INSTALL_PACKAGE_CACHE%%/}"/ "$INSTALL_MOUNT"/var/cache/pacman/
+fi
+
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
     set-parallel-downloads /etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
 fi

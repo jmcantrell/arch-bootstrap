@@ -40,7 +40,9 @@ In general, the installation steps are as follows:
 1. Change the directory to this repository
 1. Set required [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
-1. Run the installation script: `./scripts/install`
+1. Optionally, localize the environment: `./scripts/localize`
+1. Create and mount the system: `./scripts/create`
+1. Add packages and set up operating system: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
 
@@ -91,6 +93,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Packages
 
+- `INSTALL_PACKAGE_CACHE`: If set to a non-empty value, it will be copied to the package cache of the system being installed (e.g., `/mnt/var/cache/pacman` or `user@host:/var/cache/pacman`)
 - `INSTALL_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
 - `INSTALL_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `0` or `5`)
 

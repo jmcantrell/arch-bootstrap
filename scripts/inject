@@ -8,10 +8,6 @@ touch ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 curl -sL https://meta.sr.ht/~jmcantrell.keys >>~/.ssh/authorized_keys
 
-sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network
-networkctl reload
-/usr/lib/systemd/systemd-networkd-wait-online
-
 # Only download a copy of the repository if this script doesn't exist locally.
 # If this script is being piped to bash, or run via the script boot parameter,
 # the script name will be something other than `inject`.

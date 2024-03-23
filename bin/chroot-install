@@ -64,10 +64,10 @@ if [[ -v INSTALL_SUDOER_LOGIN ]]; then
         ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
         "$INSTALL_SUDOER_LOGIN"
 
-    arch-chroot "$INSTALL_MOUNT" chpasswd <<<"$INSTALL_SUDOER_LOGIN:$INSTALL_SUDOER_PASSWORD"
+    echo -n "$INSTALL_SUDOER_LOGIN:$INSTALL_SUDOER_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
-    arch-chroot "$INSTALL_MOUNT" chpasswd <<<"root:$INSTALL_ROOT_PASSWORD"
+    echo -n "root:$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then

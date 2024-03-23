@@ -5,25 +5,28 @@ set -euo pipefail
 packages=(
     base
     lvm2
+    linux
     btrfs-progs
     sudo
     openssh
     reflector
 )
 
-packages+=(linux"${INSTALL_KERNEL_VARIANT:+-$INSTALL_KERNEL_VARIANT}")
-
 case $INSTALL_BOOT_FIRMWARE in
 bios) packages+=(grub-bios) ;;
 uefi) packages+=(grub efibootmgr) ;;
 esac
 
-if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
-    packages+=(iwd)
+if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
+    package+=(cryptsetup)
 fi
 
 if [[ -v INSTALL_CPU_VENDOR ]]; then
     packages+=("$INSTALL_CPU_VENDOR"-ucode)
+fi
+
+if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
+    packages+=(iwd)
 fi
 
 if [[ -v INSTALL_SUDOER_SHELL ]]; then

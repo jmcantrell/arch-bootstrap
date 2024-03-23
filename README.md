@@ -10,7 +10,7 @@ Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using 
 
 Logical volume management is handled by [LVM][lvm], including a volume for swap (allowing for hibernation).
 
-If enabled, [full disk encryption][luks] is realized using the [LVM on LUKS][lvm-on-luks] method.
+If enabled, [full disk encryption][fde] is realized using the [LVM on LUKS][lvm-on-luks] method.
 
 The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/subvolumes`).
 
@@ -257,7 +257,7 @@ The script will be run similarly to the curl method above as soon as the environ
 [iso]: https://archlinux.org/download/
 [iwd]: https://wiki.archlinux.org/title/Iwd
 [kernel]: https://wiki.archlinux.org/title/Kernel
-[luks]: https://wiki.archlinux.org/title/Dm-crypt
+[fde]: https://wiki.archlinux.org/title/Dm-crypt
 [lvcreate]: https://man.archlinux.org/man/core/lvm2/lvcreate.8.en
 [lvm-on-luks]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system#LVM_on_LUKS
 [lvm]: https://wiki.archlinux.org/title/LVM

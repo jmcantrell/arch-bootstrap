@@ -6,9 +6,9 @@ packages=(
     base
     lvm2
     btrfs-progs
+    sudo
     openssh
     reflector
-    sudo
 )
 
 packages+=(linux"${INSTALL_KERNEL_VARIANT:+-$INSTALL_KERNEL_VARIANT}")

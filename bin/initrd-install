@@ -29,6 +29,7 @@ export INITRD_BINARIES=${binaries[*]}
 export INITRD_MODULES=${modules[*]}
 export INITRD_HOOKS=${hooks[*]}
 export INITRD_FILES=${files[*]}
+
 template-install /etc/mkinitcpio.conf
 
 arch-chroot "$INSTALL_MOUNT" mkinitcpio --allpresets

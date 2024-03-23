@@ -27,10 +27,6 @@ export GRUB_PRELOAD_MODULES=${preload_modules[*]}
 export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 
-if [[ -v INSTALL_KERNEL_EXTRA_PARAMS ]]; then
-    GRUB_CMDLINE_LINUX_DEFAULT+=" $INSTALL_KERNEL_EXTRA_PARAMS"
-fi
-
 template-install /etc/default/grub
 
 arch-chroot "$INSTALL_MOUNT" grub-install "$INSTALL_DEVICE" --recheck

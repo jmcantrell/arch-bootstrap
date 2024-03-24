@@ -220,7 +220,7 @@ As `./bin` is now in `PATH`, feel free to execute each step separately to verify
 
 The commands can also be useful outside of the context of installation (e.g., troubleshooting a system, see `./scripts/mount` and `./scripts/umount`).
 
-### Initialize the SSH server and enable Multicast DNS
+### Initialize the SSH server
 
 If you want or need to manage the installation over SSH, the `./scripts/inject` script can make this easier.
 It does the following:

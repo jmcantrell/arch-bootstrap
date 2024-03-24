@@ -21,12 +21,12 @@ if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
     package+=(cryptsetup)
 fi
 
-if [[ -v INSTALL_CPU_VENDOR ]]; then
-    packages+=("$INSTALL_CPU_VENDOR"-ucode)
-fi
-
 if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
     packages+=(iwd)
+fi
+
+if [[ -v INSTALL_CPU_VENDOR ]]; then
+    packages+=("$INSTALL_CPU_VENDOR"-ucode)
 fi
 
 if [[ -v INSTALL_SUDOER_SHELL ]]; then

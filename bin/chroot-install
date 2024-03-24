@@ -22,15 +22,14 @@ if [[ -v INSTALL_LANG ]]; then
     arch-chroot "$INSTALL_MOUNT" locale-gen
 fi
 
-rm -f "$INSTALL_MOUNT"/etc/vconsole.conf
-
-if [[ -v INSTALL_KEYMAP ]]; then
-    printf "KEYMAP=%s\n" "$INSTALL_KEYMAP" >>"$INSTALL_MOUNT"/etc/vconsole.conf
-fi
-
-if [[ -v INSTALL_FONT ]]; then
-    print "FONT=%s\n" "$INSTALL_FONT" >>"$INSTALL_MOUNT"/etc/vconsole.conf
-fi
+{
+    if [[ -v INSTALL_KEYMAP ]]; then
+        printf "KEYMAP=%s\n" "$INSTALL_KEYMAP"
+    fi
+    if [[ -v INSTALL_FONT ]]; then
+        print "FONT=%s\n" "$INSTALL_FONT"
+    fi
+} >"$INSTALL_MOUNT"/etc/vconsole.conf
 
 arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service

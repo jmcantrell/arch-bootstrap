@@ -185,9 +185,10 @@ See `./config/subvolumes` for the default list.
 
 This file, if it exists, defines the extra packages that will be installed on the new system.
 
-If it's executable, it should output one package per line to stdout.
-If it's a regular file, it should contain one package per line.
+If it's executable, it should output package names to stdout.
+If it's a regular file, each line can contain zero or more packages.
 In either case, empty lines or text beginning with a `#` will be ignored.
+If a line contains more than one package name, they should be separated by whitespace.
 
 Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/list-packages`).
 

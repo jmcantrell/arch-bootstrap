@@ -33,4 +33,6 @@ if [[ -v INSTALL_SUDOER_SHELL ]]; then
     packages+=("${INSTALL_SUDOER_SHELL##*/}")
 fi
 
-sort -u <(list "$INSTALL_CONFIG"/packages) <(printf "%s\n" "${packages[@]}")
+sort -u \
+    <(printf "%s\n" "${packages[@]}") \
+    <(list "$INSTALL_CONFIG"/packages | sed -e 's/^\s*//' -e 's/\s*$//' -e 's/\s\+/\n/g')

@@ -2,5 +2,5 @@
 
 set -euo pipefail
 
-dmidecode --type memory |
-    awk '/\<Size:/ { sum += $2; unit = substr($3,0,1) } END { print sum unit }'
+dmidecode --type memory | grep '\bSize:' |
+    awk '{ sum += $2; unit = substr($3,0,1) } END { print sum unit }'

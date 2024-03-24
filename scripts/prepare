@@ -31,8 +31,11 @@ export INSTALL_LVM_VG_NAME=${INSTALL_LVM_VG_NAME:-sys}
 export INSTALL_LVM_LV_SWAP_NAME=${INSTALL_LVM_LV_SWAP_NAME:-swap}
 
 if [[ ! -v INSTALL_LVM_LV_SWAP_SIZE ]]; then
-    # The swap size should be at least as big as physical memory.
-    if ! INSTALL_LVM_LV_SWAP_SIZE=$(get-memory-size); then
+    if memory_size=$(get-memory-size); then
+        INSTALL_LVM_LV_SWAP_SIZE=$memory_size
+    elif [[ -v INSTALL_MEMORY_SIZE ]]; then
+        INSTALL_LVM_LV_SWAP_SIZE=$INSTALL_MEMORY_SIZE
+    else
         printf "unable to get information about physical memory\n" >&2
         return 1
     fi

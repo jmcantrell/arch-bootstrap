@@ -226,7 +226,6 @@ If you want or need to manage the installation over SSH, the `./scripts/inject` 
 It does the following:
 
 - Authorizes the SSH keys with write access to this repository
-- Enables Multicast DNS, making `archiso.local` reachable
 - Fetches an archive of this repository into `/root` (if necessary)
 
 If you already have access to the repository in the live environment, just run the script:

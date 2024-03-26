@@ -4,11 +4,13 @@ set -euo pipefail
 
 default=${1:-UTC}
 
-if [[ -f /etc/localtime ]]; then
-    tz=$(realpath /etc/localtime)
-    tz=${tz#/usr/share/zoneinfo/}
+link=/etc/localtime
+
+if [[ -f $link ]]; then
+    name=$(readlink "$link")
+    name=${name#/usr/share/zoneinfo/}
 else
-    tz=$default
+    name=$default
 fi
 
-printf "%s" "$tz"
+printf "%s" "$name"

@@ -3,4 +3,4 @@
 set -euo pipefail
 
 dmidecode --type memory | grep '\bSize:' |
-    awk '{ sum += $2; unit = substr($3,0,1) } END { print sum unit }'
+    awk '$2 ~ /^[[:digit:]]+$/ { sum += $2; unit = substr($3,0,1) } END { print sum unit }'

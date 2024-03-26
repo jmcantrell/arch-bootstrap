@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-vendor_id=$(grep -w -m1 '^vendor_id\b' /proc/cpuinfo | awk '{print $NF}')
+vendor_id=$(grep -m1 '^vendor_id\b' /proc/cpuinfo | awk '{ print $NF }')
 
 unset vendor_name
 

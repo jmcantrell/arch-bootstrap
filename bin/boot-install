@@ -24,8 +24,8 @@ else
 fi
 
 export GRUB_PRELOAD_MODULES=${preload_modules[*]}
-export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
+export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 
 template-install /etc/default/grub
 

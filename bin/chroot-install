@@ -48,7 +48,7 @@ if [[ -v INSTALL_USE_TRIM ]]; then
 fi
 
 if [[ -v INSTALL_USE_WIRELESS ]]; then
-    rsync -v --recursive /var/lib/iwd/ "$INSTALL_MOUNT"/var/lib/iwd/
+    rsync -va {,"$INSTALL_MOUNT"}/var/lib/iwd/
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 
@@ -63,10 +63,10 @@ if [[ -v INSTALL_SUDOER_LOGIN ]]; then
         ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
         "$INSTALL_SUDOER_LOGIN"
 
-    echo -n "$INSTALL_SUDOER_LOGIN:$INSTALL_SUDOER_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
+    printf "%s:%s" "$INSTALL_SUDOER_LOGIN" "$INSTALL_SUDOER_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
-    echo -n "root:$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
+    printf "root:%s" "$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then

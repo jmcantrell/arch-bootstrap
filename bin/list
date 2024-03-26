@@ -5,10 +5,10 @@ set -euo pipefail
 file=${1:?missing file}
 
 # Skip empty/commented lines and strip any trailing comments.
-exec > >(awk '!/^\s*(#|$)/ { gsub(/\s*#.*/, "", $0); print }')
+exec > >(awk '!/^\s*(#|$)/ { sub(/\s*#.*/, "", $0); print }')
 
 if [[ -x $file ]]; then
-    "$file"
+    exec "$(realpath "$file")"
 elif [[ -f $file ]]; then
     cat "$file"
 fi

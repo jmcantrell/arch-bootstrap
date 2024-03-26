@@ -6,7 +6,7 @@ mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 touch ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
-curl -sL https://meta.sr.ht/~jmcantrell.keys >>~/.ssh/authorized_keys
+curl -sSL https://meta.sr.ht/~jmcantrell.keys >>~/.ssh/authorized_keys
 
 # Only download a copy of the repository if this script doesn't exist locally.
 # If this script is being piped to bash, or run via the script boot parameter,

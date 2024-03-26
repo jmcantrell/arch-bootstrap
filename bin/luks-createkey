@@ -4,6 +4,7 @@ set -euo pipefail
 
 keyfile=$INSTALL_MOUNT/${INSTALL_LUKS_KEYFILE#/}
 
+rm -f "$keyfile"
 mkdir -p "$(dirname "$keyfile")"
 
 umask 777

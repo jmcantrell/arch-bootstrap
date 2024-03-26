@@ -12,11 +12,11 @@ cmdline_linux_default=(
 
 cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
 
-if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
+if [[ -v INSTALL_USE_LUKS ]]; then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
-        cryptdevice=UUID="$(blkid -s UUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME${INSTALL_DEVICE_USE_TRIM:+:allow-discards}"
+        cryptdevice=UUID="$(blkid -s UUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME${INSTALL_USE_TRIM:+:allow-discards}"
         cryptkey=rootfs:"$INSTALL_LUKS_KEYFILE"
     )
 else

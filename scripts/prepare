@@ -15,7 +15,7 @@ export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}
 export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
 export INSTALL_SYS_DEVICE=${INSTALL_DEVICE}2
 
-if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
+if [[ -v INSTALL_USE_LUKS ]]; then
     export INSTALL_LUKS_DEVICE=$INSTALL_SYS_DEVICE
     export INSTALL_LUKS_MAPPER_NAME=${INSTALL_LUKS_MAPPER_NAME:-sys}
     export INSTALL_LUKS_MAPPER=/dev/mapper/$INSTALL_LUKS_MAPPER_NAME
@@ -94,12 +94,12 @@ export INSTALL_PART_SYS_NAME=${INSTALL_PART_SYS_NAME:-sys}
 export INSTALL_PART_SYS_TYPE=${INSTALL_PART_SYS_TYPE:-0FC63DAF-8483-4772-8E79-3D69D8477DE4}
 export INSTALL_PART_SYS_SIZE=${INSTALL_PART_SYS_SIZE:-+}
 
-if [[ ! -v INSTALL_DEVICE_USE_TRIM ]] && is-device-ssd "$INSTALL_DEVICE"; then
-    export INSTALL_DEVICE_USE_TRIM=1
+if [[ ! -v INSTALL_USE_TRIM ]] && is-device-ssd "$INSTALL_DEVICE"; then
+    export INSTALL_USE_TRIM=1
 fi
 
-if [[ ! -v INSTALL_NET_USE_WIRELESS ]] && get-network-interfaces | grep -q '^wl'; then
-    export INSTALL_NET_USE_WIRELESS=1
+if [[ ! -v INSTALL_USE_WIRELESS ]] && get-network-interfaces | grep -q '^wl'; then
+    export INSTALL_USE_WIRELESS=1
 fi
 
 export INSTALL_HOSTNAME=${INSTALL_HOSTNAME:-arch}

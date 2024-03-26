@@ -17,11 +17,11 @@ bios) packages+=(grub-bios) ;;
 uefi) packages+=(grub efibootmgr) ;;
 esac
 
-if [[ -v INSTALL_DEVICE_USE_LUKS ]]; then
+if [[ -v INSTALL_USE_LUKS ]]; then
     package+=(cryptsetup)
 fi
 
-if [[ -v INSTALL_NET_USE_WIRELESS ]]; then
+if [[ -v INSTALL_USE_WIRELESS ]]; then
     packages+=(iwd)
 fi
 

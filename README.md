@@ -113,8 +113,8 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/get-cpu-vendor`, choices: `intel` or `amd`)
 - `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/get-gpu-modules`, multiple values should be separated with a space)
 - `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
-- `INSTALL_DEVICE_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/is-device-ssd`)
-- `INSTALL_NET_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
+- `INSTALL_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/is-device-ssd`)
+- `INSTALL_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
 
 #### Partition Table
 
@@ -128,7 +128,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Full Disk Encryption
 
-- `INSTALL_DEVICE_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$INSTALL_DEVICE`
+- `INSTALL_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$INSTALL_DEVICE`
 - `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
 - `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)

@@ -1,6 +1,6 @@
 # bootstrap-arch
 
-A mildly-opinionated Arch Linux installer.
+A mildly-opinionated unattended Arch Linux installer.
 
 Aside from the opinions listed below, care is taken to ensure the resulting system closely matches what you would get from following the [official installation guide][install].
 
@@ -22,15 +22,17 @@ Any wireless connections created in the installation environment will be persist
 
 Optionally, a privileged user can be created, in which case the root account will be disabled.
 
-The following services/timers are enabled:
+Any ssh client configuration (i.e. changes to `~/.ssh/`) in the installation environment will be persisted to the root account (or the privileged user).
 
-- [fstrim][ssd] (if installation disk is a solid-state drive)
-- [iwd] (if wireless networking is requested)
-- [systemd-networkd] (with [Multicast DNS][mdns] enabled)
-- [systemd-resolved] (using `stub-resolv.conf`)
-- [systemd-timesyncd]
-- [reflector]
-- [sshd]
+The following systemd units are enabled:
+
+- [fstrim][ssd].timer (if installation disk is a solid-state drive)
+- [iwd].service (if any wireless networking devices are present)
+- [systemd-networkd].service (with [Multicast DNS][mdns] enabled)
+- [systemd-resolved].service (with `stub-resolv.conf`)
+- [systemd-timesyncd].service
+- [reflector].{service,timer}
+- [sshd].service
 
 ## Usage
 
@@ -38,7 +40,7 @@ In general, the installation steps are as follows:
 
 1. Boot into the [Arch Linux ISO][iso]
 1. Change the directory to this repository
-1. Set required [environment](#environment) variables
+1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
 1. Optionally, localize the environment: `./scripts/localize`
 1. Create and mount the system: `./scripts/create`
@@ -52,7 +54,7 @@ If all is well, `poweroff` and eject the installation media.
 
 The desired system is described by a [configuration directory](#configuration-files).
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a template for customization.
-The details of that system are controlled entirely by [environment](#environment).
+The details of that system are controlled entirely by [environment](#environment) variables.
 These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced from another file before sourcing the prepare script.
 
 Once the necessary variable overrides are set, source the preparation script to fill in the blanks.
@@ -100,7 +102,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Users
 
 - `INSTALL_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
-- `INSTALL_SUDOER_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will be disabled)
+- `INSTALL_SUDOER_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will also be disabled)
 - `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
 - `INSTALL_SUDOER_USE_GROUP`: If set to a non-empty value, the sudoer group will be configured, regardless of whether or not a privileged user is created.
@@ -167,7 +169,7 @@ It's treated as a bash script, and any variables relevant to installation (see [
 #### `$INSTALL_CONFIG/subvolumes`
 
 This file, if it exists, defines the extra btrfs subvolumes that will be created.
-This should **not** include the root subvolume, as its presence and mount point is not optional.
+This should **not** include the root subvolume, as its presence and mount point are not optional.
 It will always be created and mounted at `/`.
 
 If it's executable, it should output one subvolume mapping per line to stdout.
@@ -178,6 +180,8 @@ A submodule mapping must be of the form:
 ```
 name /path/to/subvolume
 ```
+
+The subvolume name must not contain any whitespace.
 
 See `./config/subvolumes` for the default list.
 
@@ -218,7 +222,7 @@ This script is intentionally kept extremely simple and easy to read.
 It serves as a good overview of the installation process.
 As `./bin` is now in `PATH`, feel free to execute each step separately to verify they're working as intended.
 
-The commands can also be useful outside of the context of installation (e.g., troubleshooting a system, see `./scripts/mount` and `./scripts/umount`).
+The commands can also be useful outside of the context of installation (e.g., troubleshooting a system, see `./scripts/`).
 
 ### Initialize the SSH server
 
@@ -226,7 +230,7 @@ If you want or need to manage the installation over SSH, the `./scripts/inject` 
 It does the following:
 
 - Authorizes the SSH keys with write access to this repository
-- Fetches an archive of this repository into `/root` (if necessary)
+- Fetches an archive of this repository into `/tmp/bootstrap` (if necessary)
 
 If you already have access to the repository in the live environment, just run the script:
 ```sh

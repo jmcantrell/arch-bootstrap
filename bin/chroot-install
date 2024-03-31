@@ -64,9 +64,11 @@ if [[ -v INSTALL_SUDOER_LOGIN ]]; then
         "$INSTALL_SUDOER_LOGIN"
 
     printf "%s:%s" "$INSTALL_SUDOER_LOGIN" "$INSTALL_SUDOER_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
+    rsync -va {/root,"$INSTALL_MOUNT"/home/"$INSTALL_SUDOER_LOGIN"}/.ssh/
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
     printf "root:%s" "$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
+    rsync -va {,"$INSTALL_MOUNT"}/root/.ssh/
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then

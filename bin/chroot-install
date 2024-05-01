@@ -52,19 +52,25 @@ if [[ -v INSTALL_USE_WIRELESS ]]; then
     arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
 fi
 
-if [[ -v INSTALL_SUDOER_LOGIN || -v INSTALL_SUDOER_USE_GROUP ]]; then
-    arch-chroot "$INSTALL_MOUNT" groupadd -f "$INSTALL_SUDOER_GROUP_NAME"
-    printf "%s\n" "$INSTALL_SUDOER_GROUP_SPEC" >"$INSTALL_MOUNT"/etc/sudoers.d/group
+if [[ -v INSTALL_ADMIN_LOGIN || -v INSTALL_ADMIN_USE_GROUP ]]; then
+    arch-chroot "$INSTALL_MOUNT" groupadd -f "$INSTALL_ADMIN_GROUP_NAME"
+    export ADMIN_GROUP=$INSTALL_ADMIN_GROUP_NAME
+    if [[ -v INSTALL_ADMIN_GROUP_NOPASSWD ]]; then
+        template-install /etc/sudoers.d/group{-nopasswd,}
+        template-install /etc/polkit-1/rules.d/49-nopasswd_global.rules
+    else
+        template-install /etc/sudoers.d/group
+    fi
 fi
 
-if [[ -v INSTALL_SUDOER_LOGIN ]]; then
+if [[ -v INSTALL_ADMIN_LOGIN ]]; then
     arch-chroot "$INSTALL_MOUNT" useradd \
-        --create-home --groups users,"$INSTALL_SUDOER_GROUP_NAME" \
-        ${INSTALL_SUDOER_SHELL:+--shell "$INSTALL_SUDOER_SHELL"} \
-        "$INSTALL_SUDOER_LOGIN"
+        --create-home --groups users,"$INSTALL_ADMIN_GROUP_NAME" \
+        ${INSTALL_ADMIN_SHELL:+--shell "$INSTALL_ADMIN_SHELL"} \
+        "$INSTALL_ADMIN_LOGIN"
 
-    printf "%s:%s" "$INSTALL_SUDOER_LOGIN" "$INSTALL_SUDOER_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
-    rsync -va {/root,"$INSTALL_MOUNT"/home/"$INSTALL_SUDOER_LOGIN"}/.ssh/
+    printf "%s:%s" "$INSTALL_ADMIN_LOGIN" "$INSTALL_ADMIN_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
+    rsync -va {/root,"$INSTALL_MOUNT"/home/"$INSTALL_ADMIN_LOGIN"}/.ssh/
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
     printf "root:%s" "$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"

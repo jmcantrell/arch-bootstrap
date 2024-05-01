@@ -102,13 +102,12 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Users
 
 - `INSTALL_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
-- `INSTALL_SUDOER_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will also be disabled)
-- `INSTALL_SUDOER_PASSWORD`: The primary privileged user's password (default: `hunter2`)
-- `INSTALL_SUDOER_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
-- `INSTALL_SUDOER_USE_GROUP`: If set to a non-empty value, the sudoer group will be configured, regardless of whether or not a privileged user is created.
-- `INSTALL_SUDOER_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
-- `INSTALL_SUDOER_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to use `sudo` without authenticating
-- `INSTALL_SUDOER_GROUP_SPEC`: The sudoer specification that will be put in `/etc/sudoers.d/group` (default: `%<group> ALL=(ALL) ALL` or `%<group> ALL=(ALL) NOPASSWD:ALL` depending on the previous setting)
+- `INSTALL_ADMIN_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will also be disabled)
+- `INSTALL_ADMIN_PASSWORD`: The primary privileged user's password (default: `hunter2`)
+- `INSTALL_ADMIN_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
+- `INSTALL_ADMIN_USE_GROUP`: If set to a non-empty value, the admin group will be configured, regardless of whether or not a privileged user is created.
+- `INSTALL_ADMIN_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
+- `INSTALL_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
 #### Hardware
 

@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 
 # Installs a copy of the given file with environment variables substituted.
-# Usage: template-install FILE
+# Usage: template-install INPUT_FILE [OUTPUT_FILE]
 #
-# The FILE should be specified as it would appear to the new system (e.g.
+# The file arguments should be specified as it would appear to the new system (e.g.
 # `/etc/default/grub`, not `./config/templates/etc/default/grub`).
 
 set -euo pipefail
 
-file=${1:?missing file}
+input_file=${1:?missing file}
+output_file=${2:-$input_file}
 
-template=$INSTALL_CONFIG/templates/${file#/}
-output=$INSTALL_MOUNT/${file#/}
+template=$INSTALL_CONFIG/templates/${input_file#/}
+output=$INSTALL_MOUNT/${output_file#/}
 
 mkdir -p "$(dirname "$output")"
 envsubst <"$template" >"$output"

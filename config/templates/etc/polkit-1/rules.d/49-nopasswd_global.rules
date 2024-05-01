@@ -1,0 +1,5 @@
+polkit.addRule(function(action, subject) {
+    if (subject.isInGroup("$ADMIN_GROUP")) {
+        return polkit.Result.YES;
+    }
+});

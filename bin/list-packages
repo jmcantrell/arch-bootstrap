@@ -29,8 +29,8 @@ if [[ -v INSTALL_CPU_VENDOR ]]; then
     packages+=("$INSTALL_CPU_VENDOR"-ucode)
 fi
 
-if [[ -v INSTALL_SUDOER_SHELL ]]; then
-    packages+=("${INSTALL_SUDOER_SHELL##*/}")
+if [[ -v INSTALL_ADMIN_SHELL ]]; then
+    packages+=("${INSTALL_ADMIN_SHELL##*/}")
 fi
 
 sort -u \

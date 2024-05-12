@@ -38,7 +38,7 @@ arch-chroot "$INSTALL_MOUNT" hwclock --systohc
 ln -vsfn /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-{networkd,resolved}.service
 
-export REFLECTOR_COUNTRY=$INSTALL_MIRROR_COUNTRY
+export MIRROR_COUNTRY=$INSTALL_MIRROR_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 arch-chroot "$INSTALL_MOUNT" systemctl enable reflector.{service,timer}
 

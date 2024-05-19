@@ -6,6 +6,7 @@ packages=(
     base
     lvm2
     linux
+    linux-lts
     btrfs-progs
     sudo
     openssh

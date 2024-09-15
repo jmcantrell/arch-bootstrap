@@ -1,6 +1,6 @@
 # bootstrap-arch
 
-A mildly-opinionated unattended Arch Linux installer.
+An opinionated unattended Arch Linux installer.
 
 Aside from the opinions listed below, care is taken to ensure the resulting system closely matches what you would get from following the [official installation guide][install].
 

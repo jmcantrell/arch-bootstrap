@@ -29,12 +29,12 @@ export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 
 template-install /etc/default/grub
 
-options=(--recheck)
+opts=(--recheck)
 if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
-    options+=(--target=x86_64-efi --efi-directory="$INSTALL_UEFI_MOUNT" --bootloader-id=GRUB)
+    opts+=(--target=x86_64-efi --efi-directory="$INSTALL_UEFI_MOUNT" --bootloader-id=GRUB)
 else
-    options+=(--target=i386-pc)
+    opts+=(--target=i386-pc)
 fi
 
-arch-chroot "$INSTALL_MOUNT" grub-install "${options[@]}" "$INSTALL_DEVICE"
+arch-chroot "$INSTALL_MOUNT" grub-install "${opts[@]}" "$INSTALL_DEVICE"
 arch-chroot "$INSTALL_MOUNT" grub-mkconfig --output=/boot/grub/grub.cfg

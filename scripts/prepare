@@ -13,7 +13,7 @@ fi
 export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}
 
 unset part_prefix
-if [[ $INSTALL_DEVICE == nvme* ]]; then
+if [[ ${INSTALL_DEVICE##*/} == nvme* ]]; then
     part_prefix=p
 fi
 

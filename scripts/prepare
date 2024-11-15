@@ -12,8 +12,13 @@ fi
 
 export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}
 
-export INSTALL_BOOT_DEVICE=${INSTALL_DEVICE}1
-export INSTALL_SYS_DEVICE=${INSTALL_DEVICE}2
+unset part_prefix
+if [[ $INSTALL_DEVICE == nvme* ]]; then
+    part_prefix=p
+fi
+
+export INSTALL_BOOT_DEVICE=${INSTALL_BOOT_DEVICE:-${INSTALL_DEVICE}${part_prefix:-}1}
+export INSTALL_SYS_DEVICE=${INSTALL_SYS_DEVICE:-${INSTALL_DEVICE}${part_prefix:-}2}
 
 if [[ -v INSTALL_USE_LUKS ]]; then
     export INSTALL_LUKS_DEVICE=$INSTALL_SYS_DEVICE

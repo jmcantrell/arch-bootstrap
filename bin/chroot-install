@@ -70,11 +70,9 @@ if [[ -v INSTALL_ADMIN_LOGIN ]]; then
         "$INSTALL_ADMIN_LOGIN"
 
     printf "%s:%s" "$INSTALL_ADMIN_LOGIN" "$INSTALL_ADMIN_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
-    rsync -va {/root,"$INSTALL_MOUNT"/home/"$INSTALL_ADMIN_LOGIN"}/.ssh/
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
     printf "root:%s" "$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
-    rsync -va {,"$INSTALL_MOUNT"}/root/.ssh/
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then

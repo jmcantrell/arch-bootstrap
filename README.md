@@ -22,8 +22,6 @@ Any wireless connections created in the installation environment will be persist
 
 Optionally, a privileged user can be created, in which case the root account will be disabled.
 
-Any ssh client configuration (i.e. changes to `~/.ssh/`) in the installation environment will be persisted to the root account (or the privileged user).
-
 The following systemd units are enabled:
 
 - [fstrim][ssd].timer (if installation disk is a solid-state drive)
@@ -43,7 +41,7 @@ In general, the installation steps are as follows:
 1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
 1. Optionally, localize the environment: `./scripts/localize`
-1. Create and mount the system: `./scripts/create`
+1. Create and mount partitions: `./scripts/create`
 1. Add packages and set up operating system: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.

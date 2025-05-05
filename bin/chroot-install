@@ -68,7 +68,6 @@ if [[ -v INSTALL_ADMIN_LOGIN ]]; then
         --create-home --groups users,"$INSTALL_ADMIN_GROUP_NAME" \
         ${INSTALL_ADMIN_SHELL:+--shell "$INSTALL_ADMIN_SHELL"} \
         "$INSTALL_ADMIN_LOGIN"
-
     printf "%s:%s" "$INSTALL_ADMIN_LOGIN" "$INSTALL_ADMIN_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
     arch-chroot "$INSTALL_MOUNT" passwd --delete root
 else
@@ -82,6 +81,7 @@ fi
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
 
 script=$INSTALL_CONFIG/install
+
 if [[ -f $script && -x $script ]]; then
     cp "$script" "$INSTALL_MOUNT"/script
     arch-chroot "$INSTALL_MOUNT" /script

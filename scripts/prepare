@@ -128,6 +128,3 @@ export INSTALL_ADMIN_GROUP_NAME=${INSTALL_ADMIN_GROUP_NAME:-wheel}
 
 export INSTALL_KERNEL_LOGLEVEL=${INSTALL_KERNEL_LOGLEVEL:-4}
 export INSTALL_KERNEL_CONSOLEBLANK=${INSTALL_KERNEL_CONSOLEBLANK:-0}
-
-# Show the current environment as a sanity check.
-set | grep '^INSTALL_' | sort | sed '/^[^=]*PASS\(WORD\|PHRASE\)[^=]*=/s/=.*$/=********/'

@@ -40,6 +40,7 @@ In general, the installation steps are as follows:
 1. Change the directory to this repository
 1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
+1. Optionally, ensure the environment is correct: `./scripts/show` (sensitive data is redacted)
 1. Optionally, localize the environment: `./scripts/localize`
 1. Create and mount partitions: `./scripts/create`
 1. Add packages and set up operating system: `./scripts/install`
@@ -51,12 +52,9 @@ If all is well, `poweroff` and eject the installation media.
 ## Configuration
 
 The desired system is described by a [configuration directory](#configuration-files).
-The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a template for customization.
+The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a suitable template for customization.
 The details of that system are controlled entirely by [environment](#environment) variables.
 These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced from another file before sourcing the prepare script.
-
-Once the necessary variable overrides are set, source the preparation script to fill in the blanks.
-If the script succeeds, a list of all the relevant environment variables and their values will be displayed as a sanity check (with sensitive information hidden).
 
 To prepare the environment for the default configuration:
 ```sh
@@ -175,7 +173,7 @@ In either case, empty lines or text beginning with a `#` will be ignored.
 
 A submodule mapping must be of the form:
 ```
-name /path/to/subvolume
+name /path/to/mount
 ```
 
 The subvolume name must not contain any whitespace.
@@ -210,13 +208,13 @@ It will be copied to `/` with the permissions (but not ownership) intact.
 
 ## Installation
 
-After the preparation script is sourced, the only other necessary step is to run the installation script:
+After the preparation script is sourced, create and mount the file system, then install the system data:
 ```sh
+./scripts/create
 ./scripts/install
 ```
 
-This script is intentionally kept extremely simple and easy to read.
-It serves as a good overview of the installation process.
+The scripts are intentionally kept extremely simple and easy to read, serving as an outline.
 As `./bin` is now in `PATH`, feel free to execute each step separately to verify they're working as intended.
 
 The commands can also be useful outside of the context of installation (e.g., troubleshooting a system, see `./scripts/`).

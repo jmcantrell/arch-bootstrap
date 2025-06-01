@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Show the current installation environment (sanitized).
+
+set | grep '^INSTALL_' | sort | sed '/^[^=]*PASS\(WORD\|PHRASE\)[^=]*=/s/=.*$/=********/'

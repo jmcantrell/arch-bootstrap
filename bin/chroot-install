@@ -56,10 +56,10 @@ if [[ -v INSTALL_ADMIN_LOGIN || -v INSTALL_ADMIN_USE_GROUP ]]; then
     arch-chroot "$INSTALL_MOUNT" groupadd -f "$INSTALL_ADMIN_GROUP_NAME"
     export ADMIN_GROUP=$INSTALL_ADMIN_GROUP_NAME
     if [[ -v INSTALL_ADMIN_GROUP_NOPASSWD ]]; then
-        template-install /etc/sudoers.d/*-admin-nopasswd
-        template-install /etc/polkit-1/rules.d/*-admin-nopasswd.rules
+        template-install /etc/sudoers.d/49-admin-nopasswd
+        template-install /etc/polkit-1/rules.d/49-admin-nopasswd.rules
     else
-        template-install /etc/sudoers.d/*-admin
+        template-install /etc/sudoers.d/49-admin
     fi
 fi
 

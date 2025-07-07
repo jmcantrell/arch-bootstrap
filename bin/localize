@@ -11,7 +11,7 @@ if [[ -v INSTALL_FONT ]]; then
 fi
 
 # Update the pacman mirrorlist, if possible.
-if ping -q -w1 -c1 archlinux.org &>/dev/null; then
+if timeout 1 ping -q -c1 archlinux.org &>/dev/null; then
     reflector \
         --save /etc/pacman.d/mirrorlist \
         --protocol https --latest 5 --sort age \

@@ -11,7 +11,7 @@ if [[ -v INSTALL_PACKAGE_CACHE ]]; then
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
-    set-parallel-downloads /etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
+    pacman-config-parallel-downloads /etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
 fi
 
 list-packages | pacstrap "$INSTALL_MOUNT" -

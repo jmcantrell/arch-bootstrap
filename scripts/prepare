@@ -36,10 +36,10 @@ export INSTALL_LVM_VG_NAME=${INSTALL_LVM_VG_NAME:-sys}
 export INSTALL_LVM_LV_SWAP_NAME=${INSTALL_LVM_LV_SWAP_NAME:-swap}
 
 if [[ ! -v INSTALL_LVM_LV_SWAP_SIZE ]]; then
-    if memory_size=$(get-memory-size); then
-        INSTALL_LVM_LV_SWAP_SIZE=$memory_size
-    elif [[ -v INSTALL_MEMORY_SIZE ]]; then
+    if [[ -v INSTALL_MEMORY_SIZE ]]; then
         INSTALL_LVM_LV_SWAP_SIZE=$INSTALL_MEMORY_SIZE
+    elif reply=$(memory-size); then
+        INSTALL_LVM_LV_SWAP_SIZE=$reply
     else
         printf "unable to get information about physical memory\n" >&2
         return 1
@@ -58,15 +58,15 @@ export INSTALL_FS_ROOT_LABEL=${INSTALL_FS_ROOT_LABEL:-root}
 export INSTALL_FS_ROOT_OPTIONS=${INSTALL_FS_ROOT_OPTIONS:-autodefrag,compress=zstd}
 
 if [[ ! -v INSTALL_CPU_VENDOR ]]; then
-    if ! INSTALL_CPU_VENDOR=$(get-cpu-vendor); then
+    if ! reply=$(cpu-vendor); then
         printf "unable to get cpu vendor\n" >&2
         return 1
     fi
-    export INSTALL_CPU_VENDOR
+    export INSTALL_CPU_VENDOR=$reply
 fi
 
 if [[ ! -v INSTALL_GPU_MODULES ]]; then
-    if ! INSTALL_GPU_MODULES=$(get-gpu-modules | paste -sd' '); then
+    if ! INSTALL_GPU_MODULES=$(gpu-modules | paste -sd' '); then
         printf "unable to get gpu kernel modules\n" >&2
         return 1
     fi
@@ -99,11 +99,11 @@ export INSTALL_PART_SYS_NAME=${INSTALL_PART_SYS_NAME:-sys}
 export INSTALL_PART_SYS_TYPE=${INSTALL_PART_SYS_TYPE:-0FC63DAF-8483-4772-8E79-3D69D8477DE4}
 export INSTALL_PART_SYS_SIZE=${INSTALL_PART_SYS_SIZE:-+}
 
-if [[ ! -v INSTALL_USE_TRIM ]] && is-device-ssd "$INSTALL_DEVICE"; then
+if [[ ! -v INSTALL_USE_TRIM ]] && device-is-ssd "$INSTALL_DEVICE"; then
     export INSTALL_USE_TRIM=1
 fi
 
-if [[ ! -v INSTALL_USE_WIRELESS ]] && get-network-interfaces | grep -q '^wl'; then
+if [[ ! -v INSTALL_USE_WIRELESS ]] && network-interfaces | grep -q '^wl'; then
     export INSTALL_USE_WIRELESS=1
 fi
 
@@ -112,7 +112,7 @@ export INSTALL_LANG=${INSTALL_LANG:-en_US.UTF-8}
 export INSTALL_KEYMAP=${INSTALL_KEYMAP:-us}
 
 if [[ ! -v INSTALL_TIMEZONE ]]; then
-    if ! INSTALL_TIMEZONE=$(get-timezone); then
+    if ! INSTALL_TIMEZONE=$(timezone); then
         printf "unable to get time zone\n" >&2
         return 1
     fi

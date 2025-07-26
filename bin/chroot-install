@@ -75,7 +75,7 @@ else
 fi
 
 if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
-    set-parallel-downloads "$INSTALL_MOUNT"/etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
+    pacman-config-parallel-downloads "$INSTALL_MOUNT"/etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
 fi
 
 arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service

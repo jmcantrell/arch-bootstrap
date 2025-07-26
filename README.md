@@ -107,11 +107,11 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Hardware
 
-- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/get-cpu-vendor`, choices: `intel` or `amd`)
-- `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/get-gpu-modules`, multiple values should be separated with a space)
+- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
+- `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
 - `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
-- `INSTALL_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/is-device-ssd`)
-- `INSTALL_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/get-network-interfaces`)
+- `INSTALL_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
+- `INSTALL_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
 
 #### Partition Table
 
@@ -136,7 +136,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 - `INSTALL_LVM_VG_NAME`: The volume group name (default: `sys`)
 - `INSTALL_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
-- `INSTALL_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/get-memory-size`)
+- `INSTALL_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/memory-size`)
 - `INSTALL_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
 - `INSTALL_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 

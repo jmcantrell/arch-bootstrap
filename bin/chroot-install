@@ -23,11 +23,9 @@ if [[ -v INSTALL_LANG ]]; then
 fi
 
 {
-    if [[ -v INSTALL_KEYMAP ]]; then
-        printf "KEYMAP=%s\n" "$INSTALL_KEYMAP"
-    fi
+    printf "KEYMAP=%s\n" "${INSTALL_KEYMAP@Q}"
     if [[ -v INSTALL_FONT ]]; then
-        print "FONT=%s\n" "$INSTALL_FONT"
+        printf "FONT=%s\n" "${INSTALL_FONT@Q}"
     fi
 } >"$INSTALL_MOUNT"/etc/vconsole.conf
 

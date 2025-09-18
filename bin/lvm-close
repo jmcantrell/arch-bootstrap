@@ -2,5 +2,6 @@
 
 set -euo pipefail
 
-lvchange --verbose --activate n "$INSTALL_ROOT_DEVICE"
-lvchange --verbose --activate n "$INSTALL_SWAP_DEVICE"
+lvchange --verbose --activate n \
+    "$INSTALL_ROOT_DEVICE" \
+    "$INSTALL_SWAP_DEVICE"

@@ -148,6 +148,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Kernel
 
+- `INSTALL_KERNEL_USE_LTS`: If set to a non-empty value, use the LTS kernel instead
 - `INSTALL_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `INSTALL_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `INSTALL_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)

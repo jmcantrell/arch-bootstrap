@@ -23,6 +23,12 @@ else
     export GRUB_ENABLE_CRYPTODISK=n
 fi
 
+if [[ -v INSTALL_KERNEL_USE_LTS ]]; then
+    export GRUB_DEFAULT="1>2"
+else
+    export GRUB_DEFAULT=0
+fi
+
 export GRUB_PRELOAD_MODULES=${preload_modules[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}

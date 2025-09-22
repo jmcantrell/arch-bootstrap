@@ -4,7 +4,7 @@ set -euo pipefail
 
 genfstab -t UUID "$INSTALL_MOUNT" >"$INSTALL_MOUNT"/etc/fstab
 
-for path in /etc/systemd/networkd{,.conf.d}/; do
+for path in /etc/systemd/{network,networkd.conf.d}/; do
     rsync -va "$path" "${INSTALL_MOUNT%%/}$path"
 done
 

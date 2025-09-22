@@ -4,5 +4,5 @@ set -euo pipefail
 
 packages-install
 chroot-install
-initrd-install
 boot-install
+initrd-install

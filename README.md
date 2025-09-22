@@ -91,7 +91,6 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Packages
 
-- `INSTALL_PACKAGE_CACHE`: If set to a non-empty value, it will be copied to the package cache of the system being installed (e.g., `/mnt/var/cache/pacman` or `user@host:/var/cache/pacman`)
 - `INSTALL_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
 - `INSTALL_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `0` or `5`)
 
@@ -148,7 +147,6 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Kernel
 
-- `INSTALL_KERNEL_USE_LTS`: If set to a non-empty value, use the LTS kernel instead
 - `INSTALL_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `INSTALL_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `INSTALL_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
@@ -165,12 +163,8 @@ It's treated as a bash script, and any variables relevant to installation (see [
 #### `$INSTALL_CONFIG/subvolumes`
 
 This file, if it exists, defines the extra btrfs subvolumes that will be created.
-This should **not** include the root subvolume, as its presence and mount point are not optional.
-It will always be created and mounted at `/`.
-
-If it's executable, it should output one subvolume mapping per line to stdout.
-If it's a regular file, it should contain one subvolume mapping per line.
-In either case, empty lines or text beginning with a `#` will be ignored.
+It must be a regular file containing one subvolume mapping per line.
+This must **not** include the root subvolume, as its presence and mount point are not optional.
 
 A submodule mapping must be of the form:
 ```
@@ -179,20 +173,12 @@ name /path/to/mount
 
 The subvolume name must not contain any whitespace.
 
-See `./config/subvolumes` for the default list.
-
-#### `$INSTALL_CONFIG/packages`
+#### `$INSTALL_CONFIG/packages/extra`
 
 This file, if it exists, defines the extra packages that will be installed on the new system.
+It must be a regular file containing one package per line.
 
-If it's executable, it should output package names to stdout.
-If it's a regular file, each line can contain zero or more packages.
-In either case, empty lines or text beginning with a `#` will be ignored.
-If a line contains more than one package name, they should be separated by whitespace.
-
-Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/list-packages`).
-
-By default, `./config/packages` does not exist, i.e., no extra packages are installed.
+Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/packages`).
 
 #### `$INSTALL_CONFIG/install`
 

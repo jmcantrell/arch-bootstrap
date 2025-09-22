@@ -8,7 +8,7 @@ while read -r name path; do
     mount --verbose --options \
         "${INSTALL_FS_ROOT_OPTIONS:+$INSTALL_FS_ROOT_OPTIONS,}subvol=$name" \
         "$INSTALL_ROOT_DEVICE" "$subvolume_mount"
-done < <(list-subvolumes)
+done < <(subvolumes)
 
 if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
     uefi_mount=$INSTALL_MOUNT/${INSTALL_UEFI_MOUNT#/}

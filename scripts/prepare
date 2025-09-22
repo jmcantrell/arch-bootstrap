@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
-export PATH=$PWD/bin:$PATH
+export INSTALL_ROOT=$PWD
 
-export INSTALL_CONFIG=${1:-${INSTALL_CONFIG:-$PWD/config}}
+export INSTALL_CONFIG=${1:-${INSTALL_CONFIG:-$INSTALL_ROOT/config}}
+
+export PATH=$INSTALL_ROOT/bin:$PATH
+
+export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}
 
 env_file=$INSTALL_CONFIG/env
 if [[ -f $env_file ]] && ! . "$env_file"; then
     printf "unable to source file: %q\n" "$env_file" >&2
     return 1
 fi
-
-export INSTALL_MOUNT=${INSTALL_MOUNT:-/mnt/install}
 
 unset part_prefix
 if [[ ${INSTALL_DEVICE##*/} == nvme* ]]; then

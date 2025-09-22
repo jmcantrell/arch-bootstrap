@@ -8,4 +8,4 @@ fi
 
 while read -r _ path; do
     umount --verbose "$INSTALL_MOUNT/${path#/}"
-done < <(list-subvolumes | tac)
+done < <(subvolumes | tac)

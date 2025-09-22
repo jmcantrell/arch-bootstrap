@@ -14,6 +14,6 @@ mount --verbose "$INSTALL_ROOT_DEVICE" "$INSTALL_MOUNT"
 
 while read -r name _; do
     btrfs subvolume create "$INSTALL_MOUNT/$name"
-done < <(list-subvolumes)
+done < <(subvolumes)
 
 umount --verbose "$INSTALL_MOUNT"

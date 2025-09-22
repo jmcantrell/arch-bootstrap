@@ -14,4 +14,6 @@ if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
     pacman-config-parallel-downloads /etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
 fi
 
-list-packages | pacstrap "$INSTALL_MOUNT" -
+readarray -t packages < <(list-packages)
+
+pacstrap "$INSTALL_MOUNT" "${packages[@]}"

@@ -1,4 +1,4 @@
-# bootstrap-arch
+# arch-bootstrap
 
 An opinionated unattended Arch Linux installer.
 
@@ -10,7 +10,7 @@ Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using 
 
 Logical volume management is handled by [LVM][lvm], including a volume for swap (allowing for hibernation).
 
-If enabled, [full disk encryption][fde] is realized using the [LVM on LUKS][lvm-on-luks] method.
+If enabled, [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
 The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/subvolumes`).
 
@@ -20,7 +20,7 @@ The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (
 
 Any wireless connections created in the installation environment will be persisted to the installed system.
 
-Optionally, a privileged user can be created, in which case the root account will be disabled.
+A [privileged user][#privileged-user] will be created and the root account will be disabled.
 
 The following systemd units are enabled:
 
@@ -43,7 +43,7 @@ In general, the installation steps are as follows:
 1. Optionally, ensure the environment is correct: `./scripts/show` (sensitive data is redacted)
 1. Optionally, localize the environment: `./scripts/localize`
 1. Create and mount partitions: `./scripts/create`
-1. Add packages and set up operating system: `./scripts/install`
+1. Install packages and set up operating system: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
 
@@ -53,8 +53,7 @@ If all is well, `poweroff` and eject the installation media.
 
 The desired system is described by [configuration files](#configuration-files).
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a suitable template for customization.
-The details of that system are controlled entirely by [environment](#environment) variables.
-These can be set manually, added to `$BOOTSTRAP_CONFIG/env`, or sourced from another file before sourcing the prepare script.
+The details of that system are controlled entirely by [environment](#environment) variables. These can be set manually, added to `$BOOTSTRAP_CONFIG/env`, or sourced from another file before sourcing the prepare script.
 
 To prepare the environment for the default configuration:
 
@@ -83,6 +82,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
 - `BOOTSTRAP_CONFIG`: The directory containing [configuration files](#configuration-files) (default: `./config`)
 - `BOOTSTRAP_MOUNT`: The path where the new system will be mounted during installation (default: `/mnt/install`)
+- `BOOTSTRAP_DEFAULT_PASSWORD`: The password used when not overridden (default: `hunter2`)
 
 #### Host Details
 
@@ -95,13 +95,13 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Packages
 
 - `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
-- `BOOTSTRAP_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `0` or `5`)
+- `BOOTSTRAP_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `yes` or `5`)
 
-#### Users
+#### Privileged User
 
-- `BOOTSTRAP_ADMIN_LOGIN`: The primary privileged user's login (default: `admin`)
-- `BOOTSTRAP_ADMIN_PASSWORD`: The primary privileged user's password (default: `hunter2`)
-- `BOOTSTRAP_ADMIN_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
+- `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
+- `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
+- `BOOTSTRAP_ADMIN_SHELL`: The privileged user's shell (default: same as the default for `useradd`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
@@ -126,7 +126,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Full Disk Encryption
 
 - `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_DEVICE`
-- `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
+- `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `$BOOTSTRAP_DEFAULT_PASSWORD`, occupies key slot 0)
 - `BOOTSTRAP_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
@@ -148,7 +148,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Kernel
 
-- `BOOTSTRAP_KERNEL`: Use an alternate kernel (default: unset, e.g. `lts`, `hardened`, `rt`, `rt-lts`, `zen`)
+- `BOOTSTRAP_KERNEL`: Use an alternate kernel (default: unset, choices: `lts`, `hardened`, `rt`, `rt-lts`, or `zen`)
 - `BOOTSTRAP_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
@@ -176,6 +176,12 @@ name /path/to/mount
 
 The subvolume name must not contain any whitespace.
 
+#### `$BOOTSTRAP_CONFIG/packages/*`
+
+This directory contains files representing groups of packages that are installed depending on various factors, such as the preferred kernel, cpu chipset, boot firmware, or privileged user shell.
+Removing any packages will probably break the installation, but packages could be added with no consequence.
+For example, adding packages to `wireless` will cause them to be installed along with the wireless daemon if wireless networking is enabled.
+
 #### `$BOOTSTRAP_CONFIG/packages/extra`
 
 This file, if it exists, defines the extra packages that will be installed on the new system.
@@ -185,16 +191,17 @@ Aside from these extra packages, only the packages necessary for a functional sy
 
 #### `$BOOTSTRAP_CONFIG/install`
 
-This script, if it exists, will be run in a chroot just before finalization steps (boot loader configuration and initrd creation)
-
-#### `$BOOTSTRAP_CONFIG/templates/*`
-
-This directory tree contains files necessary for installation, but with potentially varying details.
+This script, if it exists, will be run in a chroot just before finalization steps (boot loader configuration and initrd creation).
 
 #### `$BOOTSTRAP_CONFIG/files/*`
 
 This directory tree, if it exists, contains files that will be added unchanged to the installation.
 It will be copied to `/` with the permissions (but not ownership) intact.
+
+#### `$BOOTSTRAP_CONFIG/templates/*`
+
+This directory tree contains files necessary for installation, but with potentially varying details.
+They will be rendered with `envsubst` (see: `./bin/template-install`).
 
 ## Installation
 
@@ -212,8 +219,7 @@ The commands can also be useful outside of the context of installation (e.g., tr
 
 ### Initialize the SSH server
 
-If you want or need to manage the installation over SSH, the `./scripts/inject` script can make this easier.
-It does the following:
+If you want or need to manage the installation over SSH, the `./scripts/inject` script can make this easier. It does the following:
 
 - Authorizes the SSH keys with write access to this repository
 - Fetches an archive of this repository into `/tmp/bootstrap` (if necessary)
@@ -227,7 +233,7 @@ If you already have access to the repository in the live environment, just run t
 If you need to download the repository too, `curl` the script into bash:
 
 ```sh
-curl https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject | bash -s
+curl https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject | bash -s
 ```
 
 If the network is available automatically after booting, you could also run the script by using the `script` boot parameter, recognized by the Arch Linux ISO.
@@ -235,7 +241,7 @@ If the network is available automatically after booting, you could also run the 
 When you see the GRUB menu as the live environment is booting, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
 
 ```
-script=https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject
+script=https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject
 ```
 
 The script will be run similarly to the curl method above as soon as the environment is ready.

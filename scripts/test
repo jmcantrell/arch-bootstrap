@@ -3,6 +3,16 @@
 set -euo pipefail
 
 hostname=testvm
+pause=0
+
+while getopts "n:p" opt; do
+    case $opt in
+    n) hostname=$OPTARG ;;
+    p) pause=1 ;;
+    *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
 
 media_file=${1:?missing installation media}
 
@@ -29,7 +39,9 @@ printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
     printf "; ./scripts/%s" show localize create install
     printf "\n"
 
-    printf "    - poweroff\n"
+    if ((!pause)); then
+        printf "    - poweroff\n"
+    fi
 } >"$temp_dir"/cidata/user-data
 
 xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$temp_dir"/cidata/*

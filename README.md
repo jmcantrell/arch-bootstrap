@@ -99,12 +99,10 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Users
 
-- `BOOTSTRAP_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
-- `BOOTSTRAP_ADMIN_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will also be disabled)
+- `BOOTSTRAP_ADMIN_LOGIN`: The primary privileged user's login (default: `admin`)
 - `BOOTSTRAP_ADMIN_PASSWORD`: The primary privileged user's password (default: `hunter2`)
 - `BOOTSTRAP_ADMIN_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
-- `BOOTSTRAP_ADMIN_USE_GROUP`: If set to a non-empty value, the admin group will be configured, regardless of whether or not a privileged user is created.
-- `BOOTSTRAP_ADMIN_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
+- `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
 #### Hardware

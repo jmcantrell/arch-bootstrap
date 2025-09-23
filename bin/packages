@@ -6,7 +6,7 @@ cd "$BOOTSTRAP_CONFIG"/packages
 
 cat base "$BOOTSTRAP_BOOT_FIRMWARE"
 
-printf "linux%s\n" "${BOOTSTRAP_KERNEL:+-$BOOTSTRAP_KERNEL}"
+printf "%s\n" "$BOOTSTRAP_KERNEL_PACKAGE"
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     cat luks
@@ -20,8 +20,8 @@ if [[ -v BOOTSTRAP_CPU_VENDOR ]]; then
     cat "$BOOTSTRAP_CPU_VENDOR"
 fi
 
-if [[ -v BOOTSTRAP_ADMIN_SHELL ]]; then
-    printf "%s\n" "${BOOTSTRAP_ADMIN_SHELL##*/}"
+if [[ -v BOOTSTRAP_ADMIN_SHELL_PACKAGE ]]; then
+    printf "%s\n" "$BOOTSTRAP_ADMIN_SHELL_PACKAGE"
 fi
 
 if [[ -f extra ]]; then

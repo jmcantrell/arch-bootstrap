@@ -20,16 +20,13 @@ printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
     printf "runcmd:\n"
     printf "    - mkdir -p /mnt/bootstrap\n"
     printf "    - mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap\n"
-    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=${hostname@Q} BOOTSTRAP_PARALLEL_DOWNLOADS=0"
 
+    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=${hostname@Q} BOOTSTRAP_PARALLEL_DOWNLOADS=0"
     while IFS= read -r line; do
         printf " %s" "$line"
     done < <(set | grep '^BOOTSTRAP_')
-
     printf "; source ./scripts/prepare"
-    for name in show localize create install; do
-        printf "; ./scripts/%s" "$name"
-    done
+    printf "; ./scripts/%s" show localize create install
     printf "\n"
 
     printf "    - poweroff\n"

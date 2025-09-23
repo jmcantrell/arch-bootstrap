@@ -40,8 +40,8 @@ export BOOTSTRAP_LVM_LV_SWAP_NAME=${BOOTSTRAP_LVM_LV_SWAP_NAME:-swap}
 if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
     if [[ -v BOOTSTRAP_MEMORY_SIZE ]]; then
         BOOTSTRAP_LVM_LV_SWAP_SIZE=$BOOTSTRAP_MEMORY_SIZE
-    elif reply=$(memory-size); then
-        BOOTSTRAP_LVM_LV_SWAP_SIZE=$reply
+    elif memory_size=$(memory-size); then
+        BOOTSTRAP_LVM_LV_SWAP_SIZE=$memory_size
     else
         printf "unable to get information about physical memory\n" >&2
         return 1
@@ -60,19 +60,19 @@ export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
 export BOOTSTRAP_FS_ROOT_OPTIONS=${BOOTSTRAP_FS_ROOT_OPTIONS:-autodefrag,compress=zstd}
 
 if [[ ! -v BOOTSTRAP_CPU_VENDOR ]]; then
-    if ! reply=$(cpu-vendor); then
+    if ! cpu_vendor=$(cpu-vendor); then
         printf "unable to get cpu vendor\n" >&2
         return 1
     fi
-    export BOOTSTRAP_CPU_VENDOR=$reply
+    export BOOTSTRAP_CPU_VENDOR=$cpu_vendor
 fi
 
 if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
-    if ! BOOTSTRAP_GPU_MODULES=$(gpu-modules | paste -sd' '); then
+    if ! gpu_modules=$(gpu-modules | paste -sd' '); then
         printf "unable to get gpu kernel modules\n" >&2
         return 1
     fi
-    export BOOTSTRAP_GPU_MODULES
+    export BOOTSTRAP_GPU_MODULES=$gpu_modules
 fi
 
 if [[ ! -v BOOTSTRAP_BOOT_FIRMWARE ]]; then
@@ -114,19 +114,36 @@ export BOOTSTRAP_LANG=${BOOTSTRAP_LANG:-en_US.UTF-8}
 export BOOTSTRAP_KEYMAP=${BOOTSTRAP_KEYMAP:-us}
 
 if [[ ! -v BOOTSTRAP_TIMEZONE ]]; then
-    if ! BOOTSTRAP_TIMEZONE=$(timezone); then
+    if ! timezone=$(timezone); then
         printf "unable to get time zone\n" >&2
         return 1
     fi
-    export BOOTSTRAP_TIMEZONE
+    export BOOTSTRAP_TIMEZONE=$timezone
 fi
 
 export BOOTSTRAP_MIRROR_COUNTRY=${BOOTSTRAP_MIRROR_COUNTRY:-US}
 
-export BOOTSTRAP_ROOT_PASSWORD=${BOOTSTRAP_ROOT_PASSWORD:-hunter2}
-
+export BOOTSTRAP_ADMIN_LOGIN=${BOOTSTRAP_ADMIN_LOGIN:-admin}
+export BOOTSTRAP_ADMIN_GROUP=${BOOTSTRAP_ADMIN_GROUP:-wheel}
 export BOOTSTRAP_ADMIN_PASSWORD=${BOOTSTRAP_ADMIN_PASSWORD:-hunter2}
-export BOOTSTRAP_ADMIN_GROUP_NAME=${BOOTSTRAP_ADMIN_GROUP_NAME:-wheel}
+
+unset BOOTSTRAP_ADMIN_SHELL_PACKAGE
+if [[ -v BOOTSTRAP_ADMIN_SHELL ]]; then
+    shell=${BOOTSTRAP_ADMIN_SHELL##*/}
+    if ! grep -qxF "$shell" "$BOOTSTRAP_CONFIG"/packages/shell; then
+        printf "%s: invalid shell: %s\n" "$0" "$shell" >&2
+        return 2
+    fi
+    BOOTSTRAP_ADMIN_SHELL_PACKAGE=$shell
+fi
+export BOOTSTRAP_ADMIN_SHELL_PACKAGE
+
+kernel=linux${BOOTSTRAP_KERNEL:+-$BOOTSTRAP_KERNEL}
+if ! grep -qxF "$kernel" "$BOOTSTRAP_CONFIG"/packages/kernel; then
+    printf "%s: invalid kernel: %s\n" "$0" "$kernel" >&2
+    return 2
+fi
+export BOOTSTRAP_KERNEL_PACKAGE=$kernel
 
 export BOOTSTRAP_KERNEL_LOGLEVEL=${BOOTSTRAP_KERNEL_LOGLEVEL:-4}
 export BOOTSTRAP_KERNEL_CONSOLEBLANK=${BOOTSTRAP_KERNEL_CONSOLEBLANK:-0}

@@ -50,28 +50,24 @@ if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
     arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable iwd.service
 fi
 
-if [[ -v BOOTSTRAP_ADMIN_LOGIN || -v BOOTSTRAP_ADMIN_USE_GROUP ]]; then
-    arch-chroot "$BOOTSTRAP_MOUNT" groupadd -f "$BOOTSTRAP_ADMIN_GROUP_NAME"
-    export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP_NAME
-    if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
-        template-install /etc/sudoers.d/49-admin-nopasswd
-        template-install /etc/polkit-1/rules.d/49-admin-nopasswd.rules
-    else
-        template-install /etc/sudoers.d/49-admin
-    fi
+arch-chroot "$BOOTSTRAP_MOUNT" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
+
+export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP
+if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
+    template-install /etc/sudoers.d/49-admin-nopasswd
+    template-install /etc/polkit-1/rules.d/49-admin-nopasswd.rules
+else
+    template-install /etc/sudoers.d/49-admin
 fi
 
-if [[ -v BOOTSTRAP_ADMIN_LOGIN ]]; then
-    arch-chroot "$BOOTSTRAP_MOUNT" useradd \
-        --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP_NAME" \
-        ${BOOTSTRAP_ADMIN_SHELL:+--shell "$BOOTSTRAP_ADMIN_SHELL"} \
-        "$BOOTSTRAP_ADMIN_LOGIN"
-    printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
-    arch-chroot "$BOOTSTRAP_MOUNT" passwd --delete root
-else
-    printf "root:%s" "$BOOTSTRAP_ROOT_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
-    printf "PermitRootLogin yes\n" >"$BOOTSTRAP_MOUNT"/etc/ssh/sshd_config.d/49-root-password.conf
-fi
+arch-chroot "$BOOTSTRAP_MOUNT" useradd \
+    --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" \
+    ${BOOTSTRAP_ADMIN_SHELL:+--shell "$BOOTSTRAP_ADMIN_SHELL"} \
+    "$BOOTSTRAP_ADMIN_LOGIN"
+
+printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
+
+arch-chroot "$BOOTSTRAP_MOUNT" passwd --delete root
 
 if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
     pacman-config-parallel-downloads "$BOOTSTRAP_MOUNT"/etc/pacman.conf "$BOOTSTRAP_PARALLEL_DOWNLOADS"

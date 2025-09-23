@@ -67,7 +67,7 @@ arch-chroot "$BOOTSTRAP_MOUNT" useradd \
 
 printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
 
-arch-chroot "$BOOTSTRAP_MOUNT" passwd --delete root
+arch-chroot "$BOOTSTRAP_MOUNT" passwd --lock root
 
 if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
     pacman-config-parallel-downloads "$BOOTSTRAP_MOUNT"/etc/pacman.conf "$BOOTSTRAP_PARALLEL_DOWNLOADS"

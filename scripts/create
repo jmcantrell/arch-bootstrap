@@ -4,7 +4,7 @@ set -euo pipefail
 
 partition
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     luks-format
     luks-open
 fi
@@ -17,6 +17,6 @@ swap-open
 fs-format
 fs-mount
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     luks-addkey
 fi

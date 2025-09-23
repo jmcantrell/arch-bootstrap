@@ -3,5 +3,5 @@
 set -euo pipefail
 
 lvchange --verbose --activate n \
-    "$INSTALL_ROOT_DEVICE" \
-    "$INSTALL_SWAP_DEVICE"
+    "$BOOTSTRAP_ROOT_DEVICE" \
+    "$BOOTSTRAP_SWAP_DEVICE"

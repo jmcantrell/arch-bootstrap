@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     luks-open
 fi
 

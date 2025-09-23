@@ -2,15 +2,15 @@
 
 set -euo pipefail
 
-pvcreate --verbose -ff --yes "$INSTALL_LVM_DEVICE"
-vgcreate --verbose "$INSTALL_LVM_VG_NAME" "$INSTALL_LVM_DEVICE"
+pvcreate --verbose -ff --yes "$BOOTSTRAP_LVM_DEVICE"
+vgcreate --verbose "$BOOTSTRAP_LVM_VG_NAME" "$BOOTSTRAP_LVM_DEVICE"
 
 lvcreate --verbose --wipesignatures y --yes \
-    --name "$INSTALL_LVM_LV_SWAP_NAME" \
-    --size "$INSTALL_LVM_LV_SWAP_SIZE" \
-    "$INSTALL_LVM_VG_NAME"
+    --name "$BOOTSTRAP_LVM_LV_SWAP_NAME" \
+    --size "$BOOTSTRAP_LVM_LV_SWAP_SIZE" \
+    "$BOOTSTRAP_LVM_VG_NAME"
 
 lvcreate --verbose --wipesignatures y --yes \
-    --name "$INSTALL_LVM_LV_ROOT_NAME" \
-    --extents "$INSTALL_LVM_LV_ROOT_EXTENTS" \
-    "$INSTALL_LVM_VG_NAME"
+    --name "$BOOTSTRAP_LVM_LV_ROOT_NAME" \
+    --extents "$BOOTSTRAP_LVM_LV_ROOT_EXTENTS" \
+    "$BOOTSTRAP_LVM_VG_NAME"

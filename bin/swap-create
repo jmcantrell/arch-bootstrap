@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-mkswap --verbose --label "$INSTALL_FS_SWAP_LABEL" "$INSTALL_SWAP_DEVICE"
+mkswap --verbose --label "$BOOTSTRAP_FS_SWAP_LABEL" "$BOOTSTRAP_SWAP_DEVICE"

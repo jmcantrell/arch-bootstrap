@@ -2,30 +2,28 @@
 
 set -euo pipefail
 
-packages_dir=$INSTALL_CONFIG/packages
+cd "$BOOTSTRAP_CONFIG"/packages
 
-cat "$packages_dir"/base
+cat base "$BOOTSTRAP_BOOT_FIRMWARE"
 
-cat "$packages_dir"/"$INSTALL_BOOT_FIRMWARE"
+printf "linux%s\n" "${BOOTSTRAP_KERNEL:+-$BOOTSTRAP_KERNEL}"
 
-if [[ -v INSTALL_USE_LUKS ]]; then
-    cat "$packages_dir"/luks
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+    cat luks
 fi
 
-if [[ -v INSTALL_USE_WIRELESS ]]; then
-    cat "$packages_dir"/wireless
+if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+    cat wireless
 fi
 
-if [[ -v INSTALL_CPU_VENDOR ]]; then
-    cat "$packages_dir"/"$INSTALL_CPU_VENDOR"
+if [[ -v BOOTSTRAP_CPU_VENDOR ]]; then
+    cat "$BOOTSTRAP_CPU_VENDOR"
 fi
 
-if [[ -v INSTALL_ADMIN_SHELL ]]; then
-    printf "%s\n" "${INSTALL_ADMIN_SHELL##*/}"
+if [[ -v BOOTSTRAP_ADMIN_SHELL ]]; then
+    printf "%s\n" "${BOOTSTRAP_ADMIN_SHELL##*/}"
 fi
 
-config_file=$packages_dir/extra
-
-if [[ -f $config_file ]]; then
-    cat "$config_file"
+if [[ -f extra ]]; then
+    cat extra
 fi

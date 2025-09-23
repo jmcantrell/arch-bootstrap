@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-cryptsetup erase -q "$INSTALL_LUKS_DEVICE"
+cryptsetup erase -q "$BOOTSTRAP_LUKS_DEVICE"

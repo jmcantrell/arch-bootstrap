@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-lvremove --verbose "$INSTALL_LVM_VG_NAME"
-vgremove --verbose "$INSTALL_LVM_VG_NAME"
-pvremove --verbose "$INSTALL_LVM_DEVICE"
+lvremove --verbose "$BOOTSTRAP_LVM_VG_NAME"
+vgremove --verbose "$BOOTSTRAP_LVM_VG_NAME"
+pvremove --verbose "$BOOTSTRAP_LVM_DEVICE"

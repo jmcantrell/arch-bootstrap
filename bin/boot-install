@@ -5,19 +5,19 @@ set -euo pipefail
 preload_modules=(part_{gpt,msdos} lvm)
 
 cmdline_linux_default=(
-    ${INSTALL_KERNEL_QUIET:+quiet}
-    loglevel="$INSTALL_KERNEL_LOGLEVEL"
-    consoleblank="$INSTALL_KERNEL_CONSOLEBLANK"
+    ${BOOTSTRAP_KERNEL_QUIET:+quiet}
+    loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"
+    consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
 )
 
-cmdline_linux=(resume="$INSTALL_SWAP_DEVICE")
+cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
-        cryptdevice=UUID="$(blkid -s UUID -o value "$INSTALL_LUKS_DEVICE"):$INSTALL_LUKS_MAPPER_NAME${INSTALL_USE_TRIM:+:allow-discards}"
-        cryptkey=rootfs:"$INSTALL_LUKS_KEYFILE"
+        cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_USE_TRIM:+:allow-discards}"
+        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEYFILE"
     )
 else
     export GRUB_ENABLE_CRYPTODISK=n
@@ -31,11 +31,11 @@ template-install /etc/default/grub
 
 opts=()
 
-if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
-    opts+=(--target=x86_64-efi --efi-directory="$INSTALL_UEFI_MOUNT" --bootloader-id=GRUB)
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT" --bootloader-id=GRUB)
 else
     opts+=(--target=i386-pc)
 fi
 
-arch-chroot "$INSTALL_MOUNT" grub-install --recheck "${opts[@]}" "$INSTALL_DEVICE"
-arch-chroot "$INSTALL_MOUNT" grub-mkconfig --output=/boot/grub/grub.cfg
+arch-chroot "$BOOTSTRAP_MOUNT" grub-install --recheck "${opts[@]}" "$BOOTSTRAP_DEVICE"
+arch-chroot "$BOOTSTRAP_MOUNT" grub-mkconfig --output=/boot/grub/grub.cfg

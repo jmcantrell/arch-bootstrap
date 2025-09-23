@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+hostname=testvm
+
+media_file=${1:?missing installation media}
+
+temp_dir=$(mktemp -d)
+trap 'rm -rf "$temp_dir"' EXIT
+
+data_file=$temp_dir/data.cow
+cidata_file=$temp_dir/cidata.iso
+
+mkdir -p "$temp_dir"/cidata
+printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
+
+{
+    printf "#cloud-config\n"
+    printf "runcmd:\n"
+    printf "    - mkdir -p /mnt/bootstrap\n"
+    printf "    - mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap\n"
+    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=${hostname@Q} BOOTSTRAP_PARALLEL_DOWNLOADS=0"
+
+    while IFS= read -r line; do
+        printf " %s" "$line"
+    done < <(set | grep '^BOOTSTRAP_')
+
+    printf "; source ./scripts/prepare"
+    for name in show localize create install; do
+        printf "; ./scripts/%s" "$name"
+    done
+    printf "\n"
+
+    printf "    - poweroff\n"
+} >"$temp_dir"/cidata/user-data
+
+xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$temp_dir"/cidata/*
+
+qemu-img create -f qcow2 "$data_file" -o nocow=on 20G
+
+opts=(
+    -name "$hostname" -m 4G -cpu host -accel kvm -machine smm=on -boot menu=on
+    -device 'vhost-vsock-pci,guest-cid=42'
+    -device 'virtio-net-pci,netdev=net0'
+    -netdev 'user,id=net0,hostfwd=tcp::60022-:22'
+    -drive "format=qcow2,if=virtio,file=$data_file"
+)
+
+qemu-system-x86_64 "${opts[@]}" \
+    -device virtio-scsi-pci,id=scsi0 \
+    -device scsi-cd,bus=scsi0.0,drive=cdrom0 \
+    -drive id=cdrom0,if=none,format=raw,media=cdrom,read-only=on,file="$media_file" \
+    -device scsi-cd,bus=scsi0.0,drive=cdrom1 \
+    -drive id=cdrom1,if=none,format=raw,media=cdrom,read-only=on,file="$cidata_file" \
+    -virtfs local,path="$PWD",mount_tag=bootstrap,security_model=passthrough
+
+qemu-system-x86_64 "${opts[@]}"

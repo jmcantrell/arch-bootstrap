@@ -1,7 +1,5 @@
 base
 lvm2
-linux
-linux-lts
 linux-firmware
 btrfs-progs
 sudo

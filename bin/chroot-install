@@ -2,58 +2,58 @@
 
 set -euo pipefail
 
-genfstab -t UUID "$INSTALL_MOUNT" >"$INSTALL_MOUNT"/etc/fstab
+genfstab -t UUID "$BOOTSTRAP_MOUNT" >"$BOOTSTRAP_MOUNT"/etc/fstab
 
 for path in /etc/systemd/{network,networkd.conf.d}; do
-    rsync -va "$path"/ "${INSTALL_MOUNT%%/}$path"/
+    rsync -va "$path"/ "${BOOTSTRAP_MOUNT%%/}$path"/
 done
 
-if [[ -d $INSTALL_CONFIG/files ]]; then
-    rsync -va --no-{owner,group} "$INSTALL_CONFIG"/files/ "$INSTALL_MOUNT"/
+if [[ -d $BOOTSTRAP_CONFIG/files ]]; then
+    rsync -va --no-{owner,group} "$BOOTSTRAP_CONFIG"/files/ "$BOOTSTRAP_MOUNT"/
 fi
 
-if [[ -v INSTALL_HOSTNAME ]]; then
-    printf "%s\n" "$INSTALL_HOSTNAME" >"$INSTALL_MOUNT"/etc/hostname
+if [[ -v BOOTSTRAP_HOSTNAME ]]; then
+    printf "%s\n" "$BOOTSTRAP_HOSTNAME" >"$BOOTSTRAP_MOUNT"/etc/hostname
 fi
 
-if [[ -v INSTALL_LANG ]]; then
-    printf "LANG=%s\n" "$INSTALL_LANG" >"$INSTALL_MOUNT"/etc/locale.conf
-    sed -i "/^#$INSTALL_LANG/s/#//" "$INSTALL_MOUNT"/etc/locale.gen
-    arch-chroot "$INSTALL_MOUNT" locale-gen
+if [[ -v BOOTSTRAP_LANG ]]; then
+    printf "LANG=%s\n" "$BOOTSTRAP_LANG" >"$BOOTSTRAP_MOUNT"/etc/locale.conf
+    sed -i "/^#$BOOTSTRAP_LANG/s/#//" "$BOOTSTRAP_MOUNT"/etc/locale.gen
+    arch-chroot "$BOOTSTRAP_MOUNT" locale-gen
 fi
 
 {
-    printf "KEYMAP=%s\n" "${INSTALL_KEYMAP@Q}"
-    if [[ -v INSTALL_FONT ]]; then
-        printf "FONT=%s\n" "${INSTALL_FONT@Q}"
+    printf "KEYMAP=%s\n" "${BOOTSTRAP_KEYMAP@Q}"
+    if [[ -v BOOTSTRAP_FONT ]]; then
+        printf "FONT=%s\n" "${BOOTSTRAP_FONT@Q}"
     fi
-} >"$INSTALL_MOUNT"/etc/vconsole.conf
+} >"$BOOTSTRAP_MOUNT"/etc/vconsole.conf
 
-arch-chroot "$INSTALL_MOUNT" ln -vsfn /usr/share/zoneinfo/"$INSTALL_TIMEZONE" /etc/localtime
-arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-timesyncd.service
-arch-chroot "$INSTALL_MOUNT" hwclock --systohc
+arch-chroot "$BOOTSTRAP_MOUNT" ln -vsfn /usr/share/zoneinfo/"$BOOTSTRAP_TIMEZONE" /etc/localtime
+arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable systemd-timesyncd.service
+arch-chroot "$BOOTSTRAP_MOUNT" hwclock --systohc
 
-ln -vsfn /run/systemd/resolve/stub-resolv.conf "$INSTALL_MOUNT"/etc/resolv.conf
-arch-chroot "$INSTALL_MOUNT" systemctl enable systemd-{networkd,resolved}.service
+ln -vsfn /run/systemd/resolve/stub-resolv.conf "$BOOTSTRAP_MOUNT"/etc/resolv.conf
+arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable systemd-{networkd,resolved}.service
 
-export MIRROR_COUNTRY=$INSTALL_MIRROR_COUNTRY
+export MIRROR_COUNTRY=$BOOTSTRAP_MIRROR_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
-arch-chroot "$INSTALL_MOUNT" systemctl enable reflector.{service,timer}
+arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable reflector.{service,timer}
 
-if [[ -v INSTALL_USE_TRIM ]]; then
-    sed -i '/^[[:space:]]*#\?[[:space:]]*issue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$INSTALL_MOUNT"/etc/lvm/lvm.conf
-    arch-chroot "$INSTALL_MOUNT" systemctl enable fstrim.timer
+if [[ -v BOOTSTRAP_USE_TRIM ]]; then
+    sed -E -i '/^[[:space:]]*#?[[:space:]]*issue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$BOOTSTRAP_MOUNT"/etc/lvm/lvm.conf
+    arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable fstrim.timer
 fi
 
-if [[ -v INSTALL_USE_WIRELESS ]]; then
-    rsync -va {,"$INSTALL_MOUNT"}/var/lib/iwd/
-    arch-chroot "$INSTALL_MOUNT" systemctl enable iwd.service
+if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+    rsync -va {,"$BOOTSTRAP_MOUNT"}/var/lib/iwd/
+    arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable iwd.service
 fi
 
-if [[ -v INSTALL_ADMIN_LOGIN || -v INSTALL_ADMIN_USE_GROUP ]]; then
-    arch-chroot "$INSTALL_MOUNT" groupadd -f "$INSTALL_ADMIN_GROUP_NAME"
-    export ADMIN_GROUP=$INSTALL_ADMIN_GROUP_NAME
-    if [[ -v INSTALL_ADMIN_GROUP_NOPASSWD ]]; then
+if [[ -v BOOTSTRAP_ADMIN_LOGIN || -v BOOTSTRAP_ADMIN_USE_GROUP ]]; then
+    arch-chroot "$BOOTSTRAP_MOUNT" groupadd -f "$BOOTSTRAP_ADMIN_GROUP_NAME"
+    export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP_NAME
+    if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
         template-install /etc/sudoers.d/49-admin-nopasswd
         template-install /etc/polkit-1/rules.d/49-admin-nopasswd.rules
     else
@@ -61,27 +61,28 @@ if [[ -v INSTALL_ADMIN_LOGIN || -v INSTALL_ADMIN_USE_GROUP ]]; then
     fi
 fi
 
-if [[ -v INSTALL_ADMIN_LOGIN ]]; then
-    arch-chroot "$INSTALL_MOUNT" useradd \
-        --create-home --groups users,"$INSTALL_ADMIN_GROUP_NAME" \
-        ${INSTALL_ADMIN_SHELL:+--shell "$INSTALL_ADMIN_SHELL"} \
-        "$INSTALL_ADMIN_LOGIN"
-    printf "%s:%s" "$INSTALL_ADMIN_LOGIN" "$INSTALL_ADMIN_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
-    arch-chroot "$INSTALL_MOUNT" passwd --delete root
+if [[ -v BOOTSTRAP_ADMIN_LOGIN ]]; then
+    arch-chroot "$BOOTSTRAP_MOUNT" useradd \
+        --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP_NAME" \
+        ${BOOTSTRAP_ADMIN_SHELL:+--shell "$BOOTSTRAP_ADMIN_SHELL"} \
+        "$BOOTSTRAP_ADMIN_LOGIN"
+    printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
+    arch-chroot "$BOOTSTRAP_MOUNT" passwd --delete root
 else
-    printf "root:%s" "$INSTALL_ROOT_PASSWORD" | chpasswd -R "$INSTALL_MOUNT"
+    printf "root:%s" "$BOOTSTRAP_ROOT_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
+    printf "PermitRootLogin yes\n" >"$BOOTSTRAP_MOUNT"/etc/ssh/sshd_config.d/49-root-password.conf
 fi
 
-if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
-    pacman-config-parallel-downloads "$INSTALL_MOUNT"/etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
+if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
+    pacman-config-parallel-downloads "$BOOTSTRAP_MOUNT"/etc/pacman.conf "$BOOTSTRAP_PARALLEL_DOWNLOADS"
 fi
 
-arch-chroot "$INSTALL_MOUNT" systemctl enable sshd.service
+arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable sshd.service
 
-script=$INSTALL_CONFIG/install
+script=$BOOTSTRAP_CONFIG/install
 
 if [[ -f $script && -x $script ]]; then
-    cp "$script" "$INSTALL_MOUNT"/script
-    arch-chroot "$INSTALL_MOUNT" /script
-    rm "$INSTALL_MOUNT"/script
+    cp "$script" "$BOOTSTRAP_MOUNT"/script
+    arch-chroot "$BOOTSTRAP_MOUNT" /script
+    rm "$BOOTSTRAP_MOUNT"/script
 fi

@@ -7,19 +7,19 @@ modules=()
 hooks=(base udev autodetect modconf kms)
 files=()
 
-if [[ -v INSTALL_GPU_MODULES ]]; then
-    read -ra gpu_modules <<<"$INSTALL_GPU_MODULES"
+if [[ -v BOOTSTRAP_GPU_MODULES ]]; then
+    read -ra gpu_modules <<<"$BOOTSTRAP_GPU_MODULES"
     modules+=("${gpu_modules[@]}")
 fi
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     hooks+=(keyboard keymap consolefont)
-    files+=("$INSTALL_LUKS_KEYFILE")
+    files+=("$BOOTSTRAP_LUKS_KEYFILE")
 fi
 
 hooks+=(block)
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     hooks+=(encrypt)
 fi
 
@@ -32,4 +32,4 @@ export INITRD_FILES=${files[*]}
 
 template-install /etc/mkinitcpio.conf
 
-arch-chroot "$INSTALL_MOUNT" mkinitcpio --allpresets
+arch-chroot "$BOOTSTRAP_MOUNT" mkinitcpio --allpresets

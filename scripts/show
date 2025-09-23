@@ -2,4 +2,4 @@
 
 # Show the current installation environment (sanitized).
 
-set | grep '^INSTALL_' | sort | sed -E '/^[^=]*PASS(WORD|PHRASE)[^=]*=/s/=.*$/=********/'
+set | grep '^BOOTSTRAP_' | sort | sed -E '/^[^=]*PASS(WORD|PHRASE)[^=]*=/s/=.*$/=********/'

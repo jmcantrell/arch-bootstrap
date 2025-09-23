@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-cryptsetup close "$INSTALL_LUKS_MAPPER_NAME"
+cryptsetup close "$BOOTSTRAP_LUKS_MAPPER_NAME"

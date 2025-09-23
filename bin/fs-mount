@@ -3,15 +3,15 @@
 set -euo pipefail
 
 while read -r name path; do
-    subvolume_mount=$INSTALL_MOUNT/${path#/}
+    subvolume_mount=$BOOTSTRAP_MOUNT/${path#/}
     mkdir -p "$subvolume_mount"
     mount --verbose --options \
-        "${INSTALL_FS_ROOT_OPTIONS:+$INSTALL_FS_ROOT_OPTIONS,}subvol=$name" \
-        "$INSTALL_ROOT_DEVICE" "$subvolume_mount"
+        "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
+        "$BOOTSTRAP_ROOT_DEVICE" "$subvolume_mount"
 done < <(subvolumes)
 
-if [[ $INSTALL_BOOT_FIRMWARE == uefi ]]; then
-    uefi_mount=$INSTALL_MOUNT/${INSTALL_UEFI_MOUNT#/}
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    uefi_mount=$BOOTSTRAP_MOUNT/${BOOTSTRAP_UEFI_MOUNT#/}
     mkdir -p "$uefi_mount"
-    mount --verbose "$INSTALL_BOOT_DEVICE" "$uefi_mount"
+    mount --verbose "$BOOTSTRAP_BOOT_DEVICE" "$uefi_mount"
 fi

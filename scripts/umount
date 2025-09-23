@@ -6,6 +6,6 @@ fs-umount
 swap-close
 lvm-close
 
-if [[ -v INSTALL_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     luks-close
 fi

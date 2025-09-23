@@ -51,24 +51,27 @@ If all is well, `poweroff` and eject the installation media.
 
 ## Configuration
 
-The desired system is described by a [configuration directory](#configuration-files).
+The desired system is described by [configuration files](#configuration-files).
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a suitable template for customization.
 The details of that system are controlled entirely by [environment](#environment) variables.
-These can be set manually, added to `$INSTALL_CONFIG/env`, or sourced from another file before sourcing the prepare script.
+These can be set manually, added to `$BOOTSTRAP_CONFIG/env`, or sourced from another file before sourcing the prepare script.
 
 To prepare the environment for the default configuration:
+
 ```sh
 source ./scripts/prepare
 ```
 
 To prepare the environment for a different configuration:
+
 ```sh
 source ./scripts/prepare /path/to/config/
 ```
 
 Which is equivalent to:
+
 ```sh
-INSTALL_CONFIG=/path/to/config/ source ./scripts/prepare
+BOOTSTRAP_CONFIG=/path/to/config/ source ./scripts/prepare
 ```
 
 ### Environment
@@ -77,118 +80,120 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Metadata
 
-- `INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
-- `INSTALL_CONFIG`: The directory containing [configuration files](#configuration-files) (default: `./config`)
-- `INSTALL_MOUNT`: The path where the new system will be mounted during installation (default: `/mnt/install`)
+- `BOOTSTRAP_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
+- `BOOTSTRAP_CONFIG`: The directory containing [configuration files](#configuration-files) (default: `./config`)
+- `BOOTSTRAP_MOUNT`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
 #### Host Details
 
-- `INSTALL_HOSTNAME`: The system host name (default: `arch`)
-- `INSTALL_LANG`: The default language (default: `en_US.UTF-8`)
-- `INSTALL_KEYMAP`: The default keyboard mapping (default: `us`)
-- `INSTALL_FONT`: The default console font
-- `INSTALL_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
+- `BOOTSTRAP_HOSTNAME`: The system host name (default: `arch`)
+- `BOOTSTRAP_LANG`: The default language (default: `en_US.UTF-8`)
+- `BOOTSTRAP_KEYMAP`: The default keyboard mapping (default: `us`)
+- `BOOTSTRAP_FONT`: The default console font
+- `BOOTSTRAP_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
 
 #### Packages
 
-- `INSTALL_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
-- `INSTALL_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `0` or `5`)
+- `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
+- `BOOTSTRAP_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `0` or `5`)
 
 #### Users
 
-- `INSTALL_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
-- `INSTALL_ADMIN_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will also be disabled)
-- `INSTALL_ADMIN_PASSWORD`: The primary privileged user's password (default: `hunter2`)
-- `INSTALL_ADMIN_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
-- `INSTALL_ADMIN_USE_GROUP`: If set to a non-empty value, the admin group will be configured, regardless of whether or not a privileged user is created.
-- `INSTALL_ADMIN_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
-- `INSTALL_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
+- `BOOTSTRAP_ROOT_PASSWORD`: The root account password (only used if not setting a privileged user, default: `hunter2`)
+- `BOOTSTRAP_ADMIN_LOGIN`: The primary privileged user's login (if set to a non-empty value, the root account will also be disabled)
+- `BOOTSTRAP_ADMIN_PASSWORD`: The primary privileged user's password (default: `hunter2`)
+- `BOOTSTRAP_ADMIN_SHELL`: The primary privileged user's shell (default: same as the default for `useradd`)
+- `BOOTSTRAP_ADMIN_USE_GROUP`: If set to a non-empty value, the admin group will be configured, regardless of whether or not a privileged user is created.
+- `BOOTSTRAP_ADMIN_GROUP_NAME`: The group name used to determine privileged user status (default: `wheel`)
+- `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
 #### Hardware
 
-- `INSTALL_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
-- `INSTALL_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
-- `INSTALL_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
-- `INSTALL_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
-- `INSTALL_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
+- `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
+- `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
+- `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
+- `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
+- `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
 
 #### Partition Table
 
 **NOTE**: Values for partition sizes must be specified in a way that [sfdisk(8)][sfdisk] can understand
 
-- `INSTALL_PART_BOOT_NAME`: The name of the boot partition (default: `boot`)
-- `INSTALL_PART_BOOT_SIZE`: The size of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
-- `INSTALL_PART_SYS_NAME`: The name of the operating system partition (default: `sys`)
-- `INSTALL_PART_SYS_SIZE`: The size of the operating system partition (default: `+`, i.e., use all remaining space)
-- `INSTALL_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
+- `BOOTSTRAP_PART_BOOT_NAME`: The name of the boot partition (default: `boot`)
+- `BOOTSTRAP_PART_BOOT_SIZE`: The size of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
+- `BOOTSTRAP_PART_SYS_NAME`: The name of the operating system partition (default: `sys`)
+- `BOOTSTRAP_PART_SYS_SIZE`: The size of the operating system partition (default: `+`, i.e., use all remaining space)
+- `BOOTSTRAP_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
 #### Full Disk Encryption
 
-- `INSTALL_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$INSTALL_DEVICE`
-- `INSTALL_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
-- `INSTALL_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
-- `INSTALL_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
+- `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_DEVICE`
+- `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
+- `BOOTSTRAP_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
+- `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
 #### Volume Management
 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
 
-- `INSTALL_LVM_VG_NAME`: The volume group name (default: `sys`)
-- `INSTALL_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
-- `INSTALL_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/memory-size`)
-- `INSTALL_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
-- `INSTALL_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
+- `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
+- `BOOTSTRAP_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
+- `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/memory-size`)
+- `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
+- `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 
 #### File System
 
-- `INSTALL_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
-- `INSTALL_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
-- `INSTALL_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
+- `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
+- `BOOTSTRAP_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
+- `BOOTSTRAP_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
 
 #### Kernel
 
-- `INSTALL_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
-- `INSTALL_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
-- `INSTALL_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
+- `BOOTSTRAP_KERNEL`: Use an alternate kernel (default: unset, e.g. `lts`, `hardened`, `rt`, `rt-lts`, `zen`)
+- `BOOTSTRAP_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
+- `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
+- `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
 
 ### Configuration Files
 
 Within a configuration directory, the following files are recognized:
 
-#### `$INSTALL_CONFIG/env`
+#### `$BOOTSTRAP_CONFIG/env`
 
 This file, if it exists, will be sourced at the beginning of the preparation script.
 It's treated as a bash script, and any variables relevant to installation (see [environment](#environment)) should be exported.
 
-#### `$INSTALL_CONFIG/subvolumes`
+#### `$BOOTSTRAP_CONFIG/subvolumes`
 
 This file, if it exists, defines the extra btrfs subvolumes that will be created.
 It must be a regular file containing one subvolume mapping per line.
 This must **not** include the root subvolume, as its presence and mount point are not optional.
 
 A submodule mapping must be of the form:
+
 ```
 name /path/to/mount
 ```
 
 The subvolume name must not contain any whitespace.
 
-#### `$INSTALL_CONFIG/packages/extra`
+#### `$BOOTSTRAP_CONFIG/packages/extra`
 
 This file, if it exists, defines the extra packages that will be installed on the new system.
 It must be a regular file containing one package per line.
 
 Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/packages`).
 
-#### `$INSTALL_CONFIG/install`
+#### `$BOOTSTRAP_CONFIG/install`
 
 This script, if it exists, will be run in a chroot just before finalization steps (boot loader configuration and initrd creation)
 
-#### `$INSTALL_CONFIG/templates/*`
+#### `$BOOTSTRAP_CONFIG/templates/*`
 
 This directory tree contains files necessary for installation, but with potentially varying details.
 
-#### `$INSTALL_CONFIG/files/*`
+#### `$BOOTSTRAP_CONFIG/files/*`
 
 This directory tree, if it exists, contains files that will be added unchanged to the installation.
 It will be copied to `/` with the permissions (but not ownership) intact.
@@ -196,6 +201,7 @@ It will be copied to `/` with the permissions (but not ownership) intact.
 ## Installation
 
 After the preparation script is sourced, create and mount the file system, then install the system data:
+
 ```sh
 ./scripts/create
 ./scripts/install
@@ -215,11 +221,13 @@ It does the following:
 - Fetches an archive of this repository into `/tmp/bootstrap` (if necessary)
 
 If you already have access to the repository in the live environment, just run the script:
+
 ```sh
 ./scripts/inject
 ```
 
 If you need to download the repository too, `curl` the script into bash:
+
 ```sh
 curl https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject | bash -s
 ```
@@ -227,6 +235,7 @@ curl https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject | bas
 If the network is available automatically after booting, you could also run the script by using the `script` boot parameter, recognized by the Arch Linux ISO.
 
 When you see the GRUB menu as the live environment is booting, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
+
 ```
 script=https://git.sr.ht/~jmcantrell/bootstrap-arch/blob/main/scripts/inject
 ```

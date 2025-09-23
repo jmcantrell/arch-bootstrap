@@ -6,10 +6,10 @@ pacman-key --init
 pacman-key --populate
 pacman --sync --refresh --needed --noconfirm archlinux-keyring
 
-if [[ -v INSTALL_PARALLEL_DOWNLOADS ]]; then
-    pacman-config-parallel-downloads /etc/pacman.conf "$INSTALL_PARALLEL_DOWNLOADS"
+if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
+    pacman-config-parallel-downloads /etc/pacman.conf "$BOOTSTRAP_PARALLEL_DOWNLOADS"
 fi
 
 readarray -t packages < <(packages)
 
-pacstrap ${INSTALL_PACKAGE_CACHE:+-c} "$INSTALL_MOUNT" "${packages[@]}"
+pacstrap ${BOOTSTRAP_PACKAGE_CACHE:+-c} "$BOOTSTRAP_MOUNT" "${packages[@]}"

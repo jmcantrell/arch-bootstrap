@@ -2,12 +2,12 @@
 
 set -euo pipefail
 
-if [[ -v INSTALL_KEYMAP ]]; then
-    loadkeys "$INSTALL_KEYMAP"
+if [[ -v BOOTSTRAP_KEYMAP ]]; then
+    loadkeys "$BOOTSTRAP_KEYMAP"
 fi
 
-if [[ -v INSTALL_FONT ]]; then
-    setfont "$INSTALL_FONT"
+if [[ -v BOOTSTRAP_FONT ]]; then
+    setfont "$BOOTSTRAP_FONT"
 fi
 
 # Update the pacman mirrorlist, if possible.
@@ -15,7 +15,7 @@ if timeout 1 ping -q -c1 archlinux.org &>/dev/null; then
     reflector \
         --save /etc/pacman.d/mirrorlist \
         --protocol https --latest 5 --sort age \
-        --country "$INSTALL_MIRROR_COUNTRY"
+        --country "$BOOTSTRAP_MIRROR_COUNTRY"
 else
     # If there's no network access, stop trying to update the mirror list.
     systemctl stop reflector.service

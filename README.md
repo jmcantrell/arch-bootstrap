@@ -8,7 +8,7 @@ Aside from the opinions listed below, care is taken to ensure the resulting syst
 
 Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using BIOS or [UEFI][uefi] mode, depending on the detected hardware capabilities.
 
-Logical volume management is handled by [LVM][lvm], including a volume for swap (allowing for hibernation).
+Logical volume management is handled by [LVM][lvm], optionally, with a volume for swap (allowing for hibernation).
 
 If enabled, [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
@@ -18,7 +18,7 @@ The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (
 
 [Early KMS start][early-kms-start] is enabled for any recognized GPU chipsets.
 
-Any wireless connections created in the installation environment will be persisted to the installed system.
+If wireless networking is enabled, any connections created in the installation environment will be persisted to the installed system.
 
 A [privileged user][#privileged-user] will be created and the root account will be disabled.
 
@@ -130,6 +130,10 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
+#### Swap
+
+- `BOOTSTRAP_USE_SWAP`: If set to a non-empty value, create and enable a swap partition (see [volume management][#volume-management] and [file system][#file-system] for further configuration)
+
 #### Volume Management
 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
@@ -148,7 +152,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Kernel
 
-- `BOOTSTRAP_KERNEL`: Use an alternate kernel (default: unset, choices: `lts`, `hardened`, `rt`, `rt-lts`, or `zen`)
+- `BOOTSTRAP_KERNEL_ALT`: Use an alternate kernel (default: unset, choices: `lts`, `hardened`, `rt`, `rt-lts`, or `zen`)
 - `BOOTSTRAP_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
@@ -201,7 +205,7 @@ It will be copied to `/` with the permissions (but not ownership) intact.
 #### `$BOOTSTRAP_CONFIG/templates/*`
 
 This directory tree contains files necessary for installation, but with potentially varying details.
-They will be rendered with `envsubst` (see: `./bin/template-install`).
+They will be rendered with `envsubst` (see: `./bin/template-install`) and installed individually as needed.
 
 ## Installation
 

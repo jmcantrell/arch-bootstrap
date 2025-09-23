@@ -5,10 +5,12 @@ set -euo pipefail
 pvcreate --verbose -ff --yes "$BOOTSTRAP_LVM_DEVICE"
 vgcreate --verbose "$BOOTSTRAP_LVM_VG_NAME" "$BOOTSTRAP_LVM_DEVICE"
 
-lvcreate --verbose --wipesignatures y --yes \
-    --name "$BOOTSTRAP_LVM_LV_SWAP_NAME" \
-    --size "$BOOTSTRAP_LVM_LV_SWAP_SIZE" \
-    "$BOOTSTRAP_LVM_VG_NAME"
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    lvcreate --verbose --wipesignatures y --yes \
+        --name "$BOOTSTRAP_LVM_LV_SWAP_NAME" \
+        --size "$BOOTSTRAP_LVM_LV_SWAP_SIZE" \
+        "$BOOTSTRAP_LVM_VG_NAME"
+fi
 
 lvcreate --verbose --wipesignatures y --yes \
     --name "$BOOTSTRAP_LVM_LV_ROOT_NAME" \

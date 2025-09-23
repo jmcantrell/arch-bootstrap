@@ -10,7 +10,11 @@ cmdline_linux_default=(
     consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
 )
 
-cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
+cmdline_linux=()
+
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    cmdline_linux+=(resume="$BOOTSTRAP_SWAP_DEVICE")
+fi
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     export GRUB_ENABLE_CRYPTODISK=y

@@ -2,21 +2,11 @@
 
 set -euo pipefail
 
-hostname=testvm
-pause=0
-
-while getopts "n:p" opt; do
-    case $opt in
-    n) hostname=$OPTARG ;;
-    p) pause=1 ;;
-    *) exit 2 ;;
-    esac
-done
-shift $((OPTIND - 1))
+hostname=testvm-$$
 
 media_file=${1:?missing installation media}
 
-temp_dir=$(mktemp -d)
+temp_dir=$(mktemp -d -t "$hostname".XXXXXXXXXX)
 trap 'rm -rf "$temp_dir"' EXIT
 
 data_file=$temp_dir/data.cow
@@ -30,18 +20,13 @@ printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
     printf "runcmd:\n"
     printf "    - mkdir -p /mnt/bootstrap\n"
     printf "    - mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap\n"
-
-    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_INSTALL_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=${hostname@Q}"
+    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_INSTALL_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=$hostname BOOTSTRAP_ADMIN_LOGIN=$USER"
     while IFS= read -r line; do
         printf " %s" "$line"
     done < <(set | grep '^BOOTSTRAP_')
     printf "; source ./scripts/prepare"
     printf "&& ./scripts/%s" show create install
     printf "\n"
-
-    if ((!pause)); then
-        printf "    - poweroff\n"
-    fi
 } >"$temp_dir"/cidata/user-data
 
 xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$temp_dir"/cidata/*

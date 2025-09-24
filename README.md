@@ -154,7 +154,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Kernel
 
-- `BOOTSTRAP_KERNEL_PACKAGE`: The package containing the kernel (default: `linux`)
+- `BOOTSTRAP_KERNEL_ALT`: Use an alternate kernel (default: unset, e.g. `lts` or `zen`)
 - `BOOTSTRAP_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)

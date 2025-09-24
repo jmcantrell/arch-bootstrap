@@ -6,7 +6,7 @@ cd "$BOOTSTRAP_CONFIG"/packages
 
 cat base
 
-printf "%s\n" "$BOOTSTRAP_KERNEL_PACKAGE"
+printf "linux%s\n" "${BOOTSTRAP_KERNEL_ALT:-}"
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     cat luks

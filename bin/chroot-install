@@ -8,10 +8,6 @@ for path in /etc/systemd/{network,networkd.conf.d}; do
     rsync -va "$path"/ "${BOOTSTRAP_MOUNT_DIR%%/}$path"/
 done
 
-if [[ -d $BOOTSTRAP_CONFIG_DIR/files ]]; then
-    rsync -va --no-{owner,group} "$BOOTSTRAP_CONFIG_DIR"/files/ "$BOOTSTRAP_MOUNT_DIR"/
-fi
-
 if [[ -v BOOTSTRAP_HOSTNAME ]]; then
     printf "%s\n" "$BOOTSTRAP_HOSTNAME" >"$BOOTSTRAP_MOUNT_DIR"/etc/hostname
 fi
@@ -34,6 +30,7 @@ arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-{networkd,resolved}.
 export MIRROR_SORT=$BOOTSTRAP_MIRROR_SORT
 export MIRROR_LATEST=$BOOTSTRAP_MIRROR_LATEST
 export MIRROR_COUNTRY=$BOOTSTRAP_MIRROR_COUNTRY
+
 template-install /etc/xdg/reflector/reflector.conf
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable reflector.{service,timer}
 
@@ -43,12 +40,13 @@ if [[ -v BOOTSTRAP_USE_TRIM ]]; then
 fi
 
 if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
-    rsync -va {,"$BOOTSTRAP_MOUNT_DIR"}/var/lib/iwd/
     arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable iwd.service
 fi
 
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
+
 export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP
+
 if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
     template-install /etc/sudoers.d/49-admin{-nopasswd,}
     template-install /etc/polkit-1/rules.d/49-admin{-nopasswd,}.rules
@@ -59,9 +57,5 @@ fi
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
 printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT_DIR"
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" passwd --lock root
-
-if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
-    pacman-config-parallel-downloads "$BOOTSTRAP_MOUNT_DIR"/etc/pacman.conf "$BOOTSTRAP_PARALLEL_DOWNLOADS"
-fi
 
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable sshd.service

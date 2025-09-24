@@ -8,11 +8,7 @@ cmdline_linux_default=(
     loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"
     consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
 )
-cmdline_linux=()
-
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
-    cmdline_linux+=(resume="$BOOTSTRAP_SWAP_DEVICE")
-fi
+cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     export GRUB_ENABLE_CRYPTODISK=y
@@ -33,10 +29,10 @@ template-install /etc/default/grub
 
 grub_opts=()
 if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    grub_opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT" --bootloader-id=GRUB)
+    grub_opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT_DIR" --bootloader-id=GRUB)
 else
     grub_opts+=(--target=i386-pc)
 fi
 
-arch-chroot "$BOOTSTRAP_MOUNT" grub-install --recheck "${grub_opts[@]}" "$BOOTSTRAP_DEVICE"
-arch-chroot "$BOOTSTRAP_MOUNT" grub-mkconfig --output=/boot/grub/grub.cfg
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-install --recheck "${grub_opts[@]}" "$BOOTSTRAP_INSTALL_DEVICE"
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-mkconfig --output=/boot/grub/grub.cfg

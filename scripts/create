@@ -11,10 +11,8 @@ fi
 
 lvm-create
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
-    swap-create
-    swap-open
-fi
+swap-create
+swap-open
 
 fs-format
 fs-mount

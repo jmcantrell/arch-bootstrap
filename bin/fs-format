@@ -8,12 +8,12 @@ fi
 
 mkfs.btrfs --verbose --label "$BOOTSTRAP_FS_ROOT_LABEL" "$BOOTSTRAP_ROOT_DEVICE"
 
-mkdir -p "$BOOTSTRAP_MOUNT"
+mkdir -p "$BOOTSTRAP_MOUNT_DIR"
 
-mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_MOUNT"
+mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_MOUNT_DIR"
 
 while read -r name _; do
-    btrfs subvolume create "$BOOTSTRAP_MOUNT/$name"
+    btrfs subvolume create "$BOOTSTRAP_MOUNT_DIR/$name"
 done < <(subvolumes)
 
-umount --verbose "$BOOTSTRAP_MOUNT"
+umount --verbose "$BOOTSTRAP_MOUNT_DIR"

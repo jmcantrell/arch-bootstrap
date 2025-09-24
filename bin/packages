@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-cd "$BOOTSTRAP_CONFIG"/packages
+cd "$BOOTSTRAP_CONFIG_DIR"/packages
 
 cat base
 

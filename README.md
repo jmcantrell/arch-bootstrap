@@ -52,7 +52,7 @@ If all is well, `poweroff` and eject the installation media.
 
 The desired system is described by [configuration files](#configuration-files).
 The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a suitable template for customization.
-The details of that system are controlled entirely by [environment](#environment) variables. These can be set manually, added to `$BOOTSTRAP_CONFIG/env`, or sourced from another file before sourcing the prepare script.
+The details of that system are controlled entirely by [environment](#environment) variables. These can be set manually, added to `$BOOTSTRAP_CONFIG_DIR/env`, or sourced from another file before sourcing the prepare script.
 
 To prepare the environment for the default configuration:
 
@@ -69,7 +69,7 @@ source ./scripts/prepare /path/to/config/
 Which is equivalent to:
 
 ```sh
-BOOTSTRAP_CONFIG=/path/to/config/ source ./scripts/prepare
+BOOTSTRAP_CONFIG_DIR=/path/to/config/ source ./scripts/prepare
 ```
 
 ### Environment
@@ -78,10 +78,9 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Metadata
 
-- `BOOTSTRAP_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
-- `BOOTSTRAP_CONFIG`: The directory containing [configuration files](#configuration-files) (default: `./config`)
-- `BOOTSTRAP_MOUNT`: The path where the new system will be mounted during installation (default: `/mnt/install`)
-- `BOOTSTRAP_DEFAULT_PASSWORD`: The password used when not overridden (default: `hunter2`)
+- `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
+- `BOOTSTRAP_CONFIG_DIR`: The directory containing [configuration files](#configuration-files) (default: `./config`)
+- `BOOTSTRAP_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
 #### Host Details
 
@@ -108,9 +107,9 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Hardware
 
+- `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
 - `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
 - `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
-- `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
 - `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
 - `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
 
@@ -122,18 +121,14 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_PART_BOOT_SIZE`: The size of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
 - `BOOTSTRAP_PART_SYS_NAME`: The name of the operating system partition (default: `sys`)
 - `BOOTSTRAP_PART_SYS_SIZE`: The size of the operating system partition (default: `+`, i.e., use all remaining space)
-- `BOOTSTRAP_UEFI_MOUNT`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
+- `BOOTSTRAP_UEFI_MOUNT_DIR`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
 #### Full Disk Encryption
 
-- `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_DEVICE`
+- `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_INSTALL_DEVICE`
 - `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `$BOOTSTRAP_DEFAULT_PASSWORD`, occupies key slot 0)
-- `BOOTSTRAP_LUKS_KEYFILE`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
+- `BOOTSTRAP_LUKS_KEYFILE_PATH`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
-
-#### Swap
-
-- `BOOTSTRAP_USE_SWAP`: If set to a non-empty value, create and enable a swap partition (see [volume management][#volume-management] and [file system][#file-system] for further configuration)
 
 #### Volume Management
 
@@ -161,12 +156,12 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 Within a configuration directory, the following files are recognized:
 
-#### `$BOOTSTRAP_CONFIG/env`
+#### `$BOOTSTRAP_CONFIG_DIR/env`
 
 This file, if it exists, will be sourced at the beginning of the preparation script.
 It's treated as a bash script, and any variables relevant to installation (see [environment](#environment)) should be exported.
 
-#### `$BOOTSTRAP_CONFIG/subvolumes`
+#### `$BOOTSTRAP_CONFIG_DIR/subvolumes`
 
 This file, if it exists, defines the extra btrfs subvolumes that will be created.
 It must be a regular file containing one subvolume mapping per line.
@@ -180,29 +175,29 @@ name /path/to/mount
 
 The subvolume name must not contain any whitespace.
 
-#### `$BOOTSTRAP_CONFIG/packages/**`
+#### `$BOOTSTRAP_CONFIG_DIR/packages/**`
 
-This directory contains files representing groups of packages that are installed depending on various factors, such as the preferred kernel, cpu chipset, or boot firmware.
+This directory contains files representing groups of packages that are installed, either unconditionally or depending on various factors e.g. cpu chipset or boot firmware.
 Removing any packages will probably break the installation, but packages could be added with no consequence.
 For example, adding packages to `wireless` will cause them to be installed along with the wireless daemon if wireless networking is enabled.
 
-#### `$BOOTSTRAP_CONFIG/packages/extra`
+To see what packages will be installed, run `./bin/packages`.
+
+#### `$BOOTSTRAP_CONFIG_DIR/packages/extra`
 
 This file, if it exists, defines the extra packages that will be installed on the new system.
 It must be a regular file containing one package per line.
 
-Aside from these extra packages, only the packages necessary for a functional system will be installed (see `./bin/packages`).
-
-#### `$BOOTSTRAP_CONFIG/install`
+#### `$BOOTSTRAP_CONFIG_DIR/install`
 
 This script, if it exists, will be run in a chroot just before finalization steps (boot loader configuration and initrd creation).
 
-#### `$BOOTSTRAP_CONFIG/files/*`
+#### `$BOOTSTRAP_CONFIG_DIR/files/*`
 
 This directory tree, if it exists, contains files that will be added unchanged to the installation.
 It will be copied to `/` with the permissions (but not ownership) intact.
 
-#### `$BOOTSTRAP_CONFIG/templates/*`
+#### `$BOOTSTRAP_CONFIG_DIR/templates/*`
 
 This directory tree contains files necessary for installation, but with potentially varying details.
 They will be rendered with `envsubst` (see: `./bin/template-install`) and installed individually as needed.

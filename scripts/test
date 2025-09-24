@@ -31,7 +31,7 @@ printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
     printf "    - mkdir -p /mnt/bootstrap\n"
     printf "    - mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap\n"
 
-    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=${hostname@Q} BOOTSTRAP_PARALLEL_DOWNLOADS=0"
+    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_INSTALL_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=${hostname@Q} BOOTSTRAP_PARALLEL_DOWNLOADS=0"
     while IFS= read -r line; do
         printf " %s" "$line"
     done < <(set | grep '^BOOTSTRAP_')

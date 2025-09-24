@@ -12,4 +12,4 @@ fi
 
 readarray -t packages < <(packages)
 
-pacstrap ${BOOTSTRAP_PACKAGE_CACHE:+-c} "$BOOTSTRAP_MOUNT" "${packages[@]}"
+pacstrap ${BOOTSTRAP_PACKAGE_CACHE:+-c} "$BOOTSTRAP_MOUNT_DIR" "${packages[@]}"

@@ -6,8 +6,5 @@ if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     luks-open
 fi
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
-    swap-open
-fi
-
+swap-open
 fs-mount

@@ -1,154 +1,16 @@
 #!/usr/bin/env bash
 
-export PATH=$PWD/bin:$PATH
+export BOOTSTRAP_ROOT_DIR=$PWD
 
-export BOOTSTRAP_CONFIG=${1:-${BOOTSTRAP_CONFIG:-$PWD/config}}
+export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
 
-env_file=$BOOTSTRAP_CONFIG/env
-if [[ -f $env_file ]] && ! . "$env_file"; then
-    printf "unable to source file: %q\n" "$env_file" >&2
-    return 1
-fi
+export BOOTSTRAP_LIB_DIR=$BOOTSTRAP_ROOT_DIR/lib
+export BOOTSTRAP_CONFIG_DIR=${1:-${BOOTSTRAP_CONFIG_DIR:-$BOOTSTRAP_ROOT_DIR/config}}
 
-export BOOTSTRAP_MOUNT=${BOOTSTRAP_MOUNT:-/mnt/install}
+. "$BOOTSTRAP_LIB_DIR"/source.bash
 
-export BOOTSTRAP_DEFAULT_PASSWORD=${BOOTSTRAP_DEFAULT_PASSWORD:-hunter2}
+bootstrap_try_source "$BOOTSTRAP_CONFIG_DIR"/env || return
 
-unset partition_prefix
-if [[ ${BOOTSTRAP_DEVICE##*/} == nvme* ]]; then
-    partition_prefix=p
-fi
+: "${BOOTSTRAP_INSTALL_DEVICE:?missing install device}"
 
-export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_DEVICE}${partition_prefix:-}1}
-export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_DEVICE}${partition_prefix:-}2}
-
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_SYS_DEVICE
-    export BOOTSTRAP_LUKS_MAPPER_NAME=${BOOTSTRAP_LUKS_MAPPER_NAME:-sys}
-    export BOOTSTRAP_LUKS_MAPPER=/dev/mapper/$BOOTSTRAP_LUKS_MAPPER_NAME
-    export BOOTSTRAP_LUKS_KEYFILE=${BOOTSTRAP_LUKS_KEYFILE:-/crypto_keyfile.bin}
-    export BOOTSTRAP_LUKS_PASSPHRASE=${BOOTSTRAP_LUKS_PASSPHRASE:-$BOOTSTRAP_DEFAULT_PASSWORD}
-    export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_LUKS_MAPPER
-else
-    export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_SYS_DEVICE
-fi
-
-export BOOTSTRAP_LVM_VG_NAME=${BOOTSTRAP_LVM_VG_NAME:-sys}
-
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
-    export BOOTSTRAP_LVM_LV_SWAP_NAME=${BOOTSTRAP_LVM_LV_SWAP_NAME:-swap}
-    export BOOTSTRAP_SWAP_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_SWAP_NAME
-    export BOOTSTRAP_FS_SWAP_LABEL=${BOOTSTRAP_FS_SWAP_LABEL:-swap}
-    if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
-        if [[ -v BOOTSTRAP_MEMORY_SIZE ]]; then
-            BOOTSTRAP_LVM_LV_SWAP_SIZE=$BOOTSTRAP_MEMORY_SIZE
-        elif memory_size=$(memory-size); then
-            BOOTSTRAP_LVM_LV_SWAP_SIZE=$memory_size
-        else
-            printf "unable to get information about physical memory\n" >&2
-            return 1
-        fi
-        export BOOTSTRAP_LVM_LV_SWAP_SIZE
-    fi
-fi
-
-export BOOTSTRAP_LVM_LV_ROOT_NAME=${BOOTSTRAP_LVM_LV_ROOT_NAME:-root}
-export BOOTSTRAP_LVM_LV_ROOT_EXTENTS=${BOOTSTRAP_LVM_LV_ROOT_EXTENTS:-+100%FREE}
-export BOOTSTRAP_ROOT_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_ROOT_NAME
-
-export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
-export BOOTSTRAP_FS_ROOT_OPTIONS=${BOOTSTRAP_FS_ROOT_OPTIONS:-autodefrag,compress=zstd}
-
-if [[ ! -v BOOTSTRAP_CPU_VENDOR ]]; then
-    if ! cpu_vendor=$(cpu-vendor); then
-        printf "unable to get cpu vendor\n" >&2
-        return 1
-    fi
-    export BOOTSTRAP_CPU_VENDOR=$cpu_vendor
-fi
-
-cpu_vendor_package_file=$BOOTSTRAP_CONFIG/packages/cpu/$BOOTSTRAP_CPU_VENDOR
-
-if [[ ! -f $cpu_vendor_package_file ]]; then
-    printf "%s: invalid cpu vendor: %s\n" "$0" "$BOOTSTRAP_CPU_VENDOR" >&2
-    return 2
-fi
-
-export BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE=$cpu_vendor_package_file
-
-if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
-    if ! gpu_modules=$(gpu-modules | paste -sd' '); then
-        printf "unable to get gpu kernel modules\n" >&2
-        return 1
-    fi
-    export BOOTSTRAP_GPU_MODULES=$gpu_modules
-fi
-
-if [[ ! -v BOOTSTRAP_BOOT_FIRMWARE ]]; then
-    if [[ -d /sys/firmware/efi/efivars ]]; then
-        export BOOTSTRAP_BOOT_FIRMWARE=uefi
-    else
-        export BOOTSTRAP_BOOT_FIRMWARE=bios
-    fi
-fi
-
-boot_firmware_package_file=$BOOTSTRAP_CONFIG/packages/boot/$BOOTSTRAP_BOOT_FIRMWARE
-
-if [[ ! -f $boot_firmware_package_file ]]; then
-    printf "%s: invalid boot firmware: %s\n" "$0" "$BOOTSTRAP_BOOT_FIRMWARE" >&2
-    return 2
-fi
-
-export BOOTSTRAP_BOOT_FIRMWARE_PACKAGE_FILE=$boot_firmware_package_file
-
-export BOOTSTRAP_PART_BOOT_NAME=${BOOTSTRAP_PART_BOOT_NAME:-boot}
-
-case $BOOTSTRAP_BOOT_FIRMWARE in
-uefi)
-    export BOOTSTRAP_PART_BOOT_TYPE=C12A7328-F81F-11D2-BA4B-00A0C93EC93B
-    export BOOTSTRAP_PART_BOOT_SIZE=${BOOTSTRAP_PART_BOOT_SIZE:-100M}
-    export BOOTSTRAP_UEFI_MOUNT=${BOOTSTRAP_UEFI_MOUNT:-/efi}
-    ;;
-bios)
-    export BOOTSTRAP_PART_BOOT_TYPE=21686148-6449-6E6F-744E-656564454649
-    export BOOTSTRAP_PART_BOOT_SIZE=${BOOTSTRAP_PART_BOOT_SIZE:-1M}
-    ;;
-esac
-
-export BOOTSTRAP_PART_SYS_NAME=${BOOTSTRAP_PART_SYS_NAME:-sys}
-export BOOTSTRAP_PART_SYS_TYPE=${BOOTSTRAP_PART_SYS_TYPE:-0FC63DAF-8483-4772-8E79-3D69D8477DE4}
-export BOOTSTRAP_PART_SYS_SIZE=${BOOTSTRAP_PART_SYS_SIZE:-+}
-
-if [[ ! -v BOOTSTRAP_USE_TRIM ]] && device-is-ssd "$BOOTSTRAP_DEVICE"; then
-    export BOOTSTRAP_USE_TRIM=1
-fi
-
-if [[ ! -v BOOTSTRAP_USE_WIRELESS ]] && network-interfaces | grep -q '^wl'; then
-    export BOOTSTRAP_USE_WIRELESS=1
-fi
-
-export BOOTSTRAP_HOSTNAME=${BOOTSTRAP_HOSTNAME:-arch}
-export BOOTSTRAP_LANG=${BOOTSTRAP_LANG:-en_US.UTF-8}
-export BOOTSTRAP_KEYMAP=${BOOTSTRAP_KEYMAP:-us}
-
-if [[ ! -v BOOTSTRAP_TIMEZONE ]]; then
-    if ! timezone=$(timezone); then
-        printf "unable to get time zone\n" >&2
-        return 1
-    fi
-    export BOOTSTRAP_TIMEZONE=$timezone
-elif ! timedatectl list-timezones | grep -qxF "$BOOTSTRAP_TIMEZONE"; then
-    printf "%s: invalid timezone: %s\n" "$0" "$BOOTSTRAP_TIMEZONE" >&2
-    return 2
-fi
-
-export BOOTSTRAP_MIRROR_SORT=${BOOTSTRAP_MIRROR_SORT:-age}
-export BOOTSTRAP_MIRROR_LATEST=${BOOTSTRAP_MIRROR_LATEST:-5}
-export BOOTSTRAP_MIRROR_COUNTRY=${BOOTSTRAP_MIRROR_COUNTRY:-US}
-
-export BOOTSTRAP_ADMIN_LOGIN=${BOOTSTRAP_ADMIN_LOGIN:-admin}
-export BOOTSTRAP_ADMIN_GROUP=${BOOTSTRAP_ADMIN_GROUP:-wheel}
-export BOOTSTRAP_ADMIN_PASSWORD=${BOOTSTRAP_ADMIN_PASSWORD:-$BOOTSTRAP_DEFAULT_PASSWORD}
-
-export BOOTSTRAP_KERNEL_LOGLEVEL=${BOOTSTRAP_KERNEL_LOGLEVEL:-4}
-export BOOTSTRAP_KERNEL_CONSOLEBLANK=${BOOTSTRAP_KERNEL_CONSOLEBLANK:-0}
+bootstrap_source "$BOOTSTRAP_LIB_DIR"/prepare/*.bash

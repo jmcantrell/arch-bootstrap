@@ -11,8 +11,8 @@ set -euo pipefail
 input_file=${1:?missing file}
 output_file=${2:-$input_file}
 
-template=$BOOTSTRAP_CONFIG/templates/${input_file#/}
-output=$BOOTSTRAP_MOUNT/${output_file#/}
+template=$BOOTSTRAP_CONFIG_DIR/templates/${input_file#/}
+output=$BOOTSTRAP_MOUNT_DIR/${output_file#/}
 
 mkdir -p "$(dirname "$output")"
 envsubst <"$template" >"$output"

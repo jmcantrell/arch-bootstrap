@@ -4,7 +4,7 @@ set -euo pipefail
 
 printf "@ /\n" # the root subvolume
 
-config_file=$BOOTSTRAP_CONFIG/subvolumes
+config_file=$BOOTSTRAP_CONFIG_DIR/subvolumes
 
 if [[ -f $config_file ]]; then
     sed -E 's/^@?/@/' "$config_file"

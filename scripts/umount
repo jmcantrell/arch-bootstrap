@@ -3,11 +3,7 @@
 set -euo pipefail
 
 fs-umount
-
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
-    swap-close
-fi
-
+swap-close
 lvm-close
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then

@@ -23,13 +23,7 @@ if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     hooks+=(encrypt)
 fi
 
-hooks+=(lvm2)
-
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
-    hooks+=(resume)
-fi
-
-hooks+=(filesystems btrfs fsck)
+hooks+=(lvm2 resume filesystems btrfs fsck)
 
 export INITRD_BINARIES=${binaries[*]}
 export INITRD_MODULES=${modules[*]}
@@ -38,4 +32,4 @@ export INITRD_FILES=${files[*]}
 
 template-install /etc/mkinitcpio.conf
 
-arch-chroot "$BOOTSTRAP_MOUNT" mkinitcpio --allpresets
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" mkinitcpio --allpresets

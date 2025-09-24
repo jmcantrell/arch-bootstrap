@@ -28,6 +28,11 @@ if [[ -v BOOTSTRAP_ADMIN_SHELL_PACKAGE_FILE ]]; then
     cat "$BOOTSTRAP_ADMIN_SHELL_PACKAGE_FILE"
 fi
 
+if [[ -v BOOTSTRAP_PACKAGES ]]; then
+    read -ra packages <<<"$BOOTSTRAP_PACKAGES"
+    printf "%s\n" "${packages[@]}"
+fi
+
 if [[ -f extra ]]; then
     cat extra
 fi

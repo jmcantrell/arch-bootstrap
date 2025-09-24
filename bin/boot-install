@@ -3,13 +3,11 @@
 set -euo pipefail
 
 preload_modules=(part_{gpt,msdos} lvm)
-
 cmdline_linux_default=(
     ${BOOTSTRAP_KERNEL_QUIET:+quiet}
     loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"
     consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
 )
-
 cmdline_linux=()
 
 if [[ -v BOOTSTRAP_USE_SWAP ]]; then
@@ -33,13 +31,12 @@ export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 
 template-install /etc/default/grub
 
-opts=()
-
+grub_opts=()
 if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT" --bootloader-id=GRUB)
+    grub_opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT" --bootloader-id=GRUB)
 else
-    opts+=(--target=i386-pc)
+    grub_opts+=(--target=i386-pc)
 fi
 
-arch-chroot "$BOOTSTRAP_MOUNT" grub-install --recheck "${opts[@]}" "$BOOTSTRAP_DEVICE"
+arch-chroot "$BOOTSTRAP_MOUNT" grub-install --recheck "${grub_opts[@]}" "$BOOTSTRAP_DEVICE"
 arch-chroot "$BOOTSTRAP_MOUNT" grub-mkconfig --output=/boot/grub/grub.cfg

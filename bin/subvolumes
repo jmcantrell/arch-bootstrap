@@ -7,5 +7,5 @@ printf "@ /\n" # the root subvolume
 config_file=$BOOTSTRAP_CONFIG/subvolumes
 
 if [[ -f $config_file ]]; then
-    sed 's/^/@/' "$config_file"
+    sed -E 's/^@?/@/' "$config_file"
 fi

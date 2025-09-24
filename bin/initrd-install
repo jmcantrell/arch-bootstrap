@@ -23,7 +23,13 @@ if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     hooks+=(encrypt)
 fi
 
-hooks+=(resume lvm2 filesystems btrfs fsck)
+hooks+=(lvm2)
+
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    hooks+=(resume)
+fi
+
+hooks+=(filesystems btrfs fsck)
 
 export INITRD_BINARIES=${binaries[*]}
 export INITRD_MODULES=${modules[*]}

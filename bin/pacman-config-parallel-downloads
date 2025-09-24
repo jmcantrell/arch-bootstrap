@@ -7,10 +7,10 @@ value=${2:-0}
 
 config_key=ParallelDownloads
 
-opts=(-e "/^#$config_key\\b/s/#//")
+sed_opts=(-e "/^#$config_key\\b/s/#//")
 
 if [[ $value =~ ^[[:digit:]]+$ ]] && ((value > 0)); then
-    opts+=(-e "/^$config_key\\b/s/[[:digit:]]\+/$value/")
+    sed_opts+=(-e "/^$config_key\\b/s/[[:digit:]]\+/$value/")
 fi
 
-sed -i "${opts[@]}" "$config_file"
+sed -i "${sed_opts[@]}" "$config_file"

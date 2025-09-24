@@ -1,18 +1,12 @@
 #!/usr/bin/env bash
 
-# Installs a copy of the given file with environment variables substituted.
-# Usage: template-install INPUT_FILE [OUTPUT_FILE]
-#
-# The file arguments should be specified as it would appear to the new system (e.g.
-# `/etc/default/grub`, not `./config/templates/etc/default/grub`).
-
 set -euo pipefail
 
 input_file=${1:?missing file}
 output_file=${2:-$input_file}
 
-template=$BOOTSTRAP_CONFIG_DIR/templates/${input_file#/}
-output=$BOOTSTRAP_MOUNT_DIR/${output_file#/}
+template_file=$BOOTSTRAP_CONFIG_DIR/templates/${input_file#/}
+rendered_file=$BOOTSTRAP_MOUNT_DIR/${output_file#/}
 
-mkdir -p "$(dirname "$output")"
-envsubst <"$template" >"$output"
+mkdir -p "$(dirname "$rendered_file")"
+envsubst <"$template_file" >"$rendered_file"

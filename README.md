@@ -20,12 +20,12 @@ The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (
 
 If wireless networking is enabled, any connections created in the installation environment will be persisted to the installed system.
 
-A [privileged user][#privileged-user] will be created and the root account will be disabled.
+A [privileged user][#privileged-user] will be created and the root account will be locked.
 
 The following systemd units are enabled:
 
 - [fstrim][ssd].timer (if installation disk is a solid-state drive)
-- [iwd].service (if any wireless networking devices are present)
+- [iwd].service (if wireless networking is enabled)
 - [systemd-networkd].service (with [Multicast DNS][mdns] enabled)
 - [systemd-resolved].service (with `stub-resolv.conf`)
 - [systemd-timesyncd].service
@@ -40,9 +40,9 @@ In general, the installation steps are as follows:
 1. Change the directory to this repository
 1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
-1. Optionally, ensure the environment is correct: `./scripts/show` (sensitive data is redacted)
+1. Optionally, inspect the environment: `./scripts/show` (sensitive data is redacted)
 1. Create and mount partitions: `./scripts/create`
-1. Install packages and set up operating system: `./scripts/install`
+1. Install packages and configure system: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
 
@@ -50,47 +50,31 @@ If all is well, `poweroff` and eject the installation media.
 
 ## Configuration
 
-The desired system is described by [configuration files](#configuration-files).
-The default configuration directory at `./config` is what I consider a reasonable starting point based on the opinions outlined earlier and should serve as a suitable template for customization.
-The details of that system are controlled entirely by [environment](#environment) variables. These can be set manually, added to `$BOOTSTRAP_CONFIG_DIR/env`, or sourced from another file before sourcing the prepare script.
+The details of the system being installed are controlled entirely by [environment](#environment) variables.
+The following variables should be defined and exported before sourcing the preparation script.
 
-To prepare the environment for the default configuration:
+### Required
 
-```sh
-source ./scripts/prepare
-```
+The only required environment variable is the one that defines the installation device.
+It must be explicitly set because it's the most destructive, as all existing data will be destroyed without confirmation during installation.
 
-To prepare the environment for a different configuration:
+- `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (e.g. `/dev/sda`)
 
-```sh
-source ./scripts/prepare /path/to/config/
-```
+### Metadata
 
-Which is equivalent to:
-
-```sh
-BOOTSTRAP_CONFIG_DIR=/path/to/config/ source ./scripts/prepare
-```
-
-### Environment
-
-The following variables can be defined anywhere, as long as they're exported in the environment used to perform the installation.
-
-#### Metadata
-
-- `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
-- `BOOTSTRAP_CONFIG_DIR`: The directory containing [configuration files](#configuration-files) (default: `./config`)
 - `BOOTSTRAP_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
-#### Host Details
+### Host Details
 
 - `BOOTSTRAP_HOSTNAME`: The system host name (default: `arch`)
-- `BOOTSTRAP_LANG`: The default language (default: `en_US.UTF-8`)
-- `BOOTSTRAP_KEYMAP`: The default keyboard mapping (default: `us`)
-- `BOOTSTRAP_FONT`: The default console font
 - `BOOTSTRAP_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
 
-#### Packages
+### Localization
+
+- `BOOTSTRAP_LANG`: The default language (default: `en_US.UTF-8`)
+- `BOOTSTRAP_KEYMAP`: The default keyboard mapping (default: `us`)
+
+### Packages
 
 - `BOOTSTRAP_PACKAGES`: If set to a non-empty value, also install these packages (multiple values should be separated with a space)
 - `BOOTSTRAP_MIRROR_SORT`: The sort criteria used for mirror selection (default: `age`, choices: `age`, `rate`, `score`, or `delay`)
@@ -98,14 +82,14 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, choices: see `reflector --list-countries`)
 - `BOOTSTRAP_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `yes` or `5`)
 
-#### Privileged User
+### Privileged User
 
 - `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
 - `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
-#### Hardware
+### Hardware
 
 - `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
 - `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
@@ -113,7 +97,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
 - `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
 
-#### Partition Table
+### Partition Table
 
 **NOTE**: Values for partition sizes must be specified in a way that [sfdisk(8)][sfdisk] can understand
 
@@ -123,14 +107,14 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_PART_SYS_SIZE`: The size of the operating system partition (default: `+`, i.e., use all remaining space)
 - `BOOTSTRAP_UEFI_MOUNT_DIR`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
-#### Full Disk Encryption
+### Full Disk Encryption
 
 - `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_INSTALL_DEVICE`
 - `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `$BOOTSTRAP_DEFAULT_PASSWORD`, occupies key slot 0)
 - `BOOTSTRAP_LUKS_KEYFILE_PATH`: The path of the keyfile used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
-#### Volume Management
+### Volume Management
 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
 
@@ -140,67 +124,18 @@ The following variables can be defined anywhere, as long as they're exported in 
 - `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
 - `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 
-#### File System
+### File System
 
 - `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 - `BOOTSTRAP_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
 - `BOOTSTRAP_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
 
-#### Kernel
+### Kernel
 
+- `BOOTSTRAP_KERNEL_USE_LTS`: If set to a non-empty value, set the LTS kernel as the default
 - `BOOTSTRAP_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
-
-### Configuration Files
-
-Within a configuration directory, the following files are recognized:
-
-#### `$BOOTSTRAP_CONFIG_DIR/env`
-
-This file, if it exists, will be sourced at the beginning of the preparation script.
-It's treated as a bash script, and any variables relevant to installation (see [environment](#environment)) should be exported.
-
-#### `$BOOTSTRAP_CONFIG_DIR/subvolumes`
-
-This file, if it exists, defines the extra btrfs subvolumes that will be created.
-It must be a regular file containing one subvolume mapping per line.
-This must **not** include the root subvolume, as its presence and mount point are not optional.
-
-A submodule mapping must be of the form:
-
-```
-name /path/to/mount
-```
-
-The subvolume name must not contain any whitespace.
-
-#### `$BOOTSTRAP_CONFIG_DIR/packages/**`
-
-This directory contains files representing groups of packages that are installed, either unconditionally or depending on various factors e.g. cpu chipset or boot firmware.
-Removing any packages will probably break the installation, but packages could be added with no consequence.
-For example, adding packages to `wireless` will cause them to be installed along with the wireless daemon if wireless networking is enabled.
-
-To see what packages will be installed, run `./bin/packages`.
-
-#### `$BOOTSTRAP_CONFIG_DIR/packages/extra`
-
-This file, if it exists, defines the extra packages that will be installed on the new system.
-It must be a regular file containing one package per line.
-
-#### `$BOOTSTRAP_CONFIG_DIR/install`
-
-This script, if it exists, will be run in a chroot just before finalization steps (boot loader configuration and initrd creation).
-
-#### `$BOOTSTRAP_CONFIG_DIR/files/*`
-
-This directory tree, if it exists, contains files that will be added unchanged to the installation.
-It will be copied to `/` with the permissions (but not ownership) intact.
-
-#### `$BOOTSTRAP_CONFIG_DIR/templates/*`
-
-This directory tree contains files necessary for installation, but with potentially varying details.
-They will be rendered with `envsubst` (see: `./bin/template-install`) and installed individually as needed.
 
 ## Installation
 

@@ -22,12 +22,7 @@ if [[ -v BOOTSTRAP_LANG ]]; then
     arch-chroot "$BOOTSTRAP_MOUNT_DIR" locale-gen
 fi
 
-{
-    printf "KEYMAP=%s\n" "${BOOTSTRAP_KEYMAP@Q}"
-    if [[ -v BOOTSTRAP_FONT ]]; then
-        printf "FONT=%s\n" "${BOOTSTRAP_FONT@Q}"
-    fi
-} >"$BOOTSTRAP_MOUNT_DIR"/etc/vconsole.conf
+printf "KEYMAP=%q\n" "$BOOTSTRAP_KEYMAP" >"$BOOTSTRAP_MOUNT_DIR"/etc/vconsole.conf
 
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" ln -vsfn /usr/share/zoneinfo/"$BOOTSTRAP_TIMEZONE" /etc/localtime
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-timesyncd.service
@@ -55,15 +50,13 @@ fi
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
 export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP
 if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
-    template-install /etc/sudoers.d/49-admin-nopasswd
-    template-install /etc/polkit-1/rules.d/49-admin-nopasswd.rules
+    template-install /etc/sudoers.d/49-admin{-nopasswd,}
+    template-install /etc/polkit-1/rules.d/49-admin{-nopasswd,}.rules
 else
     template-install /etc/sudoers.d/49-admin
 fi
 
-arch-chroot "$BOOTSTRAP_MOUNT_DIR" useradd \
-    --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" \
-    "$BOOTSTRAP_ADMIN_LOGIN"
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
 printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT_DIR"
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" passwd --lock root
 
@@ -72,10 +65,3 @@ if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
 fi
 
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable sshd.service
-
-script=$BOOTSTRAP_CONFIG_DIR/install
-if [[ -f $script && -x $script ]]; then
-    cp "$script" "$BOOTSTRAP_MOUNT_DIR"/script
-    arch-chroot "$BOOTSTRAP_MOUNT_DIR" /script
-    rm "$BOOTSTRAP_MOUNT_DIR"/script
-fi

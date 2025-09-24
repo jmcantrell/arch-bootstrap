@@ -5,12 +5,14 @@ export BOOTSTRAP_ROOT_DIR=$PWD
 export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
 
 export BOOTSTRAP_LIB_DIR=$BOOTSTRAP_ROOT_DIR/lib
-export BOOTSTRAP_CONFIG_DIR=${1:-${BOOTSTRAP_CONFIG_DIR:-$BOOTSTRAP_ROOT_DIR/config}}
-
-. "$BOOTSTRAP_LIB_DIR"/source.bash
-
-bootstrap_try_source "$BOOTSTRAP_CONFIG_DIR"/env || return
+export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
 
 : "${BOOTSTRAP_INSTALL_DEVICE:?missing install device}"
 
-bootstrap_source "$BOOTSTRAP_LIB_DIR"/prepare/*.bash
+for file in "$BOOTSTRAP_LIB_DIR"/prepare/*.bash; do
+    if ! . "$file"; then
+        printf "unable to source file: %q\n" "$file" >&2
+        return 1
+    fi
+done
+unset file

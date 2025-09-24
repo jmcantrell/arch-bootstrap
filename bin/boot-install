@@ -21,6 +21,13 @@ else
     export GRUB_ENABLE_CRYPTODISK=n
 fi
 
+if [[ -v BOOTSTRAP_KERNEL_USE_LTS ]]; then
+    GRUB_TOP_LEVEL=/boot/vmlinuz-linux-lts
+else
+    GRUB_TOP_LEVEL=/boot/vmlinuz-linux
+fi
+export GRUB_TOP_LEVEL
+
 export GRUB_PRELOAD_MODULES=${preload_modules[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}

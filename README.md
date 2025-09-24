@@ -41,7 +41,6 @@ In general, the installation steps are as follows:
 1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
 1. Optionally, ensure the environment is correct: `./scripts/show` (sensitive data is redacted)
-1. Optionally, localize the environment: `./scripts/localize`
 1. Create and mount partitions: `./scripts/create`
 1. Install packages and set up operating system: `./scripts/install`
 

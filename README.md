@@ -95,7 +95,9 @@ The following variables can be defined anywhere, as long as they're exported in 
 #### Packages
 
 - `BOOTSTRAP_PACKAGES`: If set to a non-empty value, also install these packages (multiple values should be separated with a space)
-- `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, possible values: run `reflector --list-countries`)
+- `BOOTSTRAP_MIRROR_SORT`: The sort criteria used for mirror selection (default: `age`, choices: `age`, `rate`, `score`, or `delay`)
+- `BOOTSTRAP_MIRROR_LATEST`: Only consider the n most recently synchronized mirrors (default: `5`)
+- `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, choices: see `reflector --list-countries`)
 - `BOOTSTRAP_PARALLEL_DOWNLOADS`: If set to a non-empty value, enable parallel package downloads; if set to a positive integer, also define the number of parallel downloads (e.g., `yes` or `5`)
 
 #### Privileged User

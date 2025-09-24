@@ -36,6 +36,8 @@ arch-chroot "$BOOTSTRAP_MOUNT" hwclock --systohc
 ln -vsfn /run/systemd/resolve/stub-resolv.conf "$BOOTSTRAP_MOUNT"/etc/resolv.conf
 arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable systemd-{networkd,resolved}.service
 
+export MIRROR_SORT=$BOOTSTRAP_MIRROR_SORT
+export MIRROR_LATEST=$BOOTSTRAP_MIRROR_LATEST
 export MIRROR_COUNTRY=$BOOTSTRAP_MIRROR_COUNTRY
 template-install /etc/xdg/reflector/reflector.conf
 arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable reflector.{service,timer}

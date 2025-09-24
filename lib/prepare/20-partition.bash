@@ -1,7 +1,9 @@
 unset partition_prefix
+
 if [[ ${BOOTSTRAP_INSTALL_DEVICE##*/} == nvme* ]]; then
     partition_prefix=p
 fi
+
 export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_INSTALL_DEVICE}${partition_prefix:-}1}
 export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_INSTALL_DEVICE}${partition_prefix:-}2}
 

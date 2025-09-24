@@ -1,7 +1,9 @@
 base
-lvm2
-linux-firmware
 btrfs-progs
-sudo
+linux
+linux-firmware
+linux-lts
+lvm2
 openssh
 reflector
+sudo

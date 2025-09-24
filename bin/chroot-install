@@ -51,7 +51,6 @@ if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
 fi
 
 arch-chroot "$BOOTSTRAP_MOUNT" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
-
 export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP
 if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
     template-install /etc/sudoers.d/49-admin-nopasswd
@@ -62,11 +61,9 @@ fi
 
 arch-chroot "$BOOTSTRAP_MOUNT" useradd \
     --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" \
-    ${BOOTSTRAP_ADMIN_SHELL:+--shell "$BOOTSTRAP_ADMIN_SHELL"} \
+    ${BOOTSTRAP_ADMIN_SHELL:+--shell /bin/"$BOOTSTRAP_ADMIN_SHELL"} \
     "$BOOTSTRAP_ADMIN_LOGIN"
-
 printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
-
 arch-chroot "$BOOTSTRAP_MOUNT" passwd --lock root
 
 if [[ -v BOOTSTRAP_PARALLEL_DOWNLOADS ]]; then
@@ -76,7 +73,6 @@ fi
 arch-chroot "$BOOTSTRAP_MOUNT" systemctl enable sshd.service
 
 script=$BOOTSTRAP_CONFIG/install
-
 if [[ -f $script && -x $script ]]; then
     cp "$script" "$BOOTSTRAP_MOUNT"/script
     arch-chroot "$BOOTSTRAP_MOUNT" /script

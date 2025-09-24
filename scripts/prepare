@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-export BOOTSTRAP_ROOT=$PWD
+export PATH=$PWD/bin:$PATH
 
-export BOOTSTRAP_CONFIG=${1:-${BOOTSTRAP_CONFIG:-$BOOTSTRAP_ROOT/config}}
+export BOOTSTRAP_CONFIG=${1:-${BOOTSTRAP_CONFIG:-$PWD/config}}
 
 env_file=$BOOTSTRAP_CONFIG/env
 if [[ -f $env_file ]] && ! . "$env_file"; then
@@ -10,19 +10,17 @@ if [[ -f $env_file ]] && ! . "$env_file"; then
     return 1
 fi
 
-export PATH=$BOOTSTRAP_ROOT/bin:$PATH
-
 export BOOTSTRAP_MOUNT=${BOOTSTRAP_MOUNT:-/mnt/install}
 
 export BOOTSTRAP_DEFAULT_PASSWORD=${BOOTSTRAP_DEFAULT_PASSWORD:-hunter2}
 
-unset part_prefix
+unset partition_prefix
 if [[ ${BOOTSTRAP_DEVICE##*/} == nvme* ]]; then
-    part_prefix=p
+    partition_prefix=p
 fi
 
-export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_DEVICE}${part_prefix:-}1}
-export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_DEVICE}${part_prefix:-}2}
+export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_DEVICE}${partition_prefix:-}1}
+export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_DEVICE}${partition_prefix:-}2}
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_SYS_DEVICE
@@ -69,6 +67,15 @@ if [[ ! -v BOOTSTRAP_CPU_VENDOR ]]; then
     export BOOTSTRAP_CPU_VENDOR=$cpu_vendor
 fi
 
+cpu_vendor_package_file=$BOOTSTRAP_CONFIG/packages/cpu/$BOOTSTRAP_CPU_VENDOR
+
+if [[ ! -f $cpu_vendor_package_file ]]; then
+    printf "%s: invalid cpu vendor: %s\n" "$0" "$BOOTSTRAP_CPU_VENDOR" >&2
+    return 2
+fi
+
+export BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE=$cpu_vendor_package_file
+
 if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
     if ! gpu_modules=$(gpu-modules | paste -sd' '); then
         printf "unable to get gpu kernel modules\n" >&2
@@ -84,6 +91,15 @@ if [[ ! -v BOOTSTRAP_BOOT_FIRMWARE ]]; then
         export BOOTSTRAP_BOOT_FIRMWARE=bios
     fi
 fi
+
+boot_firmware_package_file=$BOOTSTRAP_CONFIG/packages/boot/$BOOTSTRAP_BOOT_FIRMWARE
+
+if [[ ! -f $boot_firmware_package_file ]]; then
+    printf "%s: invalid boot firmware: %s\n" "$0" "$BOOTSTRAP_BOOT_FIRMWARE" >&2
+    return 2
+fi
+
+export BOOTSTRAP_BOOT_FIRMWARE_PACKAGE_FILE=$boot_firmware_package_file
 
 export BOOTSTRAP_PART_BOOT_NAME=${BOOTSTRAP_PART_BOOT_NAME:-boot}
 
@@ -121,6 +137,9 @@ if [[ ! -v BOOTSTRAP_TIMEZONE ]]; then
         return 1
     fi
     export BOOTSTRAP_TIMEZONE=$timezone
+elif ! timedatectl list-timezones | grep -qxF "$BOOTSTRAP_TIMEZONE"; then
+    printf "%s: invalid timezone: %s\n" "$0" "$BOOTSTRAP_TIMEZONE" >&2
+    return 2
 fi
 
 export BOOTSTRAP_MIRROR_COUNTRY=${BOOTSTRAP_MIRROR_COUNTRY:-US}
@@ -129,23 +148,22 @@ export BOOTSTRAP_ADMIN_LOGIN=${BOOTSTRAP_ADMIN_LOGIN:-admin}
 export BOOTSTRAP_ADMIN_GROUP=${BOOTSTRAP_ADMIN_GROUP:-wheel}
 export BOOTSTRAP_ADMIN_PASSWORD=${BOOTSTRAP_ADMIN_PASSWORD:-$BOOTSTRAP_DEFAULT_PASSWORD}
 
-unset BOOTSTRAP_ADMIN_SHELL_PACKAGE
+unset BOOTSTRAP_ADMIN_SHELL_PACKAGE_FILE
 if [[ -v BOOTSTRAP_ADMIN_SHELL ]]; then
-    shell=${BOOTSTRAP_ADMIN_SHELL##*/}
-    if ! grep -qxF "$shell" "$BOOTSTRAP_CONFIG"/packages/shell; then
-        printf "%s: invalid shell: %s\n" "$0" "$shell" >&2
+    shell_package_file=$BOOTSTRAP_CONFIG/packages/shell/$BOOTSTRAP_ADMIN_SHELL
+    if [[ ! -f $shell_package_file ]]; then
+        printf "%s: invalid shell: %s\n" "$0" "$BOOTSTRAP_ADMIN_SHELL" >&2
         return 2
     fi
-    BOOTSTRAP_ADMIN_SHELL_PACKAGE=$shell
+    export BOOTSTRAP_ADMIN_SHELL_PACKAGE_FILE=$shell_package_file
 fi
-export BOOTSTRAP_ADMIN_SHELL_PACKAGE
 
-kernel=linux${BOOTSTRAP_KERNEL_ALT:+-$BOOTSTRAP_KERNEL_ALT}
-if ! grep -qxF "$kernel" "$BOOTSTRAP_CONFIG"/packages/kernel; then
-    printf "%s: invalid kernel: %s\n" "$0" "$kernel" >&2
+kernel_package=linux${BOOTSTRAP_KERNEL_ALT:+-$BOOTSTRAP_KERNEL_ALT}
+if ! grep -qxF "$kernel_package" "$BOOTSTRAP_CONFIG"/packages/kernel; then
+    printf "%s: invalid kernel: %s\n" "$0" "$kernel_package" >&2
     return 2
 fi
-export BOOTSTRAP_KERNEL_PACKAGE=$kernel
+export BOOTSTRAP_KERNEL_PACKAGE=$kernel_package
 
 export BOOTSTRAP_KERNEL_LOGLEVEL=${BOOTSTRAP_KERNEL_LOGLEVEL:-4}
 export BOOTSTRAP_KERNEL_CONSOLEBLANK=${BOOTSTRAP_KERNEL_CONSOLEBLANK:-0}

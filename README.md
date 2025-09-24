@@ -101,7 +101,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 - `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
 - `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
-- `BOOTSTRAP_ADMIN_SHELL`: The privileged user's shell (default: same as the default for `useradd`)
+- `BOOTSTRAP_ADMIN_SHELL`: The privileged user's shell (default: same as the default for `useradd`, see `./config/packages/shell/*` for command name to package mappings of common shells)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
@@ -180,7 +180,7 @@ name /path/to/mount
 
 The subvolume name must not contain any whitespace.
 
-#### `$BOOTSTRAP_CONFIG/packages/*`
+#### `$BOOTSTRAP_CONFIG/packages/**`
 
 This directory contains files representing groups of packages that are installed depending on various factors, such as the preferred kernel, cpu chipset, boot firmware, or privileged user shell.
 Removing any packages will probably break the installation, but packages could be added with no consequence.

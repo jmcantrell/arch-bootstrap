@@ -36,7 +36,7 @@ printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
         printf " %s" "$line"
     done < <(set | grep '^BOOTSTRAP_')
     printf "; source ./scripts/prepare"
-    printf "; ./scripts/%s" show localize create install
+    printf "&& ./scripts/%s" show localize create install
     printf "\n"
 
     if ((!pause)); then

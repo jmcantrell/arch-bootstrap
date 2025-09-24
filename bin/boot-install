@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+if [[ -v BOOTSTRAP_KERNEL_USE_LTS ]]; then
+    GRUB_TOP_LEVEL=/boot/vmlinuz-linux-lts
+else
+    GRUB_TOP_LEVEL=/boot/vmlinuz-linux
+fi
+export GRUB_TOP_LEVEL
+
 preload_modules=(part_{gpt,msdos} lvm)
 cmdline_linux_default=(
     ${BOOTSTRAP_KERNEL_QUIET:+quiet}
@@ -20,13 +27,6 @@ if [[ -v BOOTSTRAP_USE_LUKS ]]; then
 else
     export GRUB_ENABLE_CRYPTODISK=n
 fi
-
-if [[ -v BOOTSTRAP_KERNEL_USE_LTS ]]; then
-    GRUB_TOP_LEVEL=/boot/vmlinuz-linux-lts
-else
-    GRUB_TOP_LEVEL=/boot/vmlinuz-linux
-fi
-export GRUB_TOP_LEVEL
 
 export GRUB_PRELOAD_MODULES=${preload_modules[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}

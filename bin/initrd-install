@@ -8,8 +8,7 @@ hooks=(base udev autodetect modconf kms)
 files=()
 
 if [[ -v BOOTSTRAP_GPU_MODULES ]]; then
-    read -ra gpu_modules <<<"$BOOTSTRAP_GPU_MODULES"
-    modules+=("${gpu_modules[@]}")
+    readarray -t modules <<<"$BOOTSTRAP_GPU_MODULES"
 fi
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then

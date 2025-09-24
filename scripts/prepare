@@ -148,22 +148,6 @@ export BOOTSTRAP_ADMIN_LOGIN=${BOOTSTRAP_ADMIN_LOGIN:-admin}
 export BOOTSTRAP_ADMIN_GROUP=${BOOTSTRAP_ADMIN_GROUP:-wheel}
 export BOOTSTRAP_ADMIN_PASSWORD=${BOOTSTRAP_ADMIN_PASSWORD:-$BOOTSTRAP_DEFAULT_PASSWORD}
 
-unset BOOTSTRAP_ADMIN_SHELL_PACKAGE_FILE
-if [[ -v BOOTSTRAP_ADMIN_SHELL ]]; then
-    shell_package_file=$BOOTSTRAP_CONFIG/packages/shell/$BOOTSTRAP_ADMIN_SHELL
-    if [[ ! -f $shell_package_file ]]; then
-        printf "%s: invalid shell: %s\n" "$0" "$BOOTSTRAP_ADMIN_SHELL" >&2
-        return 2
-    fi
-    export BOOTSTRAP_ADMIN_SHELL_PACKAGE_FILE=$shell_package_file
-fi
-
-kernel_package=linux${BOOTSTRAP_KERNEL_ALT:+-$BOOTSTRAP_KERNEL_ALT}
-if ! grep -qxF "$kernel_package" "$BOOTSTRAP_CONFIG"/packages/kernel; then
-    printf "%s: invalid kernel: %s\n" "$0" "$kernel_package" >&2
-    return 2
-fi
-export BOOTSTRAP_KERNEL_PACKAGE=$kernel_package
-
+export BOOTSTRAP_KERNEL_PACKAGE=${BOOTSTRAP_KERNEL_PACKAGE:-linux}
 export BOOTSTRAP_KERNEL_LOGLEVEL=${BOOTSTRAP_KERNEL_LOGLEVEL:-4}
 export BOOTSTRAP_KERNEL_CONSOLEBLANK=${BOOTSTRAP_KERNEL_CONSOLEBLANK:-0}

@@ -61,7 +61,6 @@ fi
 
 arch-chroot "$BOOTSTRAP_MOUNT" useradd \
     --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" \
-    ${BOOTSTRAP_ADMIN_SHELL:+--shell /bin/"$BOOTSTRAP_ADMIN_SHELL"} \
     "$BOOTSTRAP_ADMIN_LOGIN"
 printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT"
 arch-chroot "$BOOTSTRAP_MOUNT" passwd --lock root

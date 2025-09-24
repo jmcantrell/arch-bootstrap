@@ -102,7 +102,6 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 - `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
 - `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
-- `BOOTSTRAP_ADMIN_SHELL`: The privileged user's shell (default: same as the default for `useradd`, see `./config/packages/shell/*` for command name to package mappings of common shells)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
@@ -153,7 +152,7 @@ The following variables can be defined anywhere, as long as they're exported in 
 
 #### Kernel
 
-- `BOOTSTRAP_KERNEL_ALT`: Use an alternate kernel (default: unset, choices: `lts`, `hardened`, `rt`, `rt-lts`, or `zen`)
+- `BOOTSTRAP_KERNEL_PACKAGE`: The package containing the kernel (default: `linux`)
 - `BOOTSTRAP_KERNEL_QUIET`: If set to a non-empty value, include `quiet` in the kernel parameters
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: `4`)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: `0`, i.e., disabled)
@@ -183,7 +182,7 @@ The subvolume name must not contain any whitespace.
 
 #### `$BOOTSTRAP_CONFIG/packages/**`
 
-This directory contains files representing groups of packages that are installed depending on various factors, such as the preferred kernel, cpu chipset, boot firmware, or privileged user shell.
+This directory contains files representing groups of packages that are installed depending on various factors, such as the preferred kernel, cpu chipset, or boot firmware.
 Removing any packages will probably break the installation, but packages could be added with no consequence.
 For example, adding packages to `wireless` will cause them to be installed along with the wireless daemon if wireless networking is enabled.
 

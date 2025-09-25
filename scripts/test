@@ -12,14 +12,13 @@ trap 'rm -rf "$temp_dir"' EXIT
 data_file=$temp_dir/data.cow
 cidata_file=$temp_dir/cidata.iso
 
-env_file=$temp_dir/env
-mount_file=$temp_dir/mount
+config_file=$temp_dir/config
 install_file=$temp_dir/install
 
 timezone=$(readlink /etc/localtime)
 timezone=${timezone##*/zoneinfo/}
 
-cat >"$env_file" <<EOF
+cat >"$config_file" <<EOF
 export BOOTSTRAP_INSTALL_DEVICE=/dev/vda
 export BOOTSTRAP_HOSTNAME=$hostname
 export BOOTSTRAP_TIMEZONE=$timezone
@@ -29,29 +28,20 @@ export BOOTSTRAP_ADMIN_USE_SSH_AUTHORIZED_KEYS=1
 export BOOTSTRAP_PACKAGES="vim git rsync"
 EOF
 
-cat >"$mount_file" <<EOF
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-mkdir -p /mnt/bootstrap
-mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap
-EOF
+set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >>"$config_file"
 
 cat >"$install_file" <<EOF
 #!/usr/bin/env bash
 
 set -euo pipefail
 
-source ./config/env
+source ./config
 
-if [[ ! -d /mnt/bootstrap ]]; then
-    ./scripts/mount
-fi
 cd /mnt/bootstrap
 
 source ./scripts/prepare
 
+./scripts/show
 ./scripts/refresh
 ./scripts/install
 EOF
@@ -65,10 +55,15 @@ cat >"$cidata_dir"/user-data <<EOF
 #cloud-config
 $(jo \
     write_files="$({
-        jo encoding=b64 path=/root/config/env owner=root:root permissions=0600 content=%"$env_file"
-        jo encoding=b64 path=/root/scripts/mount owner=root:root permissions=0755 content=%"$mount_file"
-        jo encoding=b64 path=/root/scripts/install owner=root:root permissions=0755 content=%"$install_file"
+        jo -- path=/etc/systemd/system/reflector.service owner=root:root -s permissions=0000 content=""
+        jo -- encoding=b64 path=/root/config owner=root:root -s permissions='0600' content=%"$config_file"
+        jo -- encoding=b64 path=/root/install owner=root:root -s permissions='0755' content=%"$install_file"
     } | jo -a)" \
+    runcmd="$(
+        jo -a -- \
+            "systemctl daemon-reload" \
+            "mkdir -p /mnt/bootstrap && mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap"
+    )" \
     users="$(
         jo name=root ssh_authorized_keys="$(ssh-add -L | jo -a)" | jo -a
     )" | yq -p json)

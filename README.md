@@ -8,7 +8,7 @@ Aside from the opinions listed below, care is taken to ensure the resulting syst
 
 Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using BIOS or [UEFI][uefi] mode, depending on the detected hardware capabilities.
 
-Logical volume management is handled by [LVM][lvm], optionally, with a volume for swap (allowing for hibernation).
+Logical volume management is handled by [LVM][lvm] with a swap volume (allowing for hibernation).
 
 If enabled, [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
@@ -18,9 +18,11 @@ The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (
 
 [Early KMS start][early-kms-start] is enabled for any recognized GPU chipsets.
 
-If wireless networking is enabled, any connections created in the installation environment will be persisted to the installed system.
-
 A [privileged user][#privileged-user] will be created and the root account will be locked.
+
+If wireless networking is used, any networks established in the installation environment will be persisted to the system.
+
+Any SSH public keys authorized in the installation environment will be persisted to the system.
 
 The following systemd units are enabled:
 
@@ -66,7 +68,7 @@ It must be explicitly set because it's the most destructive, as all existing dat
 ### Host Details
 
 - `BOOTSTRAP_HOSTNAME`: The system host name (default: `arch`)
-- `BOOTSTRAP_TIMEZONE`: The system time zone (default: the timezone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
+- `BOOTSTRAP_TIMEZONE`: The system time zone (default: the time zone set in the live environment, i.e., from `/etc/localtime`, or "UTC" if it's not set)
 
 ### Localization
 
@@ -75,7 +77,7 @@ It must be explicitly set because it's the most destructive, as all existing dat
 
 ### Packages
 
-- `BOOTSTRAP_PACKAGES`: If set to a non-empty value, also install these packages (multiple values should be separated with a space)
+- `BOOTSTRAP_PACKAGES`: Extra packages to install (multiple values should be separated with a space)
 - `BOOTSTRAP_MIRROR_SORT`: The sort criteria used for mirror selection (default: `age`, choices: `age`, `rate`, `score`, or `delay`)
 - `BOOTSTRAP_MIRROR_LATEST`: Only consider the n most recently synchronized mirrors (default: `5`)
 - `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, choices: see `reflector --list-countries`)
@@ -86,7 +88,6 @@ It must be explicitly set because it's the most destructive, as all existing dat
 - `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
-- `BOOTSTRAP_ADMIN_USE_SSH_AUTHORIZED_KEYS`: If set to a non-empty value, inherit the authorized ssh keys from the installation environment
 
 ### Hardware
 
@@ -94,11 +95,7 @@ It must be explicitly set because it's the most destructive, as all existing dat
 - `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
 - `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
 - `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
-
-### Wireless Networking
-
 - `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
-- `BOOTSTRAP_WIRELESS_USE_NETWORKS`: If set to a non-empty value, inherit the wireless networks accessible to the installation environment
 
 ### Partition Table
 
@@ -163,7 +160,7 @@ Prepare the environment:
 source ./scripts/prepare
 ```
 
-Inspect the modified environment (with sensitive data redacted):
+Inspect the modified environment (sensitive data is redacted):
 
 ```sh
 ./scripts/show

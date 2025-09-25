@@ -13,7 +13,7 @@ fi
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     hooks+=(keyboard keymap consolefont)
-    files+=("$BOOTSTRAP_LUKS_KEYFILE")
+    files+=("$BOOTSTRAP_LUKS_KEYFILE_PATH")
 fi
 
 hooks+=(block)

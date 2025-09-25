@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-./scripts/show
-
 ./scripts/create
 
 packages-install

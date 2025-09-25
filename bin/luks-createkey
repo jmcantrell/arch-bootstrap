@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-keyfile=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_LUKS_KEYFILE#/}
+keyfile=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_LUKS_KEYFILE_PATH#/}
 
 rm -f "$keyfile"
 mkdir -p "$(dirname "$keyfile")"

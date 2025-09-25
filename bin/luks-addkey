@@ -2,13 +2,11 @@
 
 set -euo pipefail
 
-# Slot 0 is the initial passphrase.
-# Slot 1 is reserved for the keyfile.
-keyfile_slot=1
+key_slot=1
 
 # Ensure the reserved key slot is available, i.e., kill it if occupied.
-if cryptsetup luksDump "$BOOTSTRAP_LUKS_DEVICE" | grep -q "^Key Slot $keyfile_slot: ENABLED"; then
-    cryptsetup luksKillSlot "$BOOTSTRAP_LUKS_DEVICE" "$keyfile_slot" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+if cryptsetup luksDump "$BOOTSTRAP_LUKS_DEVICE" | grep -q "^Key Slot $key_slot: ENABLED"; then
+    cryptsetup luksKillSlot "$BOOTSTRAP_LUKS_DEVICE" "$key_slot" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
 fi
 
-cryptsetup luksAddKey --new-key-slot "$keyfile_slot" "$BOOTSTRAP_LUKS_DEVICE" "$(luks-createkey)" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+cryptsetup luksAddKey --new-key-slot "$key_slot" "$BOOTSTRAP_LUKS_DEVICE" "$(luks-createkey)" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"

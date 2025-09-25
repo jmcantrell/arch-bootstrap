@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Determine the kernel modules being used for graphics.
-# Outputs one module per line to stdout.
-
 set -euo pipefail
 
 class_pattern='\<(VGA|3D|Display)\>'

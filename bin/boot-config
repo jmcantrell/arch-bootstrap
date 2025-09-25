@@ -2,12 +2,7 @@
 
 set -euo pipefail
 
-if [[ -v BOOTSTRAP_KERNEL_USE_LTS ]]; then
-    GRUB_TOP_LEVEL=/boot/vmlinuz-linux-lts
-else
-    GRUB_TOP_LEVEL=/boot/vmlinuz-linux
-fi
-export GRUB_TOP_LEVEL
+export GRUB_TOP_LEVEL=/boot/vmlinuz-linux${BOOTSTRAP_KERNEL_USE_LTS:+-lts}
 
 preload_modules=(part_{gpt,msdos} lvm)
 cmdline_linux_default=(
@@ -22,7 +17,7 @@ if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
         cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_USE_TRIM:+:allow-discards}"
-        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEYFILE"
+        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEYFILE_PATH"
     )
 else
     export GRUB_ENABLE_CRYPTODISK=n

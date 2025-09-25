@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Use default luks type once grub supports argon2i (luks default).
+# TODO: Remove pbkdf option once grub supports argon2i (luks default).
 # See grub bug report: https://savannah.gnu.org/bugs/index.php?55093
-cryptsetup luksFormat --type luks1 "$BOOTSTRAP_LUKS_DEVICE" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+cryptsetup luksFormat --pbkdf pbkdf2 "$BOOTSTRAP_LUKS_DEVICE" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"

@@ -2,6 +2,4 @@
 
 set -euo pipefail
 
-# TODO: Use default luks type once grub supports argon2i (luks default).
-# See grub bug report: https://savannah.gnu.org/bugs/index.php?55093
-cryptsetup open --type luks1 "$BOOTSTRAP_LUKS_DEVICE" "$BOOTSTRAP_LUKS_MAPPER_NAME" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+cryptsetup open "$BOOTSTRAP_LUKS_DEVICE" "$BOOTSTRAP_LUKS_MAPPER_NAME" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"

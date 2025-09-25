@@ -61,21 +61,18 @@ mkdir -p "$cidata_dir"
 
 printf "local-hostname: %s\n" "$hostname" >"$cidata_dir"/meta-data
 
-write_files=(
-    "$(jo encoding=b64 path=/root/config/env owner=root:root permissions=0600 content=%"$env_file")"
-    "$(jo encoding=b64 path=/root/scripts/mount owner=root:root permissions=0755 content=%"$mount_file")"
-    "$(jo encoding=b64 path=/root/scripts/install owner=root:root permissions=0755 content=%"$install_file")"
-)
-
-user_data=(
-    write_files="$(jo -a "${write_files[@]}")"
-    users="$(jo -a "$(jo name=root ssh_authorized_keys="$(ssh-add -L | jo -a)")")"
-)
-
-{
-    printf "#cloud-config\n"
-    jo "${user_data[@]}" | yq -p json
-} >"$cidata_dir"/user-data
+cat >"$cidata_dir"/user-data <<EOF
+#cloud-config
+$(jo \
+    write_files="$({
+        jo encoding=b64 path=/root/config/env owner=root:root permissions=0600 content=%"$env_file"
+        jo encoding=b64 path=/root/scripts/mount owner=root:root permissions=0755 content=%"$mount_file"
+        jo encoding=b64 path=/root/scripts/install owner=root:root permissions=0755 content=%"$install_file"
+    } | jo -a)" \
+    users="$(
+        jo name=root ssh_authorized_keys="$(ssh-add -L | jo -a)" | jo -a
+    )" | yq -p json)
+EOF
 
 xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$cidata_dir"/*
 

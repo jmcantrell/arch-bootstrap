@@ -2,33 +2,4 @@
 
 set -euo pipefail
 
-binaries=(/usr/bin/btrfs)
-modules=()
-hooks=(base udev autodetect modconf kms)
-files=()
-
-if [[ -v BOOTSTRAP_GPU_MODULES ]]; then
-    readarray -t modules <<<"$BOOTSTRAP_GPU_MODULES"
-fi
-
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    hooks+=(keyboard keymap consolefont)
-    files+=("$BOOTSTRAP_LUKS_KEYFILE")
-fi
-
-hooks+=(block)
-
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    hooks+=(encrypt)
-fi
-
-hooks+=(lvm2 resume filesystems btrfs fsck)
-
-export INITRD_BINARIES=${binaries[*]}
-export INITRD_MODULES=${modules[*]}
-export INITRD_HOOKS=${hooks[*]}
-export INITRD_FILES=${files[*]}
-
-template-install /etc/mkinitcpio.conf
-
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" mkinitcpio --allpresets

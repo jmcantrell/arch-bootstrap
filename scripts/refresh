@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+systemctl stop reflector.service
+
+reflector \
+    --verbose \
+    --save /etc/pacman.d/mirrorlist \
+    --protocol https \
+    --country US \
+    --latest 20 \
+    --sort rate
+
+pacman -Syy

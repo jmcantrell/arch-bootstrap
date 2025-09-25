@@ -2,44 +2,13 @@
 
 set -euo pipefail
 
-if [[ -v BOOTSTRAP_KERNEL_USE_LTS ]]; then
-    GRUB_TOP_LEVEL=/boot/vmlinuz-linux-lts
-else
-    GRUB_TOP_LEVEL=/boot/vmlinuz-linux
-fi
-export GRUB_TOP_LEVEL
+opts=()
 
-preload_modules=(part_{gpt,msdos} lvm)
-cmdline_linux_default=(
-    ${BOOTSTRAP_KERNEL_QUIET:+quiet}
-    loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"
-    consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
-)
-cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
-
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    export GRUB_ENABLE_CRYPTODISK=y
-    preload_modules+=(cryptodisk luks)
-    cmdline_linux+=(
-        cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_USE_TRIM:+:allow-discards}"
-        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEYFILE"
-    )
-else
-    export GRUB_ENABLE_CRYPTODISK=n
-fi
-
-export GRUB_PRELOAD_MODULES=${preload_modules[*]}
-export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
-export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
-
-template-install /etc/default/grub
-
-grub_opts=()
 if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    grub_opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT_DIR" --bootloader-id=GRUB)
+    opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT_DIR" --bootloader-id=GRUB)
 else
-    grub_opts+=(--target=i386-pc)
+    opts+=(--target=i386-pc)
 fi
 
-arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-install --recheck "${grub_opts[@]}" "$BOOTSTRAP_INSTALL_DEVICE"
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-install --recheck "${opts[@]}" "$BOOTSTRAP_INSTALL_DEVICE"
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-mkconfig --output=/boot/grub/grub.cfg

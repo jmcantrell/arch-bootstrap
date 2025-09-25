@@ -2,7 +2,15 @@
 
 set -euo pipefail
 
+./scripts/show
+
+./scripts/create
+
 packages-install
-chroot-install
+
+./scripts/config
+
+locale-install
+fstab-install
 initrd-install
 boot-install

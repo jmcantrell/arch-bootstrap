@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-hostname=testvm-$$
-
 media_file=${1:?missing installation media}
+
+hostname=testvm-$$
 
 temp_dir=$(mktemp -d -t "$hostname".XXXXXXXXXX)
 trap 'rm -rf "$temp_dir"' EXIT
@@ -12,24 +12,72 @@ trap 'rm -rf "$temp_dir"' EXIT
 data_file=$temp_dir/data.cow
 cidata_file=$temp_dir/cidata.iso
 
-mkdir -p "$temp_dir"/cidata
-printf "local-hostname: %s\n" "$hostname" >"$temp_dir"/cidata/meta-data
+env_file=$temp_dir/env
+mount_file=$temp_dir/mount
+install_file=$temp_dir/install
+
+timezone=$(readlink /etc/localtime)
+timezone=${timezone##*/zoneinfo/}
+
+cat >"$env_file" <<EOF
+export BOOTSTRAP_INSTALL_DEVICE=/dev/vda
+export BOOTSTRAP_HOSTNAME=$hostname
+export BOOTSTRAP_TIMEZONE=$timezone
+export BOOTSTRAP_ADMIN_LOGIN=$USER
+export BOOTSTRAP_ADMIN_GROUP_NOPASSWD=1
+export BOOTSTRAP_ADMIN_USE_SSH_AUTHORIZED_KEYS=1
+export BOOTSTRAP_PACKAGES="vim git rsync"
+EOF
+
+cat >"$mount_file" <<EOF
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mkdir -p /mnt/bootstrap
+mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap
+EOF
+
+cat >"$install_file" <<EOF
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source ./config/env
+
+if [[ ! -d /mnt/bootstrap ]]; then
+    ./scripts/mount
+fi
+cd /mnt/bootstrap
+
+source ./scripts/prepare
+
+./scripts/refresh
+./scripts/install
+EOF
+
+cidata_dir=$temp_dir/cidata
+mkdir -p "$cidata_dir"
+
+printf "local-hostname: %s\n" "$hostname" >"$cidata_dir"/meta-data
+
+write_files=(
+    "$(jo encoding=b64 path=/root/config/env owner=root:root permissions=0600 content=%"$env_file")"
+    "$(jo encoding=b64 path=/root/scripts/mount owner=root:root permissions=0755 content=%"$mount_file")"
+    "$(jo encoding=b64 path=/root/scripts/install owner=root:root permissions=0755 content=%"$install_file")"
+)
+
+user_data=(
+    write_files="$(jo -a "${write_files[@]}")"
+    users="$(jo -a "$(jo name=root ssh_authorized_keys="$(ssh-add -L | jo -a)")")"
+)
 
 {
     printf "#cloud-config\n"
-    printf "runcmd:\n"
-    printf "    - mkdir -p /mnt/bootstrap\n"
-    printf "    - mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap\n"
-    printf "    - cd /mnt/bootstrap; export BOOTSTRAP_INSTALL_DEVICE=/dev/vda BOOTSTRAP_HOSTNAME=$hostname BOOTSTRAP_ADMIN_LOGIN=$USER"
-    while IFS= read -r line; do
-        printf " %s" "$line"
-    done < <(set | grep '^BOOTSTRAP_')
-    printf "; source ./scripts/prepare"
-    printf "&& ./scripts/%s" show create install
-    printf "\n"
-} >"$temp_dir"/cidata/user-data
+    jo "${user_data[@]}" | yq -p json
+} >"$cidata_dir"/user-data
 
-xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$temp_dir"/cidata/*
+xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$cidata_dir"/*
 
 qemu-img create -f qcow2 "$data_file" -o nocow=on 20G
 

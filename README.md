@@ -41,8 +41,7 @@ In general, the installation steps are as follows:
 1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
 1. Optionally, inspect the environment: `./scripts/show` (sensitive data is redacted)
-1. Create and mount partitions: `./scripts/create`
-1. Install packages and configure system: `./scripts/install`
+1. Install the system: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
 
@@ -87,6 +86,7 @@ It must be explicitly set because it's the most destructive, as all existing dat
 - `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
+- `BOOTSTRAP_ADMIN_USE_SSH_AUTHORIZED_KEYS`: If set to a non-empty value, inherit the authorized ssh keys from the installation environment
 
 ### Hardware
 
@@ -94,7 +94,11 @@ It must be explicitly set because it's the most destructive, as all existing dat
 - `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
 - `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
 - `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
+
+### Wireless Networking
+
 - `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
+- `BOOTSTRAP_WIRELESS_USE_NETWORKS`: If set to a non-empty value, inherit the wireless networks accessible to the installation environment
 
 ### Partition Table
 
@@ -138,15 +142,41 @@ It must be explicitly set because it's the most destructive, as all existing dat
 
 ## Installation
 
-After the preparation script is sourced, create and mount the file system, then install the system data:
+Set required environment variables:
 
 ```sh
-./scripts/create
+export BOOTSTRAP_INSTALL_DEVICE=/dev/sda
+```
+
+Set any optional environment variables:
+
+```sh
+export BOOTSTRAP_ADMIN_LOGIN=bob
+export BOOTSTRAP_MIRROR_SORT=rate
+export BOOTSTRAP_TIMEZONE=America/Chicago
+export BOOTSTRAP_USE_LUKS=1
+```
+
+Prepare the environment:
+
+```sh
+source ./scripts/prepare
+```
+
+Inspect the modified environment (with sensitive data redacted):
+
+```sh
+./scripts/show
+```
+
+Install the system:
+
+```sh
 ./scripts/install
 ```
 
 The scripts are intentionally kept extremely simple and easy to read, serving as an outline.
-As `./bin` is now in `PATH`, feel free to execute each step separately to verify they're working as intended.
+As `./bin` is in `PATH` after preparation, feel free to execute each step separately to verify they're working as intended.
 
 The commands can also be useful outside of the context of installation (e.g., troubleshooting a system, see `./scripts/`).
 

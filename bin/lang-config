@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+printf "LANG=%s\n" "$BOOTSTRAP_LANG" >"$BOOTSTRAP_MOUNT_DIR"/etc/locale.conf
+
+sed -i "/^#$BOOTSTRAP_LANG/s/#//" "$BOOTSTRAP_MOUNT_DIR"/etc/locale.gen

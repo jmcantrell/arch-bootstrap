@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+sed -E -i '/^[[:space:]]*#?[[:space:]]*issue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$BOOTSTRAP_MOUNT_DIR"/etc/lvm/lvm.conf
+
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable fstrim.timer

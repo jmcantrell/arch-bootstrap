@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" ln -vsfn /usr/share/zoneinfo/"$BOOTSTRAP_TIMEZONE" /etc/localtime
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-timesyncd.service
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" hwclock --systohc

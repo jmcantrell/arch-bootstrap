@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+for path in /etc/systemd/{network,networkd.conf.d}; do
+    rsync -va "$path"/ "${BOOTSTRAP_MOUNT_DIR%%/}$path"/
+done
+
+ln -vsfn /run/systemd/resolve/stub-resolv.conf "$BOOTSTRAP_MOUNT_DIR"/etc/resolv.conf
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-{networkd,resolved}.service
+
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable sshd.service

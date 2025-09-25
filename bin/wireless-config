@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ -v BOOTSTRAP_WIRELESS_USE_NETWORKS ]]; then
+    rsync -va {,"$BOOTSTRAP_MOUNT_DIR"}/var/lib/iwd/
+fi
+
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable iwd.service

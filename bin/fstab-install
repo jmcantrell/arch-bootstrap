@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+genfstab -t UUID "$BOOTSTRAP_MOUNT_DIR" >"$BOOTSTRAP_MOUNT_DIR"/etc/fstab

@@ -7,8 +7,8 @@ default=${1:-UTC}
 link=/etc/localtime
 
 if [[ -f $link ]]; then
-    name=$(readlink "$link")
-    name=${name#/usr/share/zoneinfo/}
+    file=$(readlink -e "$link")
+    name=${file#*/zoneinfo/}
 else
     name=$default
 fi

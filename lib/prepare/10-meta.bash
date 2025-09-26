@@ -1,1 +1,0 @@
-export BOOTSTRAP_MOUNT_DIR=${BOOTSTRAP_MOUNT_DIR:-/mnt/install}

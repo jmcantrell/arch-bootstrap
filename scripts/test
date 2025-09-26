@@ -15,7 +15,7 @@ cidata_file=$temp_dir/cidata.iso
 config_file=$temp_dir/config
 install_file=$temp_dir/install
 
-timezone=$(readlink /etc/localtime)
+timezone=$(readlink -e /etc/localtime)
 timezone=${timezone##*/zoneinfo/}
 
 cat >"$config_file" <<EOF
@@ -24,7 +24,7 @@ export BOOTSTRAP_HOSTNAME=$hostname
 export BOOTSTRAP_TIMEZONE=$timezone
 export BOOTSTRAP_ADMIN_LOGIN=$USER
 export BOOTSTRAP_ADMIN_GROUP_NOPASSWD=1
-export BOOTSTRAP_PACKAGES="vim git rsync"
+export BOOTSTRAP_PACKAGES="vim git rsync tmux"
 EOF
 
 set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >>"$config_file"

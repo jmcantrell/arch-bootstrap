@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-lvm-remove
+remove-lvm
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    luks-erase
+    remove-luks
 fi

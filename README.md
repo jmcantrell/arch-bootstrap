@@ -42,7 +42,7 @@ In general, the installation steps are as follows:
 1. Change the directory to this repository
 1. Set necessary [environment](#environment) variables
 1. Prepare the environment: `source ./scripts/prepare`
-1. Optionally, inspect the environment: `./scripts/show` (sensitive data is redacted)
+1. Optionally, inspect the environment: `./scripts/inspect` (sensitive data is redacted)
 1. Install the system: `./scripts/install`
 
 After installation, the system is left mounted for inspection or further configuration.
@@ -92,10 +92,10 @@ It must be explicitly set because it's the most destructive, as all existing dat
 ### Hardware
 
 - `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
-- `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/cpu-vendor`, choices: `intel` or `amd`)
-- `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/gpu-modules`, multiple values should be separated with a space)
-- `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is an SSD, see `./bin/device-is-ssd`)
-- `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/network-interfaces`)
+- `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/print-cpu-vendor`, choices: `intel` or `amd`)
+- `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/print-gpu-modules`, multiple values should be separated with a space)
+- `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is not a disk with spinning platters, see `./bin/is-rotational-disk`)
+- `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces named like `wl*`, see `./bin/print-network-interfaces`)
 
 ### Partition Table
 
@@ -120,7 +120,7 @@ It must be explicitly set because it's the most destructive, as all existing dat
 
 - `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
 - `BOOTSTRAP_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
-- `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/memory-size`)
+- `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/print-memory-size`)
 - `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
 - `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
 
@@ -163,7 +163,7 @@ source ./scripts/prepare
 Inspect the modified environment (sensitive data is redacted):
 
 ```sh
-./scripts/show
+./scripts/inspect
 ```
 
 Install the system:

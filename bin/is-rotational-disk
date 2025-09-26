@@ -4,4 +4,4 @@ set -euo pipefail
 
 device=${1:?missing device}
 
-((!$(</sys/block/"${device##*/}"/queue/rotational)))
+(($(</sys/block/"${device##*/}"/queue/rotational)))

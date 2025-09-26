@@ -41,7 +41,7 @@ cd /mnt/bootstrap
 
 source ./scripts/prepare
 
-./scripts/show
+./scripts/inspect
 ./scripts/refresh
 ./scripts/install
 EOF

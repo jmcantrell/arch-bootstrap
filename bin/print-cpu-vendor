@@ -9,7 +9,10 @@ unset vendor_name
 case $vendor_id in
 GenuineIntel) vendor_name=intel ;;
 AuthenticAMD) vendor_name=amd ;;
-*) exit 1 ;;
+*)
+    printf "%s: unrecognized cpu vendor id: %s\n" "$0" "$vendor_id" >&2
+    exit 1
+    ;;
 esac
 
 printf "%s" "$vendor_name"

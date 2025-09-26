@@ -2,13 +2,49 @@
 
 set -euo pipefail
 
-./scripts/create
+create-partitions
 
-packages-install
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+    create-luks
+    open-luks
+fi
 
-./scripts/config
+create-lvm
 
-locale-install
-fstab-install
-initrd-install
-boot-install
+create-swap
+open-swap
+
+create-fs
+open-fs
+
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+    create-luks-keyfile
+fi
+
+install-packages
+
+if [[ -v BOOTSTRAP_USE_TRIM ]]; then
+    config-trim
+fi
+
+config-network
+
+if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+    config-wireless
+fi
+
+config-hostname
+config-timezone
+config-ntp
+config-lang
+config-keymap
+config-mirrors
+config-admin
+config-ssh
+config-boot
+config-initrd
+
+install-locale
+install-fstab
+install-initrd
+install-boot

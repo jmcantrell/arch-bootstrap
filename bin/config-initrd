@@ -29,4 +29,4 @@ export INITRD_MODULES=${modules[*]}
 export INITRD_HOOKS=${hooks[*]}
 export INITRD_FILES=${files[*]}
 
-template-install /etc/mkinitcpio.conf
+install-template /etc/mkinitcpio.conf

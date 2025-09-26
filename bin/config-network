@@ -7,6 +7,5 @@ for path in /etc/systemd/{network,networkd.conf.d}; do
 done
 
 ln -vsfn /run/systemd/resolve/stub-resolv.conf "$BOOTSTRAP_MOUNT_DIR"/etc/resolv.conf
-arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-{networkd,resolved}.service
 
-arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable sshd.service
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-{networkd,resolved}.service

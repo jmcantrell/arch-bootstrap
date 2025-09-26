@@ -7,13 +7,14 @@ arch-chroot "$BOOTSTRAP_MOUNT_DIR" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
 export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP
 
 if [[ -v BOOTSTRAP_ADMIN_GROUP_NOPASSWD ]]; then
-    template-install /etc/sudoers.d/49-admin{-nopasswd,}
-    template-install /etc/polkit-1/rules.d/49-admin{-nopasswd,}.rules
+    install-template /etc/sudoers.d/49-admin{-nopasswd,}
+    install-template /etc/polkit-1/rules.d/49-admin{-nopasswd,}.rules
 else
-    template-install /etc/sudoers.d/49-admin
+    install-template /etc/sudoers.d/49-admin
 fi
 
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
+
 printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT_DIR"
 
 if [[ -f ~/.ssh/authorized_keys ]]; then

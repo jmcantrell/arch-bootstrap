@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" hwclock --systohc
+arch-chroot "$BOOTSTRAP_MOUNT_DIR" systemctl enable systemd-timesyncd.service

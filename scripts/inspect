@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-# Show the current installation environment (sanitized).
+# Inspect the current installation environment (sanitized).
 
 set | grep '^BOOTSTRAP_' | sort | sed -E '/^[^=]*PASS(WORD|PHRASE)[^=]*=/s/=.*$/=********/'

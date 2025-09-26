@@ -2,9 +2,10 @@
 
 set -euo pipefail
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    luks-open
-fi
+close-fs
+close-swap
+close-lvm
 
-swap-open
-fs-mount
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+    close-luks
+fi

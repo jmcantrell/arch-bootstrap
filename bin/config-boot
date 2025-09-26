@@ -13,12 +13,12 @@ cmdline_linux_default=(
 cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    export GRUB_ENABLE_CRYPTODISK=y
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
         cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_USE_TRIM:+:allow-discards}"
         cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEYFILE_PATH"
     )
+    export GRUB_ENABLE_CRYPTODISK=y
 else
     export GRUB_ENABLE_CRYPTODISK=n
 fi
@@ -27,4 +27,4 @@ export GRUB_PRELOAD_MODULES=${preload_modules[*]}
 export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 
-template-install /etc/default/grub
+install-template /etc/default/grub

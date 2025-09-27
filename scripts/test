@@ -4,9 +4,7 @@ set -euo pipefail
 
 media_file=${1:?missing installation media}
 
-hostname=testvm-$$
-
-temp_dir=$(mktemp -d -t "$hostname".XXXXXXXXXX)
+temp_dir=$(mktemp -d -t boostrap-test.XXXXXXXXXX)
 trap 'rm -rf "$temp_dir"' EXIT
 
 data_file=$temp_dir/data.cow
@@ -15,16 +13,8 @@ cidata_file=$temp_dir/cidata.iso
 config_file=$temp_dir/config
 install_file=$temp_dir/install
 
-timezone=$(readlink -e /etc/localtime)
-timezone=${timezone##*/zoneinfo/}
-
 cat >"$config_file" <<EOF
 export BOOTSTRAP_INSTALL_DEVICE=/dev/vda
-export BOOTSTRAP_HOSTNAME=$hostname
-export BOOTSTRAP_TIMEZONE=$timezone
-export BOOTSTRAP_ADMIN_LOGIN=$USER
-export BOOTSTRAP_ADMIN_GROUP_NOPASSWD=1
-export BOOTSTRAP_PACKAGES="vim git rsync tmux"
 EOF
 
 set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >>"$config_file"
@@ -33,6 +23,8 @@ cat >"$install_file" <<EOF
 #!/usr/bin/env bash
 
 set -euo pipefail
+
+exec > >(tee ~/install-"\$(date --iso-8601=seconds)".log) 2>&1
 
 source ./config
 
@@ -48,7 +40,7 @@ EOF
 cidata_dir=$temp_dir/cidata
 mkdir -p "$cidata_dir"
 
-printf "local-hostname: %s\n" "$hostname" >"$cidata_dir"/meta-data
+touch "$cidata_dir"/meta-data
 
 cat >"$cidata_dir"/user-data <<EOF
 #cloud-config
@@ -73,7 +65,8 @@ xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$cid
 qemu-img create -f qcow2 "$data_file" -o nocow=on 20G
 
 opts=(
-    -name "$hostname" -m 4G -cpu host -accel kvm -machine smm=on -boot menu=on
+    -name bootstrap-test-$$
+    -m 4G -cpu host -accel kvm -machine smm=on -boot menu=on
     -device 'vhost-vsock-pci,guest-cid=42'
     -device 'virtio-net-pci,netdev=net0'
     -netdev 'user,id=net0,hostfwd=tcp::60022-:22'

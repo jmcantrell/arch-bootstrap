@@ -18,6 +18,7 @@ fi
 
 export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_INSTALL_DEVICE}${partition_prefix:-}1}
 export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_INSTALL_DEVICE}${partition_prefix:-}2}
+unset partition_prefix
 
 if [[ ! -v BOOTSTRAP_BOOT_FIRMWARE ]]; then
     if [[ -d /sys/firmware/efi/efivars ]]; then
@@ -35,6 +36,7 @@ if [[ ! -f $boot_firmware_package_file ]]; then
 fi
 
 export BOOTSTRAP_BOOT_FIRMWARE_PACKAGE_FILE=$boot_firmware_package_file
+unset boot_firmware_package_file
 
 export BOOTSTRAP_PART_BOOT_NAME=${BOOTSTRAP_PART_BOOT_NAME:-boot}
 
@@ -65,6 +67,7 @@ if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
         BOOTSTRAP_LVM_LV_SWAP_SIZE=$BOOTSTRAP_MEMORY_SIZE
     elif memory_size=$(print-memory-size); then
         BOOTSTRAP_LVM_LV_SWAP_SIZE=$memory_size
+        unset memory_size
     else
         printf "unable to get information about physical memory\n" >&2
         return 1
@@ -98,6 +101,7 @@ if [[ ! -v BOOTSTRAP_CPU_VENDOR ]]; then
         return 1
     fi
     export BOOTSTRAP_CPU_VENDOR=$cpu_vendor
+    unset cpu_vendor
 fi
 
 cpu_vendor_package_file=$BOOTSTRAP_CONFIG_DIR/packages/cpu/$BOOTSTRAP_CPU_VENDOR
@@ -108,6 +112,7 @@ if [[ ! -f $cpu_vendor_package_file ]]; then
 fi
 
 export BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE=$cpu_vendor_package_file
+unset cpu_vendor_package_file
 
 if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
     if ! gpu_modules=$(print-gpu-modules | paste -sd' '); then
@@ -115,6 +120,7 @@ if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
         return 1
     fi
     export BOOTSTRAP_GPU_MODULES=$gpu_modules
+    unset gpu_modules
 fi
 
 if [[ ! -v BOOTSTRAP_USE_TRIM ]] && ! is-rotational-disk "$BOOTSTRAP_INSTALL_DEVICE"; then
@@ -140,6 +146,7 @@ if [[ ! -v BOOTSTRAP_TIMEZONE ]]; then
         return 1
     fi
     export BOOTSTRAP_TIMEZONE=$timezone
+    unset timezone
 elif ! timedatectl list-timezones | grep -qxF "$BOOTSTRAP_TIMEZONE"; then
     printf "%s: invalid timezone: %s\n" "$0" "$BOOTSTRAP_TIMEZONE" >&2
     return 2

@@ -2,9 +2,8 @@
 
 set -euo pipefail
 
-for path in /etc/systemd/{network,networkd.conf.d}; do
-    rsync -va "$path"/ "${BOOTSTRAP_MOUNT_DIR%%/}$path"/
-done
+rsync -va {,"${BOOTSTRAP_MOUNT_DIR%%/}"}/etc/systemd/networkd.conf.d/
+rsync -va --include="20-*.network" --exclude="*" {,"${BOOTSTRAP_MOUNT_DIR%%/}"}/etc/systemd/network/
 
 ln -vsfn /run/systemd/resolve/stub-resolv.conf "$BOOTSTRAP_MOUNT_DIR"/etc/resolv.conf
 

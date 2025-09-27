@@ -147,7 +147,7 @@ if [[ ! -v BOOTSTRAP_TIMEZONE ]]; then
     fi
     export BOOTSTRAP_TIMEZONE=$timezone
     unset timezone
-elif ! timedatectl list-timezones | grep -qxF "$BOOTSTRAP_TIMEZONE"; then
+elif ! zdump "$BOOTSTRAP_TIMEZONE" &>/dev/null; then
     printf "%s: invalid timezone: %s\n" "$0" "$BOOTSTRAP_TIMEZONE" >&2
     return 2
 fi

@@ -2,6 +2,16 @@
 
 set -euo pipefail
 
+unset confirm
+
+while getopts "y" opt; do
+    case $opt in
+    y) confirm=1 ;;
+    *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
 media_file=${1:?missing installation media}
 
 temp_dir=$(mktemp -d -t boostrap-test.XXXXXXXXXX)
@@ -24,7 +34,7 @@ cat >"$install_file" <<EOF
 
 set -euo pipefail
 
-exec > >(tee ~/install-"\$(date --iso-8601=seconds)".log) 2>&1
+exec > >(tee ~/install.log) 2>&1
 
 source ./config
 
@@ -35,6 +45,8 @@ source ./scripts/prepare
 ./scripts/inspect
 ./scripts/refresh
 ./scripts/install
+
+cp -t "\$BOOTSTRAP_MOUNT_DIR"/var/log ~/install.log
 EOF
 
 cidata_dir=$temp_dir/cidata
@@ -53,7 +65,8 @@ $(jo \
     runcmd="$(
         jo -a -- \
             "systemctl daemon-reload" \
-            "mkdir -p /mnt/bootstrap && mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap"
+            "mkdir -p /mnt/bootstrap && mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap" \
+            ${confirm:+"cd /root; ./install; poweroff"}
     )" \
     users="$(
         jo name=root ssh_authorized_keys="$(ssh-add -L | jo -a)" | jo -a

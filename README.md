@@ -78,7 +78,7 @@ If all is well, `poweroff` and eject the installation media.
 The scripts are intentionally kept extremely simple and easy to read, serving as an outline.
 As `./bin` is in `PATH` after preparation, feel free to execute each step separately to verify they're working as intended.
 
-The scripts can also be useful outside of the context of installation (e.g., troubleshooting a system, see `./scripts/`).
+The scripts can also be useful in other contexts (e.g., troubleshooting a system, see `./scripts/`).
 
 ### Usage over SSH
 
@@ -217,10 +217,17 @@ export BOOTSTRAP_ADMIN_LOGIN=frank
 ./scripts/test /path/to/archlinux.iso
 ```
 
+To automatically start the install and boot into the new system when it finishes:
+
+```sh
+./scripts/test -y /path/to/archlinux.iso
+```
+
 Once booted into the Arch Linux ISO, the current directory will have two files, `config` and `install`.
 The configuration file contains all the settings that were provided to the test script and is suitable for sourcing.
 The installation script contains the [basic steps](#usage) already outlined.
-Output will be logged to a file in the current directory (in addition to outputting to the virtual terminal).
+Output will be logged to `/root/install.log` (in addition to outputting to the virtual terminal).
+When the installation is finished the log file will be copied into `$BOOTSTRAP_MOUNT_DIR/var/log`.
 
 The bootstrap repository will also be accessible in the virtual machine at `/mnt/bootstrap`.
 

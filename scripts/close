@@ -3,7 +3,11 @@
 set -euo pipefail
 
 close-fs
-close-swap
+
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    close-swap
+fi
+
 close-lvm
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then

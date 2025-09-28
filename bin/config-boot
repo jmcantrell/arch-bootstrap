@@ -10,7 +10,10 @@ cmdline_linux_default=(
     loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"
     consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
 )
-cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
+
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
+fi
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     preload_modules+=(cryptodisk luks)

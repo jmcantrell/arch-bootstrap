@@ -2,4 +2,8 @@
 
 set -euo pipefail
 
-lvchange --verbose --activate n "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_SWAP_DEVICE"
+lvchange --verbose --activate n "$BOOTSTRAP_ROOT_DEVICE"
+
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    lvchange --verbose --activate n "$BOOTSTRAP_SWAP_DEVICE"
+fi

@@ -11,8 +11,10 @@ fi
 
 create-lvm
 
-create-swap
-open-swap
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    create-swap
+    open-swap
+fi
 
 create-fs
 open-fs

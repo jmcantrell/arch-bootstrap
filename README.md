@@ -8,7 +8,7 @@ Aside from the opinions listed below, the resulting system should closely match 
 
 Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using BIOS or [UEFI][uefi] mode, depending on the detected hardware capabilities.
 
-Logical volume management is handled by [LVM][lvm] with a swap volume (allowing for hibernation).
+Logical volume management is handled by [LVM][lvm] with an optional swap volume, allowing for hibernation.
 
 If enabled, [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
@@ -132,11 +132,16 @@ The following variables should be defined and exported before sourcing the prepa
 
 **NOTE**: Values for partition sizes must be specified in a way that [sfdisk(8)][sfdisk] can understand
 
+#### Boot Partition
+
 - `BOOTSTRAP_PART_BOOT_NAME`: The name of the boot partition (default: `boot`)
 - `BOOTSTRAP_PART_BOOT_SIZE`: The size of the boot partition (default: `100M` for UEFI, `1M` for BIOS)
+- `BOOTSTRAP_UEFI_MOUNT_DIR`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
+
+#### System Partition
+
 - `BOOTSTRAP_PART_SYS_NAME`: The name of the operating system partition (default: `sys`)
 - `BOOTSTRAP_PART_SYS_SIZE`: The size of the operating system partition (default: `+`, i.e., use all remaining space)
-- `BOOTSTRAP_UEFI_MOUNT_DIR`: The path where the EFI partition will be mounted (if applicable, default: `/efi`)
 
 ### Full Disk Encryption
 
@@ -149,17 +154,20 @@ The following variables should be defined and exported before sourcing the prepa
 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
 
+#### Root Volume
+
 - `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
-- `BOOTSTRAP_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
-- `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/print-memory-size`)
 - `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
 - `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
-
-### File System
-
-- `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 - `BOOTSTRAP_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
 - `BOOTSTRAP_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
+
+#### Swap Volume
+
+- `BOOTSTRAP_USE_SWAP`: If set to a non-empty value, create a swap volume, allowing for hibernation
+- `BOOTSTRAP_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
+- `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/print-memory-size`)
+- `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 
 ### Kernel
 
@@ -168,7 +176,7 @@ The following variables should be defined and exported before sourcing the prepa
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: 4)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: 0, i.e., disabled)
 
-### Host Details
+### Host
 
 - `BOOTSTRAP_HOSTNAME`: The system host name (default: `arch`)
 - `BOOTSTRAP_TIMEZONE`: The system time zone (default: the time zone set in the live environment, i.e., from `/etc/localtime`, or `UTC` if it's not set)
@@ -226,7 +234,9 @@ The installation script contains the [basic steps](#usage) already outlined.
 Output will be logged to `/root/install.log` (in addition to outputting to the virtual terminal).
 When the installation is finished the log file will be copied into `$BOOTSTRAP_MOUNT_DIR/var/log`.
 
-The bootstrap repository will also be accessible in the virtual machine at `/mnt/bootstrap`.
+The bootstrap repository will be accessible in the virtual machine at `/mnt/bootstrap`.
+
+TCP port `60022` on localhost will be forwarded to port `22` on the virtual machine.
 
 After powering off the Arch Linux ISO, the installed system will be booted.
 

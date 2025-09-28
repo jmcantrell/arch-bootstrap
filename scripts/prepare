@@ -60,25 +60,28 @@ export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_SYS_DEVICE
 
 export BOOTSTRAP_LVM_VG_NAME=${BOOTSTRAP_LVM_VG_NAME:-sys}
 
-export BOOTSTRAP_LVM_LV_SWAP_NAME=${BOOTSTRAP_LVM_LV_SWAP_NAME:-swap}
-
-if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
-    if [[ -v BOOTSTRAP_MEMORY_SIZE ]]; then
-        BOOTSTRAP_LVM_LV_SWAP_SIZE=$BOOTSTRAP_MEMORY_SIZE
-    elif memory_size=$(print-memory-size); then
-        BOOTSTRAP_LVM_LV_SWAP_SIZE=$memory_size
-        unset memory_size
-    else
-        printf "unable to get information about physical memory\n" >&2
-        return 1
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    export BOOTSTRAP_LVM_LV_SWAP_NAME=${BOOTSTRAP_LVM_LV_SWAP_NAME:-swap}
+    if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
+        if [[ -v BOOTSTRAP_MEMORY_SIZE ]]; then
+            BOOTSTRAP_LVM_LV_SWAP_SIZE=$BOOTSTRAP_MEMORY_SIZE
+        elif memory_size=$(print-memory-size); then
+            BOOTSTRAP_LVM_LV_SWAP_SIZE=$memory_size
+            unset memory_size
+        else
+            printf "unable to get information about physical memory\n" >&2
+            return 1
+        fi
+        export BOOTSTRAP_LVM_LV_SWAP_SIZE
     fi
-    export BOOTSTRAP_LVM_LV_SWAP_SIZE
+    export BOOTSTRAP_FS_SWAP_LABEL=${BOOTSTRAP_FS_SWAP_LABEL:-swap}
+    export BOOTSTRAP_SWAP_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_SWAP_NAME
 fi
 
 export BOOTSTRAP_LVM_LV_ROOT_NAME=${BOOTSTRAP_LVM_LV_ROOT_NAME:-root}
 export BOOTSTRAP_LVM_LV_ROOT_EXTENTS=${BOOTSTRAP_LVM_LV_ROOT_EXTENTS:-+100%FREE}
-
-export BOOTSTRAP_SWAP_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_SWAP_NAME
+export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
+export BOOTSTRAP_FS_ROOT_OPTIONS=${BOOTSTRAP_FS_ROOT_OPTIONS:-autodefrag,compress=zstd}
 export BOOTSTRAP_ROOT_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_ROOT_NAME
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
@@ -89,11 +92,6 @@ if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     export BOOTSTRAP_LUKS_PASSPHRASE=${BOOTSTRAP_LUKS_PASSPHRASE:-hunter2}
     export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_LUKS_MAPPER_DEVICE
 fi
-
-export BOOTSTRAP_FS_SWAP_LABEL=${BOOTSTRAP_FS_SWAP_LABEL:-swap}
-
-export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
-export BOOTSTRAP_FS_ROOT_OPTIONS=${BOOTSTRAP_FS_ROOT_OPTIONS:-autodefrag,compress=zstd}
 
 if [[ ! -v BOOTSTRAP_CPU_VENDOR ]]; then
     if ! cpu_vendor=$(print-cpu-vendor); then

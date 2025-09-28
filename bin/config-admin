@@ -15,7 +15,7 @@ fi
 
 arch-chroot "$BOOTSTRAP_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
 
-printf "%s:%s" "$BOOTSTRAP_ADMIN_LOGIN" "$BOOTSTRAP_ADMIN_PASSWORD" | chpasswd -R "$BOOTSTRAP_MOUNT_DIR"
+chpasswd -R "$BOOTSTRAP_MOUNT_DIR" <<<"$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_PASSWORD"
 
 if [[ -f ~/.ssh/authorized_keys ]]; then
     rsync -va ~/.ssh/authorized_keys "$BOOTSTRAP_MOUNT_DIR"/home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh/

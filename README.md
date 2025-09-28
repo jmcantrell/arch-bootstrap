@@ -2,7 +2,7 @@
 
 An opinionated unattended Arch Linux installer.
 
-Aside from the opinions listed below, care is taken to ensure the resulting system closely matches what you would get from following the [official installation guide][install].
+Aside from the opinions listed below, the resulting system should closely match what you would get from following the [official installation guide][install].
 
 ## Opinions
 
@@ -115,15 +115,9 @@ The script will be run similarly to the curl method above as soon as the environ
 The details of the system being installed are controlled entirely by environment variables.
 The following variables should be defined and exported before sourcing the preparation script.
 
-### Required
+### Disk
 
-The only required environment variable is the one that defines the installation device.
-It must be explicitly set because it's the most destructive, as all existing data will be destroyed without confirmation during installation.
-
-- `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (e.g. `/dev/sda`)
-
-### Metadata
-
+- `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
 - `BOOTSTRAP_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
 ### Hardware
@@ -214,17 +208,20 @@ To test out certain settings, export them before running the script:
 export BOOTSTRAP_HOSTNAME=box
 export BOOTSTRAP_TIMEZONE=America/Chicago
 export BOOTSTRAP_ADMIN_LOGIN=frank
+
 ./scripts/test /path/to/archlinux.iso
 ```
 
-To automatically start the install and boot into the new system when it finishes:
+To automatically start the install and boot into the new system when it finishes, add the `-y` option:
 
 ```sh
 ./scripts/test -y /path/to/archlinux.iso
 ```
 
 Once booted into the Arch Linux ISO, the current directory will have two files, `config` and `install`.
+
 The configuration file contains all the settings that were provided to the test script and is suitable for sourcing.
+
 The installation script contains the [basic steps](#usage) already outlined.
 Output will be logged to `/root/install.log` (in addition to outputting to the virtual terminal).
 When the installation is finished the log file will be copied into `$BOOTSTRAP_MOUNT_DIR/var/log`.

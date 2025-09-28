@@ -23,11 +23,9 @@ cidata_file=$temp_dir/cidata.iso
 config_file=$temp_dir/config
 install_file=$temp_dir/install
 
-cat >"$config_file" <<EOF
 export BOOTSTRAP_INSTALL_DEVICE=/dev/vda
-EOF
 
-set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >>"$config_file"
+set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >"$config_file"
 
 cat >"$install_file" <<EOF
 #!/usr/bin/env bash

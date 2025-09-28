@@ -3,17 +3,20 @@
 set -euo pipefail
 
 key_slot=1
+key_file=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_LUKS_KEYFILE_PATH#/}
 
 # Ensure the reserved key slot is available, i.e., kill it if occupied.
 if cryptsetup luksDump "$BOOTSTRAP_LUKS_DEVICE" | grep -q "^Key Slot $key_slot: ENABLED"; then
     cryptsetup luksKillSlot "$BOOTSTRAP_LUKS_DEVICE" "$key_slot" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
 fi
 
-key_file=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_LUKS_KEYFILE_PATH#/}
-
-rm -f "$key_file"
-mkdir -p "$(dirname "$key_file")"
 umask a=
-dd bs=512 count=4 if=/dev/random of="$key_file" iflag=fullblock
 
-cryptsetup luksAddKey --new-key-slot "$key_slot" "$BOOTSTRAP_LUKS_DEVICE" "$key_file" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+temp_file=$(mktemp)
+trap 'rm -f "$temp_file"' EXIT
+dd bs=512 count=4 if=/dev/random of="$temp_file" iflag=fullblock
+
+cryptsetup luksAddKey --new-key-slot "$key_slot" "$BOOTSTRAP_LUKS_DEVICE" "$temp_file" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+
+mkdir -p "$(dirname "$key_file")"
+mv -f "$temp_file" "$key_file"

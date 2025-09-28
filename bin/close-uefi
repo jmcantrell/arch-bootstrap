@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+umount --verbose "$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_UEFI_MOUNT_DIR#/}"

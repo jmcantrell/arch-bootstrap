@@ -9,9 +9,3 @@ while read -r name path; do
         --options "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
         "$BOOTSTRAP_ROOT_DEVICE" "$subvolume_mount"
 done < <(print-subvolumes)
-
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    uefi_mount=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_UEFI_MOUNT_DIR#/}
-    mkdir -p "$uefi_mount"
-    mount --verbose "$BOOTSTRAP_BOOT_DEVICE" "$uefi_mount"
-fi

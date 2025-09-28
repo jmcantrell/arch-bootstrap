@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    umount --verbose "$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_UEFI_MOUNT_DIR#/}"
-fi
-
 while read -r _ path; do
     umount --verbose "$BOOTSTRAP_MOUNT_DIR/${path#/}"
 done < <(print-subvolumes | tac)

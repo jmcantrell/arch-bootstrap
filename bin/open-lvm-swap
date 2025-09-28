@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+lvchange --verbose --activate y "$BOOTSTRAP_SWAP_DEVICE"

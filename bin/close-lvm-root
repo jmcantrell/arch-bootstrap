@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+lvchange --verbose --activate n "$BOOTSTRAP_ROOT_DEVICE"

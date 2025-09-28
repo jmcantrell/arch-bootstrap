@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    remove-lvm-swap
+fi
+
+remove-lvm-root
 remove-lvm
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then

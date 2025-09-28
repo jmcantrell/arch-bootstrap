@@ -11,13 +11,22 @@ fi
 
 create-lvm
 
+create-lvm-root
+open-lvm-root
+create-root
+open-root
+
 if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+    create-lvm-swap
+    open-lvm-swap
     create-swap
     open-swap
 fi
 
-create-fs
-open-fs
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    create-uefi
+    open-uefi
+fi
 
 if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     create-luks-keyfile

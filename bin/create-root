@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    mkfs.fat -v -F32 "$BOOTSTRAP_BOOT_DEVICE"
-fi
-
 mkfs.btrfs --verbose --label "$BOOTSTRAP_FS_ROOT_LABEL" "$BOOTSTRAP_ROOT_DEVICE"
 
 mkdir -p "$BOOTSTRAP_MOUNT_DIR"

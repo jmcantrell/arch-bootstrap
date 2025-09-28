@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+lvcreate --verbose --wipesignatures y --yes \
+    --name "$BOOTSTRAP_LVM_LV_ROOT_NAME" \
+    --extents "$BOOTSTRAP_LVM_LV_ROOT_EXTENTS" \
+    "$BOOTSTRAP_LVM_VG_NAME"

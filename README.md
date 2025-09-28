@@ -12,7 +12,7 @@ Logical volume management is handled by [LVM][lvm] with an optional swap volume,
 
 If enabled, [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
-The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/subvolumes`).
+The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/btrfs/subvolumes`).
 
 [Processor microcode updates][microcode] will be installed for the system's detected CPU vendor.
 
@@ -154,20 +154,19 @@ The following variables should be defined and exported before sourcing the prepa
 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
 
-#### Root Volume
-
-- `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
-- `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
-- `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
-- `BOOTSTRAP_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
-- `BOOTSTRAP_FS_ROOT_OPTIONS`: The mount options used for file systems (default: `autodefrag,compress=zstd`)
-
 #### Swap Volume
 
 - `BOOTSTRAP_USE_SWAP`: If set to a non-empty value, create a swap volume, allowing for hibernation
 - `BOOTSTRAP_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
 - `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/print-memory-size`)
 - `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
+
+#### Root Volume
+
+- `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
+- `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
+- `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
+- `BOOTSTRAP_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
 
 ### Kernel
 

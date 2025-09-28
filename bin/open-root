@@ -2,10 +2,16 @@
 
 set -euo pipefail
 
+options_file="$BOOTSTRAP_CONFIG_DIR"/btrfs/options
+
+unset options
+
+if [[ -f $options_file ]]; then
+    options=$(paste -sd, "$options_file")
+fi
+
 while read -r name path; do
     subvolume_mount=$BOOTSTRAP_MOUNT_DIR/${path#/}
     mkdir -p "$subvolume_mount"
-    mount --verbose \
-        --options "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
-        "$BOOTSTRAP_ROOT_DEVICE" "$subvolume_mount"
-done < <(print-subvolumes)
+    mount --verbose --options "${options:+$options,}subvol=$name" "$BOOTSTRAP_ROOT_DEVICE" "$subvolume_mount"
+done < <(print-btrfs-subvolumes)

@@ -10,6 +10,6 @@ mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_MOUNT_DIR"
 
 while read -r name _; do
     btrfs subvolume create "$BOOTSTRAP_MOUNT_DIR/$name"
-done < <(print-subvolumes)
+done < <(print-btrfs-subvolumes)
 
 umount --verbose "$BOOTSTRAP_MOUNT_DIR"

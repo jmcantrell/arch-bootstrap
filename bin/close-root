@@ -4,4 +4,4 @@ set -euo pipefail
 
 while read -r _ path; do
     umount --verbose "$BOOTSTRAP_MOUNT_DIR/${path#/}"
-done < <(print-subvolumes | tac)
+done < <(print-btrfs-subvolumes | tac)

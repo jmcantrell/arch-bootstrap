@@ -4,6 +4,8 @@ set -euo pipefail
 
 systemctl stop reflector.service
 
-reflector --verbose --save /etc/pacman.d/mirrorlist --protocol https --country US --latest 20 --sort rate
+if [[ ! -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
+    reflector --verbose --save /etc/pacman.d/mirrorlist --protocol https --country US --latest 20 --sort rate
+fi
 
 pacman -Syy

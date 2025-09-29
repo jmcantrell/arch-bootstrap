@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-# Inspect the current installation environment (sanitized).
+set -euo pipefail
 
 set | grep '^BOOTSTRAP_' | sort | sed -E '/^[^=]*PASS(WORD|PHRASE)[^=]*=/s/=.*$/=********/'

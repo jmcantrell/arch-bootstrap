@@ -4,12 +4,12 @@ set -euo pipefail
 
 mkfs.btrfs --verbose --label "$BOOTSTRAP_FS_ROOT_LABEL" "$BOOTSTRAP_ROOT_DEVICE"
 
-mkdir -p "$BOOTSTRAP_MOUNT_DIR"
+mkdir -p "$BOOTSTRAP_INSTALL_MOUNT_DIR"
 
-mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_MOUNT_DIR"
+mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_INSTALL_MOUNT_DIR"
 
 while read -r name _; do
-    btrfs subvolume create "$BOOTSTRAP_MOUNT_DIR/$name"
+    btrfs subvolume create "$BOOTSTRAP_INSTALL_MOUNT_DIR/$name"
 done < <(print-btrfs-subvolumes)
 
-umount --verbose "$BOOTSTRAP_MOUNT_DIR"
+umount --verbose "$BOOTSTRAP_INSTALL_MOUNT_DIR"

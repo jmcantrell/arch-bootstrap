@@ -8,4 +8,4 @@ pacman --sync --refresh --needed --noconfirm archlinux-keyring
 
 readarray -t packages < <(print-packages)
 
-pacstrap "$BOOTSTRAP_MOUNT_DIR" "${packages[@]}"
+pacstrap "$BOOTSTRAP_INSTALL_MOUNT_DIR" "${packages[@]}"

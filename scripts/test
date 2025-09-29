@@ -2,19 +2,9 @@
 
 set -euo pipefail
 
-unset confirm
+test_id=boostrap-test-$$
 
-while getopts "y" opt; do
-    case $opt in
-    y) confirm=1 ;;
-    *) exit 2 ;;
-    esac
-done
-shift $((OPTIND - 1))
-
-media_file=${1:?missing installation media}
-
-temp_dir=$(mktemp -d -t boostrap-test.XXXXXXXXXX)
+temp_dir=$(mktemp -d -t "$test_id".XXXXXXXXXX)
 trap 'rm -rf "$temp_dir"' EXIT
 
 data_file=$temp_dir/data.cow
@@ -22,6 +12,24 @@ cidata_file=$temp_dir/cidata.iso
 
 config_file=$temp_dir/config
 install_file=$temp_dir/install
+
+unset confirm headless repo_dir
+
+while getopts "ynd:p:" opt; do
+    case $opt in
+    y) confirm=1 ;;
+    n) headless=1 ;;
+    d) data_file=$OPTARG ;;
+    p)
+        repo_dir=$OPTARG
+        export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/repo
+        ;;
+    *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+media_file=${1:?missing installation media}
 
 export BOOTSTRAP_INSTALL_DEVICE=/dev/vda
 
@@ -32,7 +40,9 @@ cat >"$install_file" <<EOF
 
 set -euo pipefail
 
-exec > >(tee ~/install.log) 2>&1
+log_file=\$HOME/install.log
+
+exec > >(tee "\$log_file") 2>&1
 
 source ./config
 
@@ -44,7 +54,7 @@ source ./scripts/prepare
 ./scripts/refresh
 ./scripts/install
 
-cp -t "\$BOOTSTRAP_MOUNT_DIR"/var/log ~/install.log
+cp -t "\$BOOTSTRAP_INSTALL_MOUNT_DIR"/var/log "\$log_file"
 EOF
 
 cidata_dir=$temp_dir/cidata
@@ -52,44 +62,55 @@ mkdir -p "$cidata_dir"
 
 touch "$cidata_dir"/meta-data
 
-cat >"$cidata_dir"/user-data <<EOF
-#cloud-config
-$(jo \
+user_data=(
     write_files="$({
         jo -- path=/etc/systemd/system/reflector.service owner=root:root -s permissions=0000 content=""
         jo -- encoding=b64 path=/root/config owner=root:root -s permissions='0600' content=%"$config_file"
         jo -- encoding=b64 path=/root/install owner=root:root -s permissions='0755' content=%"$install_file"
-    } | jo -a)" \
+    } | jo -a)"
     runcmd="$(
         jo -a -- \
             "systemctl daemon-reload" \
             "mkdir -p /mnt/bootstrap && mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap" \
+            ${repo_dir:+"mkdir -p /mnt/repo; mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 repo /mnt/repo"} \
             ${confirm:+"cd /root; ./install; poweroff"}
-    )" \
-    users="$(
-        jo name=root ssh_authorized_keys="$(ssh-add -L | jo -a)" | jo -a
-    )" | yq -p json)
+    )"
+)
+
+if reply=$(ssh-add -L); then
+    user_data+=(
+        users="$(jo name=root ssh_authorized_keys="$(jo -a <<<"$reply")" | jo -a)"
+    )
+fi
+
+cat >"$cidata_dir"/user-data <<EOF
+#cloud-config
+$(jo "${user_data[@]}" | yq -p json)
 EOF
 
 xorriso -as genisoimage -output "$cidata_file" -volid CIDATA -joliet -rock "$cidata_dir"/*
 
-qemu-img create -f qcow2 "$data_file" -o nocow=on 20G
+if [[ ! -f $data_file ]]; then
+    qemu-img create -f qcow2 "$data_file" -o nocow=on 20G
+fi
 
-opts=(
-    -name bootstrap-test-$$
-    -m 4G -cpu host -accel kvm -machine smm=on -boot menu=on
-    -device 'vhost-vsock-pci,guest-cid=42'
-    -device 'virtio-net-pci,netdev=net0'
-    -netdev 'user,id=net0,hostfwd=tcp::60022-:22'
-    -drive "format=qcow2,if=virtio,file=$data_file"
-)
+qemu_system() {
+    qemu-system-x86_64 \
+        -name "$test_id" -m 4G -cpu host -accel kvm -machine smm=on -boot menu=on ${headless:+-nographic} \
+        -device vhost-vsock-pci,guest-cid=42 \
+        -device virtio-net-pci,netdev=net0 \
+        -netdev user,id=net0,hostfwd=tcp::60022-:22 \
+        -drive format=qcow2,if=virtio,file="$data_file" \
+        "$@"
+}
 
-qemu-system-x86_64 "${opts[@]}" \
+qemu_system \
     -device virtio-scsi-pci,id=scsi0 \
     -device scsi-cd,bus=scsi0.0,drive=cdrom0 \
     -drive id=cdrom0,if=none,format=raw,media=cdrom,read-only=on,file="$media_file" \
     -device scsi-cd,bus=scsi0.0,drive=cdrom1 \
     -drive id=cdrom1,if=none,format=raw,media=cdrom,read-only=on,file="$cidata_file" \
-    -virtfs local,path="$PWD",mount_tag=bootstrap,security_model=passthrough
+    -virtfs local,path="$PWD",mount_tag=bootstrap,security_model=passthrough \
+    ${repo_dir:+-virtfs local,path="$(realpath "$repo_dir")",mount_tag=repo,security_model=passthrough}
 
-qemu-system-x86_64 "${opts[@]}"
+qemu-system

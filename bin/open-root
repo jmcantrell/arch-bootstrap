@@ -11,7 +11,7 @@ if [[ -f $options_file ]]; then
 fi
 
 while read -r name path; do
-    subvolume_mount=$BOOTSTRAP_MOUNT_DIR/${path#/}
+    subvolume_mount=$BOOTSTRAP_INSTALL_MOUNT_DIR/${path#/}
     mkdir -p "$subvolume_mount"
     mount --verbose --options "${options:+$options,}subvol=$name" "$BOOTSTRAP_ROOT_DEVICE" "$subvolume_mount"
 done < <(print-btrfs-subvolumes)

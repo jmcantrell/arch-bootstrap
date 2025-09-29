@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+((EUID == 0)) || exec sudo "$0" "$@"
+
+repo_dir=/var/cache/bootstrap/repo
+temp_dir=/tmp/blankdb
+
+readarray -t package_files < <(find ./config/packages -type f)
+readarray -t packages < <(cat "${package_files[@]}")
+
+pacman -Syw --needed --noconfirm --cachedir "$repo_dir" --dbpath "$temp_dir" "${packages[@]}" "$@"
+
+paccache --verbose --cachedir "$repo_dir" --remove --keep 1
+
+repo-add --new --remove --include-sigs "$repo_dir"/bootstrap.db.tar.zst "$repo_dir"/*.pkg.*[^sig]

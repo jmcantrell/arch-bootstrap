@@ -6,28 +6,28 @@ Aside from the opinions listed below, the resulting system should closely match 
 
 ## Opinions
 
-Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using BIOS or [UEFI][uefi] mode, depending on the detected hardware capabilities.
+Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using [BIOS][grub-bios] or [UEFI][grub-uefi] mode, depending on the detected [boot firmware](#boot-firmware) interface.
 
-Logical volume management is handled by [LVM][lvm] with an optional swap volume, allowing for hibernation.
+[Volume management](#volume-management) is handled by [LVM][lvm] with an optional swap volume, allowing for hibernation.
 
-If enabled, [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
+If [enabled](#full-disk-encryption), [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
-The file system is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/btrfs/subvolumes`).
+The [file system](#file-system) is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/btrfs/subvolumes`).
 
-[Processor microcode updates][microcode] will be installed for the system's detected CPU vendor.
+[Processor microcode updates][microcode] will be installed for the system's detected [CPU vendor](#processor).
 
-[Early KMS start][early-kms-start] is enabled for any recognized GPU chip sets.
+[Early KMS start][early-kms-start] is enabled for any recognized [GPU chip sets](#graphics).
 
 A [privileged user](#privileged-user) will be created and the root account will be locked.
 
-If wireless networking is used, any networks established in the installation environment will be persisted to the system.
+If [wireless networking](#wireless-networking) is used, any networks established in the installation environment will be persisted to the system.
 
 Any SSH public keys authorized in the installation environment will be persisted to the system.
 
 The following systemd units are enabled:
 
-- [fstrim][ssd].timer (if installation disk is a solid-state drive)
-- [iwd].service (if wireless networking is enabled)
+- [fstrim][ssd].timer (if installation disk is a [solid-state drive](#solid-state-drive))
+- [iwd].service (if [wireless networking](#wireless-networking) is enabled)
 - [systemd-networkd].service (with [Multicast DNS][mdns] enabled)
 - [systemd-resolved].service (with `stub-resolv.conf`)
 - [systemd-timesyncd].service
@@ -38,15 +38,10 @@ The following systemd units are enabled:
 
 Boot into the [Arch Linux ISO][iso] and change the directory to this repository.
 
-Set required environment variables:
+Set [environment variables](#configuration):
 
 ```sh
 export BOOTSTRAP_INSTALL_DEVICE=/dev/sda
-```
-
-Set any optional environment variables:
-
-```sh
 export BOOTSTRAP_ADMIN_LOGIN=bob
 export BOOTSTRAP_MIRROR_SORT=rate
 export BOOTSTRAP_TIMEZONE=America/Chicago
@@ -78,7 +73,7 @@ If all is well, `poweroff` and eject the installation media.
 The scripts are intentionally kept extremely simple and easy to read, serving as an outline.
 As `./bin` is in `PATH` after preparation, feel free to execute each step separately to verify they're working as intended.
 
-The scripts can also be useful in other contexts (e.g., troubleshooting a system, see `./scripts/`).
+The scripts can also be useful in other contexts (e.g., troubleshooting a system, see `./scripts/*`).
 
 ### Usage over SSH
 
@@ -115,17 +110,31 @@ The script will be run similarly to the curl method above as soon as the environ
 The details of the system being installed are controlled entirely by environment variables.
 The following variables should be defined and exported before sourcing the preparation script.
 
-### Disk
+### Installation Disk
 
 - `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
-- `BOOTSTRAP_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/install`)
+- `BOOTSTRAP_INSTALL_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/install`)
 
 ### Hardware
 
+#### Boot Firmware
+
 - `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
+
+#### Processor
+
 - `BOOTSTRAP_CPU_VENDOR`: The vendor of the system's CPU (default: parsed from `vendor_id` in `/proc/cpuinfo`, see `./bin/print-cpu-vendor`, choices: `intel` or `amd`)
+
+#### Graphics
+
 - `BOOTSTRAP_GPU_MODULES`: The kernel modules used by the system's GPUs (e.g. `i915`, default: automatically determined from the output of `lspci -k`, see `./bin/print-gpu-modules`, multiple values should be separated with a space)
+
+#### Solid-State Drive
+
 - `BOOTSTRAP_USE_TRIM`: If set to a non-empty value, enable trim support for LUKS (if applicable) and LVM, and enable scheduled `fstrim` (default: set if device is not a disk with spinning platters, see `./bin/is-rotational-disk`)
+
+#### Wireless Networking
+
 - `BOOTSTRAP_USE_WIRELESS`: If set to a non-empty value, enable wireless networking (default: set if there are any network interfaces starting with `wl`, see `./bin/print-network-interfaces`)
 
 ### Partition Table
@@ -159,13 +168,16 @@ The following variables should be defined and exported before sourcing the prepa
 - `BOOTSTRAP_USE_SWAP`: If set to a non-empty value, create a swap volume, allowing for hibernation
 - `BOOTSTRAP_LVM_LV_SWAP_NAME`: The name for the swap logical volume (default: `swap`)
 - `BOOTSTRAP_LVM_LV_SWAP_SIZE`: The size of the swap logical volume (default: same size as physical memory, i.e., parsed from the output of `dmidecode`, see `./bin/print-memory-size`)
-- `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 
 #### Root Volume
 
 - `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
 - `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
 - `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
+
+### File System
+
+- `BOOTSTRAP_FS_SWAP_LABEL`: The label for the swap file system (default: `swap`)
 - `BOOTSTRAP_FS_ROOT_LABEL`: The label for the root file system (default: `root`)
 
 ### Kernel
@@ -175,22 +187,26 @@ The following variables should be defined and exported before sourcing the prepa
 - `BOOTSTRAP_KERNEL_LOGLEVEL`: Kernel log level (default: 4)
 - `BOOTSTRAP_KERNEL_CONSOLEBLANK`: The number of seconds of inactivity to wait before putting the display to sleep (default: 0, i.e., disabled)
 
-### Host
+### Networking
 
 - `BOOTSTRAP_HOSTNAME`: The system host name (default: `arch`)
-- `BOOTSTRAP_TIMEZONE`: The system time zone (default: the time zone set in the live environment, i.e., from `/etc/localtime`, or `UTC` if it's not set)
 
 ### Localization
 
 - `BOOTSTRAP_LANG`: The default language (default: `en_US.UTF-8`)
 - `BOOTSTRAP_KEYMAP`: The default keyboard mapping (default: `us`)
+- `BOOTSTRAP_TIMEZONE`: The system time zone (default: the time zone set in the live environment, i.e., from `/etc/localtime`, or `UTC` if it's not set)
 
-### Packages
+### Mirrors
 
-- `BOOTSTRAP_PACKAGES`: Extra packages to install (multiple values should be separated with a space)
 - `BOOTSTRAP_MIRROR_SORT`: The sort criteria used for mirror selection (default: `age`, choices: `age`, `rate`, `score`, or `delay`)
 - `BOOTSTRAP_MIRROR_LATEST`: Only consider the n most recently synchronized mirrors (default: 5)
 - `BOOTSTRAP_MIRROR_COUNTRY`: The country used for mirror selection (default: `US`, choices: see `reflector --list-countries`)
+
+### Packages
+
+- `BOOTSTRAP_EXTRA_PACKAGES`: Extra packages to install (multiple values should be separated with a space)
+- `BOOTSTRAP_PACKAGE_REPO_DIR`: Look for packages in this offline package repository
 
 ### Privileged User
 
@@ -203,7 +219,7 @@ The following variables should be defined and exported before sourcing the prepa
 
 Installation can be tested in a virtual machine using the test script (requires `qemu-system-x86_64` and `xorriso`).
 
-To test the default settings (only the required variables are set):
+To test the default settings (only the installation disk set):
 
 ```sh
 ./scripts/test /path/to/archlinux.iso
@@ -230,8 +246,8 @@ Once booted into the Arch Linux ISO, the current directory will have two files, 
 The configuration file contains all the settings that were provided to the test script and is suitable for sourcing.
 
 The installation script contains the [basic steps](#usage) already outlined.
-Output will be logged to `/root/install.log` (in addition to outputting to the virtual terminal).
-When the installation is finished the log file will be copied into `$BOOTSTRAP_MOUNT_DIR/var/log`.
+Output will be logged to `/root/install.log` in addition to outputting to the virtual terminal.
+When the installation is finished the log file will be copied into `$BOOTSTRAP_INSTALL_MOUNT_DIR/var/log`.
 
 The bootstrap repository will be accessible in the virtual machine at `/mnt/bootstrap`.
 
@@ -244,6 +260,8 @@ After powering off the Arch Linux ISO, the installed system will be booted.
 [early-kms-start]: https://wiki.archlinux.org/title/Kernel_mode_setting#Early_KMS_start
 [fde]: https://wiki.archlinux.org/title/Dm-crypt
 [gpt]: https://wiki.archlinux.org/title/Partitioning#GUID_Partition_Table
+[grub-bios]: https://wiki.archlinux.org/title/GRUB#BIOS_systems
+[grub-uefi]: https://wiki.archlinux.org/title/GRUB#UEFI_systems
 [grub]: https://wiki.archlinux.org/title/GRUB
 [install]: https://wiki.archlinux.org/title/Installation_guide
 [iso]: https://archlinux.org/download/
@@ -261,4 +279,3 @@ After powering off the Arch Linux ISO, the installed system will be booted.
 [systemd-networkd]: https://wiki.archlinux.org/title/Systemd-networkd
 [systemd-resolved]: https://wiki.archlinux.org/title/Systemd-resolved
 [systemd-timesyncd]: https://wiki.archlinux.org/title/Systemd-timesyncd
-[uefi]: https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface

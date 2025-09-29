@@ -3,7 +3,7 @@
 set -euo pipefail
 
 key_slot=1
-key_file=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_LUKS_KEYFILE_PATH#/}
+key_file=$BOOTSTRAP_INSTALL_MOUNT_DIR/${BOOTSTRAP_LUKS_KEYFILE_PATH#/}
 
 # Ensure the reserved key slot is available, i.e., kill it if occupied.
 if cryptsetup luksDump "$BOOTSTRAP_LUKS_DEVICE" | grep -q "^Key Slot $key_slot: ENABLED"; then

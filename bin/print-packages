@@ -22,8 +22,8 @@ if [[ -v BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE ]]; then
     cat "$BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE"
 fi
 
-if [[ -v BOOTSTRAP_PACKAGES ]]; then
-    read -ra packages <<<"$BOOTSTRAP_PACKAGES"
+if [[ -v BOOTSTRAP_EXTRA_PACKAGES ]]; then
+    read -ra packages <<<"$BOOTSTRAP_EXTRA_PACKAGES"
     printf "%s\n" "${packages[@]}"
 fi
 

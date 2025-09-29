@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-uefi_mount=$BOOTSTRAP_MOUNT_DIR/${BOOTSTRAP_UEFI_MOUNT_DIR#/}
+uefi_mount=$BOOTSTRAP_INSTALL_MOUNT_DIR/${BOOTSTRAP_UEFI_MOUNT_DIR#/}
 
 mkdir -p "$uefi_mount"
 mount --verbose "$BOOTSTRAP_BOOT_DEVICE" "$uefi_mount"

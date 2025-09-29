@@ -11,11 +11,6 @@ fi
 
 create-lvm
 
-create-lvm-root
-open-lvm-root
-create-root
-open-root
-
 if [[ -v BOOTSTRAP_USE_SWAP ]]; then
     create-lvm-swap
     open-lvm-swap
@@ -23,9 +18,18 @@ if [[ -v BOOTSTRAP_USE_SWAP ]]; then
     open-swap
 fi
 
+create-lvm-root
+open-lvm-root
+create-root
+open-root
+
 if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     create-uefi
     open-uefi
+fi
+
+if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
+    set-offline-package-repo "$BOOTSTRAP_PACKAGE_REPO_DIR"
 fi
 
 install-packages

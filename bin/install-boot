@@ -9,5 +9,5 @@ bios) opts+=(--target=i386-pc) ;;
 uefi) opts+=(--target=x86_64-efi --efi-directory="$BOOTSTRAP_UEFI_MOUNT_DIR" --bootloader-id=GRUB) ;;
 esac
 
-arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-install --recheck "${opts[@]}" "$BOOTSTRAP_INSTALL_DEVICE"
-arch-chroot "$BOOTSTRAP_MOUNT_DIR" grub-mkconfig --output=/boot/grub/grub.cfg
+arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" grub-install --recheck "${opts[@]}" "$BOOTSTRAP_INSTALL_DEVICE"
+arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" grub-mkconfig --output=/boot/grub/grub.cfg

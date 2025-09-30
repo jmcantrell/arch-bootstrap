@@ -4,7 +4,7 @@ set -euo pipefail
 
 self_name=${0##*/}
 
-packages_dir=/var/cache/bootstrap/repo
+repo_dir=/var/cache/bootstrap/repo
 
 disk_size=20G
 
@@ -74,5 +74,5 @@ export BOOTSTRAP_USE_TRIM=1
     -i "$media_file" \
     -i "$cidata_file" \
     -s bootstrap="$PWD" \
-    -s packages="$packages_dir" \
+    -s packages="$repo_dir" \
     "$disk_file"

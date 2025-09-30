@@ -28,11 +28,11 @@ Enabled systemd units:
 Additional configuration:
 
 - If [wireless networking is enabled](#wireless-networking), any [networks established][iwd-networks] in the live system will be persisted to the target system
-- If [enabled or installation disk is a solid-state drive](#solid-state-drive), trim will be configured in [LVM][lvm-thin] and [LUKS][luks-trim]
+- If [trim is enabled or the installation disk is a solid-state drive](#solid-state-drive), discards will be configured in [LVM][lvm-thin] and [LUKS][luks-trim]
 - A [privileged user](#privileged-user) will be created and the root account will be locked
 - Any SSH public keys authorized in the live system will be persisted to the target system
 
-The system can be [configured
+See [configuration](#configuration) for complete details on customizing the installation.
 
 ## Usage
 
@@ -219,7 +219,7 @@ The script will be run similarly to the curl method above as soon as the environ
 ## Configuration
 
 The details of the system being installed are controlled entirely by environment variables.
-The following variables should be defined and exported before sourcing the preparation script.
+The following variables should be defined and exported before sourcing the initialization script.
 
 ### Installation Disk
 

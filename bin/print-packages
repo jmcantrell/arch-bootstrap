@@ -2,24 +2,20 @@
 
 set -euo pipefail
 
+exec > >(sort -u)
+
 cd "$BOOTSTRAP_CONFIG_DIR"/packages
 
-cat base
+cat base \
+    "$BOOTSTRAP_BOOT_FIRMWARE_PACKAGE_FILE" \
+    "$BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE"
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if ((BOOTSTRAP_USE_LUKS)); then
     cat luks
 fi
 
-if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+if ((BOOTSTRAP_USE_WIRELESS)); then
     cat wireless
-fi
-
-if [[ -v BOOTSTRAP_BOOT_FIRMWARE_PACKAGE_FILE ]]; then
-    cat "$BOOTSTRAP_BOOT_FIRMWARE_PACKAGE_FILE"
-fi
-
-if [[ -v BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE ]]; then
-    cat "$BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE"
 fi
 
 if [[ -v BOOTSTRAP_EXTRA_PACKAGES ]]; then

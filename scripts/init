@@ -6,18 +6,18 @@ export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
 
 export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
 
-export BOOTSTRAP_INSTALL_MOUNT_DIR=${BOOTSTRAP_INSTALL_MOUNT_DIR:-/mnt/install}
+export BOOTSTRAP_TARGET_MOUNT_DIR=${BOOTSTRAP_TARGET_MOUNT_DIR:-/mnt/target}
 
-: "${BOOTSTRAP_INSTALL_DEVICE:?}"
+: "${BOOTSTRAP_TARGET_DEVICE:?}"
 
 unset partition_prefix
 
-if [[ ${BOOTSTRAP_INSTALL_DEVICE##*/} == nvme* ]]; then
+if [[ ${BOOTSTRAP_TARGET_DEVICE##*/} == nvme* ]]; then
     partition_prefix=p
 fi
 
-export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_INSTALL_DEVICE}${partition_prefix:-}1}
-export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_INSTALL_DEVICE}${partition_prefix:-}2}
+export BOOTSTRAP_BOOT_DEVICE=${BOOTSTRAP_BOOT_DEVICE:-${BOOTSTRAP_TARGET_DEVICE}${partition_prefix:-}1}
+export BOOTSTRAP_SYS_DEVICE=${BOOTSTRAP_SYS_DEVICE:-${BOOTSTRAP_TARGET_DEVICE}${partition_prefix:-}2}
 unset partition_prefix
 
 if [[ ! -v BOOTSTRAP_BOOT_FIRMWARE ]]; then
@@ -60,7 +60,9 @@ export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_SYS_DEVICE
 
 export BOOTSTRAP_LVM_VG_NAME=${BOOTSTRAP_LVM_VG_NAME:-sys}
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+export BOOTSTRAP_USE_SWAP=${BOOTSTRAP_USE_SWAP:-0}
+
+if ((BOOTSTRAP_USE_SWAP)); then
     export BOOTSTRAP_LVM_LV_SWAP_NAME=${BOOTSTRAP_LVM_LV_SWAP_NAME:-swap}
     if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
         if [[ -v BOOTSTRAP_MEMORY_SIZE ]]; then
@@ -83,7 +85,9 @@ export BOOTSTRAP_LVM_LV_ROOT_EXTENTS=${BOOTSTRAP_LVM_LV_ROOT_EXTENTS:-+100%FREE}
 export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
 export BOOTSTRAP_ROOT_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_ROOT_NAME
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+export BOOTSTRAP_USE_LUKS=${BOOTSTRAP_USE_LUKS:-0}
+
+if ((BOOTSTRAP_USE_LUKS)); then
     export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_SYS_DEVICE
     export BOOTSTRAP_LUKS_MAPPER_NAME=${BOOTSTRAP_LUKS_MAPPER_NAME:-sys}
     export BOOTSTRAP_LUKS_KEYFILE_PATH=${BOOTSTRAP_LUKS_KEYFILE_PATH:-/crypto_keyfile.bin}
@@ -119,12 +123,20 @@ if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
     unset gpu_modules
 fi
 
-if [[ ! -v BOOTSTRAP_USE_TRIM ]] && ! is-rotational-disk "$BOOTSTRAP_INSTALL_DEVICE"; then
-    export BOOTSTRAP_USE_TRIM=1
+if [[ ! -v BOOTSTRAP_USE_TRIM ]]; then
+    if is-rotational-disk "$BOOTSTRAP_TARGET_DEVICE"; then
+        export BOOTSTRAP_USE_TRIM=0
+    else
+        export BOOTSTRAP_USE_TRIM=1
+    fi
 fi
 
-if [[ ! -v BOOTSTRAP_USE_WIRELESS ]] && print-network-interfaces | grep -q '^wl'; then
-    export BOOTSTRAP_USE_WIRELESS=1
+if [[ ! -v BOOTSTRAP_USE_WIRELESS ]]; then
+    if print-network-interfaces | grep -q '^wl'; then
+        export BOOTSTRAP_USE_WIRELESS=1
+    else
+        export BOOTSTRAP_USE_WIRELESS=0
+    fi
 fi
 
 export BOOTSTRAP_KERNEL_LOGLEVEL=${BOOTSTRAP_KERNEL_LOGLEVEL:-4}

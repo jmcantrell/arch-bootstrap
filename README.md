@@ -1,89 +1,156 @@
 # arch-bootstrap
 
-An opinionated unattended Arch Linux installer.
+An opinionated Arch Linux installer.
 
-Aside from the opinions listed below, the resulting system should closely match what you would get from following the [official installation guide][install].
+Aside from the opinions listed below, the target system should closely match the result of following the [official installation guide][install].
 
 ## Opinions
 
 Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using [BIOS][grub-bios] or [UEFI][grub-uefi] mode, depending on the detected [boot firmware](#boot-firmware) interface.
 
-[Volume management](#volume-management) is handled by [LVM][lvm] with an optional swap volume, allowing for hibernation.
+[Volume management](#volume-management) is handled by [LVM][lvm].
+
+If [enabled](#swap-volume), a [dedicated swap volume][swap-partition] will be created, enabling [hibernation][hibernation].
 
 If [enabled](#full-disk-encryption), [full disk encryption][fde] is implemented using the [LVM on LUKS][lvm-on-luks] method.
 
 The [file system](#file-system) is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/btrfs/subvolumes`).
 
-[Processor microcode updates][microcode] will be installed for the system's detected [CPU vendor](#processor).
+[Processor microcode updates][microcode] will be installed for the target system's detected [CPU vendor](#processor).
 
-[Early KMS start][early-kms-start] is enabled for any recognized [GPU chip sets](#graphics).
+If [enabled or any graphics drivers are detected](#graphics), [Early KMS start][early-kms-start] is configured.
+
+If [enabled or wireless interfaces are detected](#wireless-networking), any networks established in the installation environment will be persisted to the target system.
+
+If [enabled or the installation disk is a solid-state drive](#solid-state-drive), trim will be enabled in LVM and LUKS, and regular `fstrim` will be scheduled.
 
 A [privileged user](#privileged-user) will be created and the root account will be locked.
 
-If [wireless networking](#wireless-networking) is used, any networks established in the installation environment will be persisted to the system.
+Any SSH public keys authorized in the live system will be persisted to the target system.
 
-Any SSH public keys authorized in the installation environment will be persisted to the system.
+The following systemd units will be enabled on the target system:
 
-The following systemd units are enabled:
-
-- [fstrim][ssd].timer (if installation disk is a [solid-state drive](#solid-state-drive))
-- [iwd].service (if [wireless networking](#wireless-networking) is enabled)
 - [systemd-networkd].service (with [Multicast DNS][mdns] enabled)
 - [systemd-resolved].service (with `stub-resolv.conf`)
 - [systemd-timesyncd].service
 - [reflector].{service,timer}
 - [sshd].service
+- [fstrim][ssd-trim].timer (if applicable)
+- [iwd].service (if applicable)
 
 ## Usage
 
-Boot into the [Arch Linux ISO][iso] and change the directory to this repository.
+Boot into the [live environment][iso] and change the directory to this repository.
 
 Set [environment variables](#configuration):
 
 ```sh
-export BOOTSTRAP_INSTALL_DEVICE=/dev/sda
+export BOOTSTRAP_TARGET_DEVICE=/dev/sda
 export BOOTSTRAP_ADMIN_LOGIN=bob
 export BOOTSTRAP_MIRROR_SORT=rate
 export BOOTSTRAP_TIMEZONE=America/Chicago
 export BOOTSTRAP_USE_LUKS=1
 ```
 
-Prepare the environment:
+Initialize the environment on the live system:
 
 ```sh
-source ./scripts/prepare
+source ./scripts/init
 ```
+
+This will validate the environment variables that were set and add `./bin` to `PATH`.
 
 Inspect the modified environment (sensitive data is redacted):
 
 ```sh
-./scripts/inspect
+print-config
 ```
 
-Install the system:
+Install the target system:
 
 ```sh
-./scripts/install
+install-target
 ```
 
-After installation, the system is left mounted for inspection or further configuration.
+After installation, the target system is left mounted for inspection or further configuration.
 
 If all is well, `poweroff` and eject the installation media.
 
-The scripts are intentionally kept extremely simple and easy to read, serving as an outline.
-As `./bin` is in `PATH` after preparation, feel free to execute each step separately to verify they're working as intended.
+The top-level commands, i.e., `./bin/*-target`, are intentionally kept extremely simple and easy to read, serving as an outline.
+They can also be helpful in other contexts, e.g., troubleshooting the target system (see `./bin/{open,close,remove,wipe,shred}-target`).
 
-The scripts can also be useful in other contexts (e.g., troubleshooting a system, see `./scripts/*`).
+### Offline Installation
 
-### Usage over SSH
+An [offline package repository][offline-install] can be used to minimize bandwidth usage or if the network is not available.
+
+Transfer the repository to the live system and assign it to `BOOTSTRAP_PACKAGE_REPO_DIR`.
+During installation, packages will be pulled **only** from this repository.
+
+To create a package repository at `/var/cache/bootstrap/repo` based on packages defined in `./config/packages/**`:
+
+```sh
+./scripts/mkpkgrepo
+```
+
+Extra [packages](#packages) can be provided using `BOOTSTRAP_EXTRA_PACKAGES` and/or as arguments to the script:
+
+```sh
+BOOTSTRAP_EXTRA_PACKAGES="vim rsync" ./scripts/mkpkgrepo tmux git
+```
+
+To see complete usage details:
+
+```sh
+./scripts/mkpkgrepo --help
+```
+
+### Automated Installation
+
+The Arch Linux ISO uses [cloud-init] which can be configured to automate the installation.
+
+The script `./scripts/mkcidata` can be used to create a cloud-init ISO (requires `xorriso`, `jo`, and `yq`).
+
+The generated image will be configured to do the following automatically:
+
+- Authorize any authorized SSH public keys
+- Authorize any SSH public keys added to ssh-agent
+- Authorize any SSH public keys in ~/.ssh belonging to the user
+- Include any iwd pre-shared keys on the system
+- Enable Multicast DNS on the live system so it can be reached by host name
+- Set the host name of the live system to `bootstrap` or `bootstrap-$BOOTSTRAP_HOSTNAME` (if the environment variable is set)
+- Try to mount a drive with the label `BOOTSTRAP` to `/mnt/bootstrap`
+- If `BOOTSTRAP_PACKAGE_REPO_DIR` is set, try to mount a drive with the label `PACKAGES` to `/mnt/packages`
+- Add any configuration (exported environment variables like `BOOTSTRAP_*`) to the file `/root/config` on the live system.
+- Create an installation entry point script at `/root/install` on the live system that logs its output to `/root/install.log` and `/var/log/install.log` on the target system.
+
+To build a cloud-init ISO that does all of the above but waits for user initiation:
+
+```sh
+./scripts/mkcidata /path/to/cidata.iso
+```
+
+To build a cloud-init ISO that automatically runs the installation script and then powers off:
+
+```sh
+./scripts/mkcidata -y /path/to/cidata.iso
+```
+
+To see complete usage details:
+
+```sh
+./scripts/mkcidata --help
+```
+
+### Remote Installation
 
 If you need to manage the installation over SSH, the injection script can make this easier.
 It does the following:
 
 - Authorizes the SSH keys with write access to this repository
+- Enables Multicast DNS on the live system so it can be reached by host name
 - Fetches an archive of this repository into `/tmp/bootstrap` (if necessary)
 
-If you already have access to the repository in the live environment, just run the script to authorize the keys:
+If you already have access to the repository in the live system, just run the script to authorize the keys and enable mDNS:
 
 ```sh
 ./scripts/inject
@@ -105,6 +172,49 @@ script=https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject
 
 The script will be run similarly to the curl method above as soon as the environment is ready.
 
+### Virtual Machine Installation
+
+Installation can be tested in a virtual machine using the script `./scripts/test` (requires `qemu-system-x86_64`, `xorriso`, `jo`, and `yq`).
+
+The ephemeral virtual machine will be booted with a cloud-init image generated using the [script described earlier](#automated-installation).
+
+Additionally, it will do the following:
+
+- Mount the current directory to `/mnt/bootstrap` on the live system
+- Mount the `/var/cache/bootstrap/repo` on the host system to `/mnt/packages` on the live system
+- Forward TCP port `60022` on the host system to TCP port `22` on the live and new system
+- Allow SSH connections over vsock at cid `42`
+
+After powering off the Arch Linux ISO, the installed system will be booted.
+
+To test the default settings (only the installation disk set):
+
+```sh
+./scripts/test /path/to/archlinux.iso
+```
+
+To test out certain settings, export them before running the script:
+
+```sh
+export BOOTSTRAP_HOSTNAME=box
+export BOOTSTRAP_TIMEZONE=America/Chicago
+export BOOTSTRAP_ADMIN_LOGIN=frank
+
+./scripts/test /path/to/archlinux.iso
+```
+
+To automatically start the install and boot into the new system when it finishes, add the `-y` option:
+
+```sh
+./scripts/test -y /path/to/archlinux.iso
+```
+
+To see complete usage details:
+
+```sh
+./scripts/test --help
+```
+
 ## Configuration
 
 The details of the system being installed are controlled entirely by environment variables.
@@ -112,8 +222,8 @@ The following variables should be defined and exported before sourcing the prepa
 
 ### Installation Disk
 
-- `BOOTSTRAP_INSTALL_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
-- `BOOTSTRAP_INSTALL_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/install`)
+- `BOOTSTRAP_TARGET_DEVICE`: The disk that will contain the new system (**REQUIRED**, e.g. `/dev/sda`, **WARNING**: all existing data will be destroyed without confirmation)
+- `BOOTSTRAP_TARGET_MOUNT_DIR`: The path where the new system will be mounted during installation (default: `/mnt/target`)
 
 ### Hardware
 
@@ -154,7 +264,7 @@ The following variables should be defined and exported before sourcing the prepa
 
 ### Full Disk Encryption
 
-- `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_INSTALL_DEVICE`
+- `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_TARGET_DEVICE`
 - `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `$BOOTSTRAP_DEFAULT_PASSWORD`, occupies key slot 0)
 - `BOOTSTRAP_LUKS_KEY_FILE`: The path of the key file used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
@@ -206,7 +316,7 @@ The following variables should be defined and exported before sourcing the prepa
 ### Packages
 
 - `BOOTSTRAP_EXTRA_PACKAGES`: Extra packages to install (multiple values should be separated with a space)
-- `BOOTSTRAP_PACKAGE_REPO_DIR`: Look for packages in this offline package repository
+- `BOOTSTRAP_PACKAGE_REPO_DIR`: Look for packages in this offline package repository directory
 
 ### Privileged User
 
@@ -215,54 +325,16 @@ The following variables should be defined and exported before sourcing the prepa
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
-## Testing
-
-Installation can be tested in a virtual machine using the test script (requires `qemu-system-x86_64` and `xorriso`).
-
-To test the default settings (only the installation disk set):
-
-```sh
-./scripts/test /path/to/archlinux.iso
-```
-
-To test out certain settings, export them before running the script:
-
-```sh
-export BOOTSTRAP_HOSTNAME=box
-export BOOTSTRAP_TIMEZONE=America/Chicago
-export BOOTSTRAP_ADMIN_LOGIN=frank
-
-./scripts/test /path/to/archlinux.iso
-```
-
-To automatically start the install and boot into the new system when it finishes, add the `-y` option:
-
-```sh
-./scripts/test -y /path/to/archlinux.iso
-```
-
-Once booted into the Arch Linux ISO, the current directory will have two files, `config` and `install`.
-
-The configuration file contains all the settings that were provided to the test script and is suitable for sourcing.
-
-The installation script contains the [basic steps](#usage) already outlined.
-Output will be logged to `/root/install.log` in addition to outputting to the virtual terminal.
-When the installation is finished the log file will be copied into `$BOOTSTRAP_INSTALL_MOUNT_DIR/var/log`.
-
-The bootstrap repository will be accessible in the virtual machine at `/mnt/bootstrap`.
-
-TCP port `60022` on localhost will be forwarded to port `22` on the virtual machine.
-
-After powering off the Arch Linux ISO, the installed system will be booted.
-
 [btrfs-subvolumes]: https://wiki.archlinux.org/title/Btrfs#Subvolumes
 [btrfs]: https://wiki.archlinux.org/title/Btrfs
+[cloud-init]: https://wiki.archlinux.org/title/Cloud-init
 [early-kms-start]: https://wiki.archlinux.org/title/Kernel_mode_setting#Early_KMS_start
 [fde]: https://wiki.archlinux.org/title/Dm-crypt
 [gpt]: https://wiki.archlinux.org/title/Partitioning#GUID_Partition_Table
 [grub-bios]: https://wiki.archlinux.org/title/GRUB#BIOS_systems
 [grub-uefi]: https://wiki.archlinux.org/title/GRUB#UEFI_systems
 [grub]: https://wiki.archlinux.org/title/GRUB
+[hibernation]: https://wiki.archlinux.org/title/Power_management/Suspend_and_hibernate#Hibernation
 [install]: https://wiki.archlinux.org/title/Installation_guide
 [iso]: https://archlinux.org/download/
 [iwd]: https://wiki.archlinux.org/title/Iwd
@@ -272,10 +344,13 @@ After powering off the Arch Linux ISO, the installed system will be booted.
 [lvm]: https://wiki.archlinux.org/title/LVM
 [mdns]: https://wiki.archlinux.org/title/Systemd-resolved#mDNS
 [microcode]: https://wiki.archlinux.org/title/Microcode
+[offline-install]: https://wiki.archlinux.org/title/Offline_installation
 [reflector]: https://wiki.archlinux.org/title/Reflector
 [sfdisk]: https://man.archlinux.org/man/sfdisk.8
+[ssd-trim]: https://wiki.archlinux.org/title/Solid_state_drive#TRIM
 [ssd]: https://wiki.archlinux.org/title/Solid_state_drive
 [sshd]: https://wiki.archlinux.org/title/OpenSSH#Server_usage
+[swap-partition]: https://wiki.archlinux.org/title/Swap#Swap_partition
 [systemd-networkd]: https://wiki.archlinux.org/title/Systemd-networkd
 [systemd-resolved]: https://wiki.archlinux.org/title/Systemd-resolved
 [systemd-timesyncd]: https://wiki.archlinux.org/title/Systemd-timesyncd

@@ -8,4 +8,4 @@ export MIRROR_COUNTRY=$BOOTSTRAP_MIRROR_COUNTRY
 
 install-template /etc/xdg/reflector/reflector.conf
 
-arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" systemctl enable reflector.{service,timer}
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" systemctl enable reflector.{service,timer}

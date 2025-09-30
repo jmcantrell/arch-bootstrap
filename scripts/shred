@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-shred -v -n1 "$BOOTSTRAP_INSTALL_DEVICE"

@@ -18,8 +18,6 @@ fi
 
 sed -Ei '/^\[(core|core-testing|extra|extra-testing|multilib|multilib-testing)\]/,+1s/^/#/' "$config_file"
 
-cat >>"$config_file" <<EOF
-[$db_name]
-SigLevel = Optional
-Server = file://$(realpath "$repo_dir")
-EOF
+if ! grep -qxF "[$db_name]" "$config_file"; then
+    printf "\n[%s]\nSigLevel = Optional\nServer = file://%s\n" "$db_name" "$(realpath "$repo_dir")" >>"$config_file"
+fi

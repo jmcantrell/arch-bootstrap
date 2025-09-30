@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+reflector --verbose --protocol https \
+    --save /etc/pacman.d/mirrorlist \
+    --country "$BOOTSTRAP_MIRROR_COUNTRY" \
+    --latest "$BOOTSTRAP_MIRROR_LATEST" \
+    --sort "$BOOTSTRAP_MIRROR_SORT"

@@ -7,24 +7,24 @@ modules=()
 hooks=(base udev autodetect modconf kms)
 files=()
 
-if [[ -v BOOTSTRAP_GPU_MODULES ]]; then
+if [[ -v BOOTSTRAP_GPU_MODULES && -n $BOOTSTRAP_GPU_MODULES ]]; then
     readarray -t modules <<<"$BOOTSTRAP_GPU_MODULES"
 fi
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if ((BOOTSTRAP_USE_LUKS)); then
     hooks+=(keyboard keymap consolefont)
     files+=("$BOOTSTRAP_LUKS_KEYFILE_PATH")
 fi
 
 hooks+=(block)
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if ((BOOTSTRAP_USE_LUKS)); then
     hooks+=(encrypt)
 fi
 
 hooks+=(lvm2)
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+if ((BOOTSTRAP_USE_SWAP)); then
     hooks+=(resume)
 fi
 

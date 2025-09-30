@@ -6,7 +6,7 @@ input_file=${1:?missing file}
 output_file=${2:-$input_file}
 
 template_file=$BOOTSTRAP_CONFIG_DIR/templates/${input_file#/}
-rendered_file=$BOOTSTRAP_INSTALL_MOUNT_DIR/${output_file#/}
+rendered_file=$BOOTSTRAP_TARGET_MOUNT_DIR/${output_file#/}
 
 mkdir -p "$(dirname "$rendered_file")"
 envsubst <"$template_file" >"$rendered_file"

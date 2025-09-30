@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-genfstab -t UUID "$BOOTSTRAP_INSTALL_MOUNT_DIR" >"$BOOTSTRAP_INSTALL_MOUNT_DIR"/etc/fstab
+genfstab -t UUID "$BOOTSTRAP_TARGET_MOUNT_DIR" >"$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/fstab

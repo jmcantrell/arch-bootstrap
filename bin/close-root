@@ -3,5 +3,5 @@
 set -euo pipefail
 
 while read -r _ path; do
-    umount --verbose "$BOOTSTRAP_INSTALL_MOUNT_DIR/${path#/}"
+    umount --verbose "$BOOTSTRAP_TARGET_MOUNT_DIR/${path#/}"
 done < <(print-btrfs-subvolumes | tac)

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+self_name=${0##*/}
+
+packages_dir=/var/cache/bootstrap/repo
+
+usage="Bootstrap a virtual machine.
+
+Usage:
+    $self_name -h|--help
+    $self_name [OPTIONS] ISO_FILE DISK_FILE
+
+Options:
+    -m SIZE    specify memory size (default: same as ./scripts/mkvm)
+    -d SIZE    specify disk size (default: same as ./scripts/mkvm)
+
+    -e    edit configuration before building cloud-init image
+
+    -y    proceed with the installation and reboot into system
+
+Arguments:
+    ISO_FILE     installation media ISO file
+    DISK_FILE    data disk image file
+"
+
+if (($# > 0)); then
+    if [[ $1 == -h || $1 == --help ]]; then
+        printf "%s\n" "$usage"
+        exit
+    fi
+fi
+
+temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
+trap 'rm -rf "$temp_dir"' EXIT
+
+ci_opts=()
+bs_opts=()
+disk_file=$temp_dir/disk.cow
+cidata_file=$temp_dir/cidata.iso
+
+while getopts "m:d:ey" opt; do
+    case $opt in
+    m | d) bs_opts+=(-"$opt") ;;
+    e | y) ci_opts+=(-"$opt") ;;
+    *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+media_file=${1:?missing media file}
+disk_file=${2:?missing disk file}
+
+export BOOTSTRAP_TARGET_DEVICE=/dev/vda
+export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
+
+./scripts/mkcidata "${ci_opts[@]}" \
+    -r "mkdir -p /mnt/bootstrap && mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 bootstrap /mnt/bootstrap" \
+    -r "mkdir -p /mnt/packages && mount -t 9p -o trans=virtio,version=9p2000.L,msize=262144 packages /mnt/packages" \
+    "$cidata_file"
+
+./scripts/mkvm "${bs_opts[@]}" \
+    -i "$media_file" \
+    -i "$cidata_file" \
+    -s bootstrap="$PWD" \
+    -s packages="$packages_dir" \
+    "$disk_file"

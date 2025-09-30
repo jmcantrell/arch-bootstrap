@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-printf "%s\n" "$BOOTSTRAP_HOSTNAME" >"$BOOTSTRAP_INSTALL_MOUNT_DIR"/etc/hostname
+printf "%s\n" "$BOOTSTRAP_HOSTNAME" >"$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/hostname

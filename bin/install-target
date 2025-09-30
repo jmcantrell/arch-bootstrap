@@ -4,22 +4,20 @@ set -euo pipefail
 
 create-partitions
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if ((BOOTSTRAP_USE_LUKS)); then
     create-luks
     open-luks
 fi
 
 create-lvm
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+if ((BOOTSTRAP_USE_SWAP)); then
     create-lvm-swap
-    open-lvm-swap
     create-swap
     open-swap
 fi
 
 create-lvm-root
-open-lvm-root
 create-root
 open-root
 
@@ -28,19 +26,15 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     open-uefi
 fi
 
-if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
-    set-offline-package-repo "$BOOTSTRAP_PACKAGE_REPO_DIR"
-fi
-
 install-packages
 
-if [[ -v BOOTSTRAP_USE_TRIM ]]; then
+if ((BOOTSTRAP_USE_TRIM)); then
     config-trim
 fi
 
 config-network
 
-if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+if ((BOOTSTRAP_USE_WIRELESS)); then
     config-wireless
 fi
 
@@ -55,7 +49,7 @@ config-ssh
 config-boot
 config-initrd
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if ((BOOTSTRAP_USE_LUKS)); then
     install-luks-keyfile
 fi
 

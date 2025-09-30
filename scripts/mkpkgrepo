@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+self_name=${0##*/}
+
+repo_dir=/var/cache/bootstrap/repo
+
+usage="Create/update a custom repository for bootstrapping.
+
+Usage:
+    $self_name -h|--help
+    $self_name [PACKAGE...]
+
+Arguments:
+    PACKAGE    also install PACKAGE (can be used multiple times)
+
+Environment:
+    BOOTSTRAP_EXTRA_PACKAGES    also install the packages defined here
+                                (packages should be separated with whitespace)
+
+The package repository will be located at:
+    $repo_dir
+"
+
+if (($# > 0)); then
+    if [[ $1 == -h || $1 == --help ]]; then
+        printf "%s\n" "$usage"
+        exit
+    fi
+fi
+
+((EUID == 0)) || exec sudo "$0" "$@"
+
+temp_dir=/tmp/mkrepo-db-$$
+
+mkdir -p "$temp_dir"
+trap 'rm -rf "$temp_dir"' EXIT
+
+readarray -t package_names < <(find ./config/packages -type f -exec cat {} +)
+
+pacman -Syw --needed --noconfirm --cachedir "$repo_dir" --dbpath "$temp_dir" "${package_names[@]}" "$@"
+paccache --verbose --cachedir "$repo_dir" --remove --keep 1
+
+readarray -t package_files < <(find "$repo_dir" -type f -name "*.pkg.*" \! -name "*.sig")
+
+repo-add --new --remove --include-sigs "$repo_dir"/bootstrap.db.tar.zst "${package_files[@]}"

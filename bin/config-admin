@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
 
 export ADMIN_GROUP=$BOOTSTRAP_ADMIN_GROUP
 
@@ -13,13 +13,13 @@ else
     install-template /etc/sudoers.d/49-admin
 fi
 
-arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
 
-chpasswd -R "$BOOTSTRAP_INSTALL_MOUNT_DIR" <<<"$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_PASSWORD"
+chpasswd -R "$BOOTSTRAP_TARGET_MOUNT_DIR" <<<"$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_PASSWORD"
 
 if [[ -f ~/.ssh/authorized_keys ]]; then
-    rsync -va ~/.ssh/authorized_keys "$BOOTSTRAP_INSTALL_MOUNT_DIR"/home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh/
-    arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" chown -R "$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_LOGIN" /home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh
+    rsync -va ~/.ssh/authorized_keys "$BOOTSTRAP_TARGET_MOUNT_DIR"/home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh/
+    arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" chown -R "$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_LOGIN" /home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh
 fi
 
-arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" passwd --lock root
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd --lock root

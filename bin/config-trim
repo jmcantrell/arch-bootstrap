@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-sed -E -i '/#?[[:space:]]*\bissue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$BOOTSTRAP_INSTALL_MOUNT_DIR"/etc/lvm/lvm.conf
+sed -E -i '/#?[[:space:]]*\bissue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/lvm/lvm.conf
 
-arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" systemctl enable fstrim.timer
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" systemctl enable fstrim.timer

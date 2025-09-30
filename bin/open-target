@@ -6,13 +6,13 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     open-uefi
 fi
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if ((BOOTSTRAP_USE_LUKS)); then
     open-luks
 fi
 
 open-lvm
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+if ((BOOTSTRAP_USE_SWAP)); then
     open-lvm-swap
     open-swap
 fi

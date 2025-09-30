@@ -2,5 +2,5 @@
 
 set -euo pipefail
 
-sed -i "/^#$BOOTSTRAP_LANG/s/#//" "$BOOTSTRAP_INSTALL_MOUNT_DIR"/etc/locale.gen
-arch-chroot "$BOOTSTRAP_INSTALL_MOUNT_DIR" locale-gen
+sed -i "/^#$BOOTSTRAP_LANG/s/#//" "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/locale.gen
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" locale-gen

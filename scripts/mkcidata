@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s nullglob
+
+self_name=${0##*/}
+
+usage="Create a cloud-init ISO file.
+
+Usage:
+    $self_name -h|--help
+    $self_name [OPTIONS] ISO_FILE
+
+Options:
+    -y    proceed with the installation and shut down
+
+    -m LABEL[=DIRECTORY]    mount drive with LABEL at DIRECTORY
+                            (if no DIRECTORY is given, /mnt/<LABEL> will be used)
+
+    -r COMMAND    add COMMAND to be run after boot
+
+    -e    edit files before building
+
+Arguments:
+    ISO_FILE    write cloud-init iso to ISO_FILE
+"
+
+if (($# > 0)); then
+    if [[ $1 == -h || $1 == --help ]]; then
+        printf "%s\n" "$usage"
+        exit
+    fi
+fi
+
+user_data=()
+
+runcmd=(
+    "systemctl daemon-reload"
+    "systemctl stop reflector.service"
+    "sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network"
+    "networkctl reload"
+)
+
+write_files=(
+    "$(jo -- path=/etc/systemd/system/reflector.service owner='root:root' -s permissions=0000 content="")"
+)
+
+declare -A ssh_pubkeys=()
+
+declare -A mounts=([BOOTSTRAP]=/mnt/bootstrap)
+
+if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
+    mounts[PACKAGES]=$BOOTSTRAP_PACKAGE_REPO_DIR
+fi
+
+confirm=0
+edit=0
+
+while getopts "ym:r:e" opt; do
+    case $opt in
+    y) confirm=1 ;;
+    m)
+        if [[ $OPTARG == *=* ]]; then
+            label=${OPTARG%%=*}
+            directory=${OPTARG#*=}
+        else
+            label=$OPTARG
+            directory=/mnt/$label
+        fi
+        mounts[$label]=$directory
+        ;;
+    r) runcmd+=("$OPTARG") ;;
+    e) edit=1 ;;
+    *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+iso_file=${1:?missing iso file}
+
+temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
+trap 'rm -rf "$temp_dir"' EXIT
+
+if reply=$(ssh-add -L); then
+    while IFS= read -r pubkey; do
+        ssh_pubkeys[$pubkey]=1
+    done <<<"$reply"
+fi
+
+if [[ -f ~/.ssh/authorized_keys ]]; then
+    while IFS= read -r pubkey; do
+        ssh_pubkeys[$pubkey]=1
+    done <~/.ssh/authorized_keys
+fi
+
+for pubkey_file in ~/.ssh/*.pub; do
+    privkey_file=${pubkey_file%.*}
+    if [[ -f $pubkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s "$pubkey_file" -; then
+        ssh_pubkeys[$(<"$pubkey_file")]=1
+    fi
+done
+
+user_data+=(users="$(jo -a "$(jo name=root ssh_authorized_keys="$(jo -a "${!ssh_pubkeys[@]}")")")")
+
+should_restart_iwd=0
+
+while IFS= read -r -d '' psk_file; do
+    should_restart_iwd=1
+    write_files+=("$(sudo jo encoding=b64 path="$psk_file" content=%"$psk_file")")
+done < <(sudo find /var/lib/iwd -type f -name "*.psk" -print0)
+
+if ((should_restart_iwd)); then
+    runcmd+=("systemctl restart iwd.service")
+fi
+
+for label in "${!mounts[@]}"; do
+    directory=${mounts[$label]}
+    runcmd+=("mkdir -p ${directory@Q} && device=\$(findfs LABEL=${label@Q}) && mount \"\$device\" ${directory@Q}")
+done
+
+if ((confirm)); then
+    runcmd+=("cd /root; ./install; poweroff")
+fi
+
+config_file=$temp_dir/config
+
+set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >"$config_file"
+printf "\n# vi:ft=bash\n" >>"$config_file"
+
+write_files+=("$(jo -- encoding=b64 path=/root/config owner='root:root' -s permissions='0600' content=%"$config_file")")
+
+install_file=$temp_dir/install
+
+cat >"$install_file" <<EOF
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+log_file=\$HOME/install.log
+
+exec > >(tee "\$log_file") 2>&1
+
+source ./config
+
+cd /mnt/bootstrap
+
+source ./scripts/init
+
+print-config
+
+if [[ ! -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
+    refresh-mirrors
+fi
+
+install-target
+
+cp -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/var/log "\$log_file"
+EOF
+
+write_files+=("$(jo -- encoding=b64 path=/root/install owner='root:root' -s permissions='0755' content=%"$install_file")")
+
+if ((${#write_files[@]} > 0)); then
+    user_data+=(write_files="$(jo -a -- "${write_files[@]}")")
+fi
+
+if ((${#runcmd[@]} > 0)); then
+    user_data+=(runcmd="$(jo -a -- "${runcmd[@]}")")
+fi
+
+umask 077
+
+cidata_dir=$temp_dir/cidata
+mkdir -p "$cidata_dir"
+
+cat >"$cidata_dir"/meta-data <<EOF
+local-hostname: bootstrap${BOOTSTRAP_HOSTNAME:+-$BOOTSTRAP_HOSTNAME}
+EOF
+
+cat >"$cidata_dir"/user-data <<EOF
+#cloud-config
+$(jo "${user_data[@]}" | yq -p json)
+EOF
+
+if ((edit)); then
+    $EDITOR "$config_file" "$install_file" "$cidata_dir"/{user,meta}-data
+fi
+
+mkdir -p "$(dirname "$iso_file")"
+xorriso -as genisoimage -output "$iso_file" -volid CIDATA -joliet -rock "$cidata_dir"/*

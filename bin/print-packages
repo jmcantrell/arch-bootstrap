@@ -18,11 +18,6 @@ if ((BOOTSTRAP_USE_WIRELESS)); then
     cat wireless
 fi
 
-if [[ -v BOOTSTRAP_EXTRA_PACKAGES ]]; then
-    read -ra packages <<<"$BOOTSTRAP_EXTRA_PACKAGES"
-    printf "%s\n" "${packages[@]}"
-fi
-
 if [[ -f extra ]]; then
     cat extra
 fi

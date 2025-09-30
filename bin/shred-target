@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-shred -v -n1 "$BOOTSTRAP_TARGET_DEVICE"
+shred -v "$@" "$BOOTSTRAP_TARGET_DEVICE"

@@ -12,14 +12,14 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
-    -y    proceed with the installation and shut down
-
     -m LABEL[=DIRECTORY]    mount drive with LABEL at DIRECTORY
                             (if no DIRECTORY is given, /mnt/<LABEL> will be used)
 
+    -f LINE       add LINE to fstab
     -r COMMAND    add COMMAND to be run after boot
 
     -e    edit files before building
+    -y    proceed with the installation and shut down
 
 Arguments:
     ISO_FILE    write cloud-init iso to ISO_FILE
@@ -33,44 +33,43 @@ if (($# > 0)); then
 fi
 
 user_data=()
+users=()
+mounts=()
+write_files=()
+runcmd=()
 
-runcmd=(
+# Mask the reflector service so it doesn't try to start.
+write_files+=("$(jo -- path=/etc/systemd/system/reflector.service owner='root:root' -s permissions=0000)")
+
+# Stop the reflector service and unmask it so that it can be used if requested.
+runcmd+=(
     "systemctl daemon-reload"
     "systemctl stop reflector.service"
+    "rm /etc/systemd/system/reflector.service"
+    "systemctl daemon-reload"
+)
+
+runcmd+=(
     "sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network"
     "networkctl reload"
 )
 
-write_files=(
-    "$(jo -- path=/etc/systemd/system/reflector.service owner='root:root' -s permissions=0000 content="")"
+edit=0
+confirm=0
+declare -A mount_lines=(
+    [/mnt/bootstrap]="LABEL=BOOTSTRAP /mnt/bootstrap"
+    [/mnt/packages]="LABEL=PACKAGES /mnt/packages"
 )
 
-declare -A ssh_pubkeys=()
-
-declare -A mounts=([BOOTSTRAP]=/mnt/bootstrap)
-
-if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
-    mounts[PACKAGES]=$BOOTSTRAP_PACKAGE_REPO_DIR
-fi
-
-confirm=0
-edit=0
-
-while getopts "ym:r:e" opt; do
+while getopts "m:f:r:ey" opt; do
     case $opt in
-    y) confirm=1 ;;
     m)
-        if [[ $OPTARG == *=* ]]; then
-            label=${OPTARG%%=*}
-            directory=${OPTARG#*=}
-        else
-            label=$OPTARG
-            directory=/mnt/$label
-        fi
-        mounts[$label]=$directory
+        read -r _ dir _ <<<"$OPTARG"
+        mount_lines[$dir]=$OPTARG
         ;;
     r) runcmd+=("$OPTARG") ;;
     e) edit=1 ;;
+    y) confirm=1 ;;
     *) exit 2 ;;
     esac
 done
@@ -80,6 +79,17 @@ iso_file=${1:?missing iso file}
 
 temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
 trap 'rm -rf "$temp_dir"' EXIT
+
+for line in "${mount_lines[@]}"; do
+    read -ra tokens <<<"$line"
+    args=()
+    for token in "${tokens[@]}"; do
+        args+=(-s "$token")
+    done
+    mounts+=("$(jo -a -- "${args[@]}")")
+done
+
+declare -A ssh_pubkeys=()
 
 if reply=$(ssh-add -L); then
     while IFS= read -r pubkey; do
@@ -100,7 +110,7 @@ for pubkey_file in ~/.ssh/*.pub; do
     fi
 done
 
-user_data+=(users="$(jo -a "$(jo name=root ssh_authorized_keys="$(jo -a "${!ssh_pubkeys[@]}")")")")
+users+=("$(jo name=root ssh_authorized_keys="$(jo -a "${!ssh_pubkeys[@]}")")")
 
 should_restart_iwd=0
 
@@ -112,11 +122,6 @@ done < <(sudo find /var/lib/iwd -type f -name "*.psk" -print0)
 if ((should_restart_iwd)); then
     runcmd+=("systemctl restart iwd.service")
 fi
-
-for label in "${!mounts[@]}"; do
-    directory=${mounts[$label]}
-    runcmd+=("mkdir -p ${directory@Q} && device=\$(findfs LABEL=${label@Q}) && mount \"\$device\" ${directory@Q}")
-done
 
 if ((confirm)); then
     runcmd+=("cd /root; ./install; poweroff")
@@ -158,6 +163,14 @@ cp -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/var/log "\$log_file"
 EOF
 
 write_files+=("$(jo -- encoding=b64 path=/root/install owner='root:root' -s permissions='0755' content=%"$install_file")")
+
+if ((${#users[@]} > 0)); then
+    user_data+=(users="$(jo -a -- "${users[@]}")")
+fi
+
+if ((${#mounts[@]} > 0)); then
+    user_data+=(mounts="$(jo -a -- "${mounts[@]}")")
+fi
 
 if ((${#write_files[@]} > 0)); then
     user_data+=(write_files="$(jo -a -- "${write_files[@]}")")

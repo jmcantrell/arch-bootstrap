@@ -15,10 +15,6 @@ Usage:
 Arguments:
     PACKAGE    also install PACKAGE (can be used multiple times)
 
-Environment:
-    BOOTSTRAP_EXTRA_PACKAGES    also install the packages defined here
-                                (packages should be separated with whitespace)
-
 The package repository will be located at:
     $repo_dir
 "
@@ -32,7 +28,7 @@ fi
 
 ((EUID == 0)) || exec sudo "$0" "$@"
 
-temp_dir=/tmp/mkrepo-db-$$
+temp_dir=/tmp/$self_name-db-$$
 
 mkdir -p "$temp_dir"
 trap 'rm -rf "$temp_dir"' EXIT

@@ -25,11 +25,11 @@ if (($# > 0)); then
     fi
 fi
 
-bs_opts=()
+mkvm_opts=()
 
 while getopts "ey" opt; do
     case $opt in
-    e | y) bs_opts+=(-"$opt") ;;
+    e | y) mkvm_opts+=(-"$opt") ;;
     *) exit 2 ;;
     esac
 done
@@ -42,6 +42,6 @@ trap 'rm -rf "$temp_dir"' EXIT
 
 disk_file=$temp_dir/disk.cow
 
-./scripts/mkvmbs "${bs_opts[@]}" "$media_file" "$disk_file"
+./scripts/mkvm "${mkvm_opts[@]}" "$media_file" "$disk_file"
 
-./scripts/mkvm "$disk_file"
+./scripts/vm "$disk_file"

@@ -4,24 +4,25 @@ set -euo pipefail
 
 self_name=${0##*/}
 
-mem_size=4G
+packages_dir=/var/cache/bootstrap/repo
+
 disk_size=20G
 
-usage="Create a virtual machine.
+usage="Bootstrap a virtual machine.
 
 Usage:
     $self_name -h|--help
-    $self_name [OPTIONS] DISK_FILE
+    $self_name [OPTIONS] ISO_FILE DISK_FILE
 
 Options:
-    -m SIZE    specify memory size (default: $mem_size)
-    -d SIZE    specify disk size (default: $disk_size, only applies if DISK_FILE does not exist)
+    -m SIZE    specify memory size (default: same as ./scripts/vm)
+    -d SIZE    specify disk size (default: $disk_size)
 
-    -i FILE    add iso FILE as a cdrom
-
-    -s NAME=PATH    add PATH as NAME 9p share
+    -e    edit configuration before building cloud-init image
+    -y    proceed with the installation and reboot into system
 
 Arguments:
+    ISO_FILE     installation media ISO file
     DISK_FILE    data disk image file
 "
 
@@ -32,44 +33,47 @@ if (($# > 0)); then
     fi
 fi
 
-cdrom_opts=()
-cdrom_id_next=0
-cdrom_device_fmt="scsi-cd,bus=scsi0.0,drive=cdrom%d"
-cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
+temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
+trap 'rm -rf "$temp_dir"' EXIT
 
-while getopts "m:d:i:s:" opt; do
+ci_opts=()
+vm_opts=()
+disk_file=$temp_dir/disk.cow
+cidata_file=$temp_dir/cidata.iso
+
+while getopts "m:d:ey" opt; do
     case $opt in
-    m) mem_size=$OPTARG ;;
+    m) vm_opts+=(-"$opt") ;;
+    e | y) ci_opts+=(-"$opt") ;;
     d) disk_size=$OPTARG ;;
-    i)
-        cdrom_id=$((cdrom_id_next++))
-        cdrom_opts+=(
-            -device "$(printf "$cdrom_device_fmt" "$cdrom_id")"
-            -drive "$(printf "$cdrom_drive_fmt" "$cdrom_id" "$OPTARG")"
-        )
-        ;;
-    s) opts+=(-virtfs "local,path=${OPTARG#*=},mount_tag=${OPTARG%%=*},security_model=passthrough") ;;
     *) exit 2 ;;
     esac
 done
 shift $((OPTIND - 1))
 
-disk_file=${1:?missing disk file}
+media_file=${1:?missing media file}
+disk_file=${2:?missing disk file}
 
-if [[ ! -f $disk_file ]]; then
-    qemu-img create -f qcow2 "$disk_file" -o nocow=on "$disk_size"
+if [[ -f $disk_file ]]; then
+    printf "%s: disk file already exists: %q\n" "$0" "$disk_file" >&2
+    exit 2
 fi
 
-opts=()
+printf "creating virtual machine disk: %q (%s)\n" "$disk_file" "$disk_size"
+qemu-img create -f qcow2 "$disk_file" -o nocow=on "$disk_size"
 
-if ((${#cdrom_opts[@]} > 0)); then
-    opts+=(-boot order=d -device 'virtio-scsi-pci,id=scsi0' "${cdrom_opts[@]}")
-fi
+export BOOTSTRAP_TARGET_DEVICE=/dev/sda
+export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
+export BOOTSTRAP_USE_TRIM=1
 
-exec qemu-system-x86_64 "${opts[@]}" \
-    -name "$self_name-$$" -m "$mem_size" \
-    -cpu host -accel kvm -machine smm=on \
-    -device vhost-vsock-pci,guest-cid=42 \
-    -device virtio-net-pci,netdev=net0 \
-    -netdev user,id=net0,hostfwd=tcp::60022-:22 \
-    -drive format=qcow2,if=virtio,file="$disk_file"
+./scripts/mkci "${ci_opts[@]}" \
+    -m "bootstrap /mnt/bootstrap 9p trans=virtio,version=9p2000.L 0 0" \
+    -m "packages /mnt/packages 9p trans=virtio,version=9p2000.L 0 0" \
+    "$cidata_file"
+
+./scripts/vm "${vm_opts[@]}" \
+    -i "$media_file" \
+    -i "$cidata_file" \
+    -s bootstrap="$PWD" \
+    -s packages="$packages_dir" \
+    "$disk_file"

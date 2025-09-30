@@ -12,10 +12,9 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
-    -m LABEL[=DIRECTORY]    mount drive with LABEL at DIRECTORY
-                            (if no DIRECTORY is given, /mnt/<LABEL> will be used)
+    -m MOUNT    add MOUNT line to fstab
+                (where MOUNT is of the form 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
 
-    -f LINE       add LINE to fstab
     -r COMMAND    add COMMAND to be run after boot
 
     -e    edit files before building
@@ -32,7 +31,6 @@ if (($# > 0)); then
     fi
 fi
 
-user_data=()
 users=()
 mounts=()
 write_files=()
@@ -43,7 +41,6 @@ write_files+=("$(jo -- path=/etc/systemd/system/reflector.service owner='root:ro
 
 # Stop the reflector service and unmask it so that it can be used if requested.
 runcmd+=(
-    "systemctl daemon-reload"
     "systemctl stop reflector.service"
     "rm /etc/systemd/system/reflector.service"
     "systemctl daemon-reload"
@@ -56,16 +53,17 @@ runcmd+=(
 
 edit=0
 confirm=0
-declare -A mount_lines=(
-    [/mnt/bootstrap]="LABEL=BOOTSTRAP /mnt/bootstrap"
-    [/mnt/packages]="LABEL=PACKAGES /mnt/packages"
-)
+declare -A mount_lines=()
 
-while getopts "m:f:r:ey" opt; do
+for name in bootstrap packages; do
+    mount_lines[/mnt/$name]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
+done
+
+while getopts "m:r:ey" opt; do
     case $opt in
     m)
-        read -r _ dir _ <<<"$OPTARG"
-        mount_lines[$dir]=$OPTARG
+        read -r _ target _ <<<"$OPTARG"
+        mount_lines[$target]=$OPTARG
         ;;
     r) runcmd+=("$OPTARG") ;;
     e) edit=1 ;;
@@ -163,6 +161,8 @@ cp -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/var/log "\$log_file"
 EOF
 
 write_files+=("$(jo -- encoding=b64 path=/root/install owner='root:root' -s permissions='0755' content=%"$install_file")")
+
+user_data=()
 
 if ((${#users[@]} > 0)); then
     user_data+=(users="$(jo -a -- "${users[@]}")")

@@ -59,7 +59,6 @@ if [[ -f $disk_file ]]; then
     exit 2
 fi
 
-printf "creating virtual machine disk: %q (%s)\n" "$disk_file" "$disk_size"
 qemu-img create -f qcow2 "$disk_file" -o nocow=on "$disk_size"
 
 export BOOTSTRAP_TARGET_DEVICE=/dev/sda

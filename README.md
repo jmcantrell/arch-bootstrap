@@ -6,37 +6,33 @@ Aside from the opinions listed below, the target system should closely match the
 
 ## Opinions
 
-Boot loading is handled by [GRUB][grub] with a [GPT][gpt] partition table using [BIOS][grub-bios] or [UEFI][grub-uefi] mode, depending on the detected [boot firmware](#boot-firmware) interface.
+Components used:
 
-[Volume management](#volume-management) is handled by [LVM][lvm].
+- [GRUB][grub] boot loader using either [BIOS][grub-bios] or [UEFI][grub-uefi], depending on the [boot firmware](#boot-firmware) interface
+- [LVM][lvm] with an [optional](#swap-volume) [dedicated swap volume][swap-partition]
+- [Optional](#full-disk-encryption) [full disk encryption][luks] using the [LVM on LUKS][lvm-on-luks] method
+- [Btrfs] [file system](#file-system) with [subvolumes][btrfs-subvolumes] (see `./config/btrfs/subvolumes`)
+- [Processor microcode updates][microcode] for the [CPU vendor](#processor)
+- [Early KMS start][early-kms-start] for any [graphics chip sets](#graphics)
 
-If [enabled](#swap-volume), a [dedicated swap volume][swap-partition] will be created, enabling [hibernation][hibernation].
-
-If [enabled](#full-disk-encryption), [full disk encryption][luks] is implemented using the [LVM on LUKS][lvm-on-luks] method.
-
-The [file system](#file-system) is formatted using [btrfs] with [subvolumes][btrfs-subvolumes] (see `./config/btrfs/subvolumes`).
-
-[Processor microcode updates][microcode] will be installed for the target system's detected [CPU vendor](#processor).
-
-If [enabled or any graphics drivers are detected](#graphics), [Early KMS start][early-kms-start] is configured.
-
-If [enabled or wireless network interfaces are detected](#wireless-networking), any [networks established][iwd-networks] in the installation environment will be persisted to the target system.
-
-If [enabled or the installation disk is a solid-state drive](#solid-state-drive), trim will be enabled in [LVM][lvm-thin] and [LUKS][luks-trim], and [`fstrim` will be scheduled][fstrim].
-
-A [privileged user](#privileged-user) will be created and the root account will be locked.
-
-Any SSH public keys authorized in the live system will be persisted to the target system.
-
-The following systemd units will be enabled on the target system:
+Enabled systemd units:
 
 - [systemd-networkd].service (with [Multicast DNS][mdns] enabled)
 - [systemd-resolved].service (with `stub-resolv.conf`)
 - [systemd-timesyncd].service
 - [reflector].{service,timer}
 - [sshd].service
-- [fstrim][ssd-trim].timer (if trim support is needed)
-- [iwd].service (if wireless networking is used)
+- [fstrim][ssd-trim].timer (if trim is configured)
+- [iwd].service (if wireless networking is configured)
+
+Additional configuration:
+
+- If [wireless networking is enabled](#wireless-networking), any [networks established][iwd-networks] in the live system will be persisted to the target system
+- If [enabled or installation disk is a solid-state drive](#solid-state-drive), trim will be configured in [LVM][lvm-thin] and [LUKS][luks-trim]
+- A [privileged user](#privileged-user) will be created and the root account will be locked
+- Any SSH public keys authorized in the live system will be persisted to the target system
+
+The system can be [configured
 
 ## Usage
 
@@ -331,7 +327,7 @@ The following variables should be defined and exported before sourcing the prepa
 
 ## Testing
 
-Installation can be tested in a virtual machine using the script `./scripts/test` (requires `qemu`, `xorriso`, `jo`, and `yq`).
+Installation can be tested in a virtual machine using the script `./scripts/test`.
 
 The ephemeral virtual machine will be created using the [script described earlier](#virtual-machine-installation).
 

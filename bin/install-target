@@ -28,6 +28,8 @@ fi
 
 install-packages
 
+config-lvm
+
 if ((BOOTSTRAP_USE_TRIM)); then
     config-trim
 fi

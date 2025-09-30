@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ -v BOOSTRAP_USE_TRIM ]]; then
+    sed -E -i '/^[[:space:]]*#[[:space:]]*issue_discards\b/ { s/#[[:space:]]*//; s/0/1/; }' "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/lvm/lvm.conf
+fi

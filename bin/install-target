@@ -26,6 +26,13 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     open-uefi
 fi
 
+config-boot
+config-initrd
+
+if ((BOOTSTRAP_USE_LUKS)); then
+    install-luks-keyfile
+fi
+
 install-packages
 
 config-lvm
@@ -48,14 +55,7 @@ config-keymap
 config-mirrors
 config-admin
 config-ssh
-config-boot
-config-initrd
-
-if ((BOOTSTRAP_USE_LUKS)); then
-    install-luks-keyfile
-fi
 
 install-locale
 install-fstab
-install-initrd
 install-boot

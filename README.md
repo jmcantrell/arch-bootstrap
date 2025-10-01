@@ -226,7 +226,7 @@ The following variables should be defined and exported before sourcing the initi
 
 ### Partition Table
 
-**NOTE**: Values for partition sizes must be specified in a way that [sfdisk(8)][sfdisk] can understand
+**NOTE**: Values for partition sizes must be specified in a way that [sfdisk(8)][sfdisk] can understand.
 
 #### Boot Partition
 

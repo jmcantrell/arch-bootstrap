@@ -8,7 +8,7 @@ mem_size=4G
 host_port=60022
 vsock_id=42
 
-usage="Create a virtual machine.
+usage="Run a virtual machine.
 
 Usage:
     $self_name -h|--help

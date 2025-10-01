@@ -13,7 +13,7 @@ Usage:
 
 Options:
     -m MOUNT    add MOUNT line to fstab
-                (where MOUNT is of the form 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
+                (where MOUNT is like 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
 
     -r COMMAND    add COMMAND to be run after boot
 
@@ -42,16 +42,8 @@ runcmd=()
 write_files+=("$(jo -- path=/etc/systemd/system/reflector.service owner='root:root' -s permissions=0000)")
 
 # Stop the reflector service and unmask it so that it can possibly be used later.
-runcmd+=(
-    "systemctl stop reflector.service"
-    "rm /etc/systemd/system/reflector.service"
-    "systemctl daemon-reload"
-)
-
-runcmd+=(
-    "sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network"
-    "networkctl reload"
-)
+runcmd+=("systemctl stop reflector.service && rm /etc/systemd/system/reflector.service && systemctl daemon-reload")
+runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network && networkctl reload")
 
 edit=0
 confirm=0
@@ -105,7 +97,7 @@ fi
 
 for pubkey_file in ~/.ssh/*.pub; do
     privkey_file=${pubkey_file%.*}
-    if [[ -f $pubkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s "$pubkey_file" -; then
+    if [[ -f $pubkey_file && -f $privkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s "$pubkey_file" -; then
         ssh_pubkeys[$(<"$pubkey_file")]=1
     fi
 done
@@ -145,7 +137,9 @@ cat >"$install_file" <<EOF
 
 set -euo pipefail
 
-log_file=/root/install.log
+cd /root
+
+log_file=\$PWD/install.log
 
 exec > >(tee "\$log_file") 2>&1
 

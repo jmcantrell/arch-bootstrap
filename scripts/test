@@ -17,7 +17,7 @@ Options:
     -c ID    set guest vsock client ID
              (default: same as ./scripts/vm)
 
-    -e    edit configuration before building cloud-init image
+    -e    edit configuration before booting the live system
 
     -y    proceed with the installation
           (specify twice to also reboot into the new system)

@@ -109,8 +109,8 @@ The script `./scripts/mkci` can be used to create a cloud-init ISO (requires `xo
 The generated image will be configured to do the following automatically:
 
 - Authorize any SSH public keys added to ssh-agent
-- Authorize any SSH public keys in ~/.ssh belonging to the user
-- Authorize any authorized SSH public keys (keys in `~/.ssh/authorized_keys`)
+- Authorize any SSH public keys in `~/.ssh/authorized_keys`
+- Authorize any SSH public keys in `~/.ssh` belonging to the user
 - Include any iwd pre-shared keys on the system
 - Enable Multicast DNS on the live system so it can be reached by host name
 - Set the host name of the live system to `bootstrap` or `bootstrap-$BOOTSTRAP_HOSTNAME` (if the environment variable is set)
@@ -118,18 +118,6 @@ The generated image will be configured to do the following automatically:
 - Try to mount a drive with the label `PACKAGES` to `/mnt/packages`
 - Add any configuration (exported environment variables like `BOOTSTRAP_*`) to the file `/root/config` on the live system.
 - Create an installation entry point script at `/root/install` on the live system that logs its output to `/root/install.log` and `/var/log/install.log` on the target system.
-
-To build a cloud-init ISO that does all of the above but waits for user initiation:
-
-```sh
-./scripts/mkci /path/to/cidata.iso
-```
-
-To build a cloud-init ISO that automatically runs the installation script and then powers off:
-
-```sh
-./scripts/mkci -y /path/to/cidata.iso
-```
 
 To see complete usage details:
 
@@ -147,8 +135,8 @@ Additionally, it will do the following:
 
 - Mount the current directory to `/mnt/bootstrap` on the live system
 - Mount `/var/cache/bootstrap/repo` on the host system to `/mnt/packages` on the live system and [configure offline installation](#offline-installation)
-- Forward TCP port `60022` on the host system to TCP port `22` on the virtual machine
-- Allow SSH connections over vsock at cid `42`
+- Forward TCP port `60022` (or argument to option `-p`) on the host system to TCP port `22` on the virtual machine
+- Allow SSH connections over vsock at client id `42` (or argument to option `-c`)
 
 To create a virtual machine with the default settings (only the installation disk set):
 
@@ -166,22 +154,10 @@ export BOOTSTRAP_ADMIN_LOGIN=frank
 ./scripts/test /path/to/archlinux.iso /path/to/disk.cow
 ```
 
-To automatically start the installation and power off when it finishes, add the `-y` option:
-
-```sh
-./scripts/mkvm -y /path/to/archlinux.iso /path/to/disk.cow
-```
-
 To see complete usage details:
 
 ```sh
 ./scripts/mkvm --help
-```
-
-If you need to boot the same virtual machine later:
-
-```sh
-./scripts/vm -m 4G /path/to/disk.cow
 ```
 
 ### Remote Installation
@@ -206,15 +182,15 @@ To also download the repository, `curl` the script into `bash`:
 curl https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject | bash -s
 ```
 
-If the network is available automatically after booting, you could run the script by using the `script` boot parameter, recognized by the Arch Linux ISO.
+If the network is available automatically after booting, you could run the script by using the `script` boot parameter.
 
-When you see the GRUB menu as during booting, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
+When you see the GRUB menu, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
 
 ```
 script=https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject
 ```
 
-The script will be run similarly to the curl method above as soon as the environment is ready.
+The script will be run similarly to the curl command above once the live system has booted.
 
 ## Configuration
 
@@ -230,7 +206,7 @@ The following variables should be defined and exported before sourcing the initi
 
 #### Boot Firmware
 
-- `BOOTSTRAP_BOOT_FIRMWARE`: The firmware used for booting (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
+- `BOOTSTRAP_BOOT_FIRMWARE`: The boot firmware interface (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
 
 #### Processor
 
@@ -266,13 +242,15 @@ The following variables should be defined and exported before sourcing the initi
 ### Full Disk Encryption
 
 - `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_TARGET_DEVICE`
-- `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `$BOOTSTRAP_DEFAULT_PASSWORD`, occupies key slot 0)
+- `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
 - `BOOTSTRAP_LUKS_KEY_FILE`: The path of the key file used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
 ### Volume Management
 
 **NOTE**: Values for volume size and extents must be specified in a way that [lvcreate(8)][lvcreate] can understand.
+
+- `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
 
 #### Swap Volume
 
@@ -282,9 +260,8 @@ The following variables should be defined and exported before sourcing the initi
 
 #### Root Volume
 
-- `BOOTSTRAP_LVM_VG_NAME`: The volume group name (default: `sys`)
 - `BOOTSTRAP_LVM_LV_ROOT_NAME`: The name for the root logical volume (default: `root`)
-- `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`)
+- `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`: The extents of the root logical volume (default: `+100%FREE`, i.e., use all remaining space)
 
 ### File System
 
@@ -321,7 +298,7 @@ The following variables should be defined and exported before sourcing the initi
 ### Privileged User
 
 - `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
-- `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `$BOOTSTRAP_DEFAULT_PASSWORD`)
+- `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `hunter2`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
@@ -347,12 +324,6 @@ export BOOTSTRAP_TIMEZONE=America/Chicago
 export BOOTSTRAP_ADMIN_LOGIN=frank
 
 ./scripts/test /path/to/archlinux.iso
-```
-
-To automatically start the installation and boot into the new system when it finishes, add the `-y` option:
-
-```sh
-./scripts/test -y /path/to/archlinux.iso
 ```
 
 To see complete usage details:

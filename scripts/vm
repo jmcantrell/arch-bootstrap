@@ -5,6 +5,8 @@ set -euo pipefail
 self_name=${0##*/}
 
 mem_size=4G
+host_port=60022
+vsock_id=42
 
 usage="Create a virtual machine.
 
@@ -17,6 +19,12 @@ Options:
 
     -i FILE         add iso FILE as a cdrom
     -s NAME=PATH    add PATH as NAME 9p share
+
+    -p PORT    forward host PORT to port 22 on the guest
+               (tcp only, default: $host_port)
+
+    -c ID    set guest vsock client ID
+             (default: $vsock_id)
 
 Arguments:
     DISK_FILE    data disk image file
@@ -35,7 +43,7 @@ cdrom_id_next=0
 cdrom_device_fmt="scsi-cd,bus=scsi0.0,drive=cdrom%d"
 cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
 
-while getopts "m:d:i:s:" opt; do
+while getopts "m:d:i:s:p:" opt; do
     case $opt in
     m) mem_size=$OPTARG ;;
     i)
@@ -47,6 +55,7 @@ while getopts "m:d:i:s:" opt; do
         )
         ;;
     s) opts+=(-virtfs "local,path=${OPTARG#*=},mount_tag=${OPTARG%%=*},security_model=passthrough") ;;
+    p) host_port=$OPTARG ;;
     *) exit 2 ;;
     esac
 done
@@ -59,9 +68,9 @@ exec qemu-system-x86_64 \
     -cpu host -accel kvm -machine smm=on \
     ${boot_order_arg:+-boot order="$boot_order_arg"} \
     -device virtio-scsi-pci,id=scsi0 \
-    -device vhost-vsock-pci,guest-cid=42 \
+    -device vhost-vsock-pci,guest-cid="$vsock_id" \
     -device virtio-net-pci,netdev=net0 \
-    -netdev user,id=net0,hostfwd=tcp::60022-:22 \
+    -netdev user,id=net0,hostfwd=tcp::"$host_port"-:22 \
     -device scsi-hd,bus=scsi0.0,drive=disk0 \
     -drive file="$disk_file",id=disk0,if=none,discard=unmap \
     "${opts[@]}"

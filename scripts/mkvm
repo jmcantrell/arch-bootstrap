@@ -18,6 +18,12 @@ Options:
     -m SIZE    specify memory size (default: same as ./scripts/vm)
     -d SIZE    specify disk size (default: $disk_size)
 
+    -p PORT    forward host PORT to port 22 on the guest
+               (tcp only, default: same as ./scripts/vm)
+
+    -c ID    set guest vsock client ID
+             (default: same as ./scripts/vm)
+
     -e    edit configuration before building cloud-init image
 
     -y    proceed with the installation
@@ -43,9 +49,10 @@ vm_opts=()
 disk_file=$temp_dir/disk.cow
 cidata_file=$temp_dir/cidata.iso
 
-while getopts "m:d:ey" opt; do
+while getopts "m:d:p:c:ey" opt; do
     case $opt in
     m) vm_opts+=(-"$opt") ;;
+    p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
     e | y) ci_opts+=(-"$opt") ;;
     d) disk_size=$OPTARG ;;
     *) exit 2 ;;

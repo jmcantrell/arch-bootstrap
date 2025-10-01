@@ -11,6 +11,12 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
+    -p PORT    forward host PORT to port 22 on the guest
+               (tcp only, default: same as ./scripts/vm)
+
+    -c ID    set guest vsock client ID
+             (default: same as ./scripts/vm)
+
     -e    edit configuration before building cloud-init image
 
     -y    proceed with the installation
@@ -27,10 +33,12 @@ if (($# > 0)); then
     fi
 fi
 
+vm_opts=()
 mkvm_opts=()
 
-while getopts "ey" opt; do
+while getopts "p:c:ey" opt; do
     case $opt in
+    p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
     e | y) mkvm_opts+=(-"$opt") ;;
     *) exit 2 ;;
     esac
@@ -44,6 +52,6 @@ trap 'rm -rf "$temp_dir"' EXIT
 
 disk_file=$temp_dir/disk.cow
 
-./scripts/mkvm "${mkvm_opts[@]}" "$media_file" "$disk_file"
+./scripts/mkvm "${vm_opts[@]}" "${mkvm_opts[@]}" "$media_file" "$disk_file"
 
-./scripts/vm "$disk_file"
+./scripts/vm "${vm_opts[@]}" "$disk_file"

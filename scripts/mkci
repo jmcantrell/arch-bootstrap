@@ -18,7 +18,9 @@ Options:
     -r COMMAND    add COMMAND to be run after boot
 
     -e    edit files before building
-    -y    proceed with the installation and shut down
+
+    -y    proceed with the installation
+          (specify twice to also power off)
 
 Arguments:
     ISO_FILE    write cloud-init iso to ISO_FILE
@@ -39,7 +41,7 @@ runcmd=()
 # Mask the reflector service so it doesn't try to start.
 write_files+=("$(jo -- path=/etc/systemd/system/reflector.service owner='root:root' -s permissions=0000)")
 
-# Stop the reflector service and unmask it so that it can be used if requested.
+# Stop the reflector service and unmask it so that it can possibly be used later.
 runcmd+=(
     "systemctl stop reflector.service"
     "rm /etc/systemd/system/reflector.service"
@@ -67,7 +69,7 @@ while getopts "m:r:ey" opt; do
         ;;
     r) runcmd+=("$OPTARG") ;;
     e) edit=1 ;;
-    y) confirm=1 ;;
+    y) confirm=$((confirm+1)) ;;
     *) exit 2 ;;
     esac
 done
@@ -122,7 +124,11 @@ if ((should_restart_iwd)); then
 fi
 
 if ((confirm)); then
-    runcmd+=("cd /root; ./install; poweroff")
+    cmd="cd /root; ./install"
+    if ((confirm > 1)); then
+        cmd+="; poweroff"
+    fi
+    runcmd+=("$cmd") 
 fi
 
 config_file=$temp_dir/config
@@ -139,7 +145,7 @@ cat >"$install_file" <<EOF
 
 set -euo pipefail
 
-log_file=\$HOME/install.log
+log_file=/root/install.log
 
 exec > >(tee "\$log_file") 2>&1
 

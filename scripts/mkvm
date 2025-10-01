@@ -19,7 +19,9 @@ Options:
     -d SIZE    specify disk size (default: $disk_size)
 
     -e    edit configuration before building cloud-init image
-    -y    proceed with the installation and reboot into system
+
+    -y    proceed with the installation
+          (specify twice to also reboot into the new system)
 
 Arguments:
     ISO_FILE     installation media ISO file

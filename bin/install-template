@@ -8,5 +8,14 @@ output_file=${2:-$input_file}
 template_file=$BOOTSTRAP_CONFIG_DIR/templates/${input_file#/}
 rendered_file=$BOOTSTRAP_TARGET_MOUNT_DIR/${output_file#/}
 
+variables=
+
+while IFS= read -r line; do
+    while IFS= read -r name; do
+        [[ $name == BOOTSTRAP_* ]] && variables+=\$$name
+    done < <(envsubst -v "${line//-/ }") # envsubst does not recognize -- 86 dashes
+done <"$template_file"
+
 mkdir -p "$(dirname "$rendered_file")"
-envsubst <"$template_file" >"$rendered_file"
+envsubst "$variables" <"$template_file" >"$rendered_file"
+chmod --verbose --reference="$template_file" "$rendered_file"

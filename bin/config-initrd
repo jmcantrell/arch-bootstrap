@@ -13,7 +13,7 @@ fi
 
 if ((BOOTSTRAP_USE_LUKS)); then
     hooks+=(keyboard keymap consolefont)
-    files+=("$BOOTSTRAP_LUKS_KEYFILE_PATH")
+    files+=("$BOOTSTRAP_LUKS_KEY_FILE")
 fi
 
 hooks+=(block)
@@ -30,9 +30,9 @@ fi
 
 hooks+=(filesystems btrfs fsck)
 
-export INITRD_BINARIES=${binaries[*]}
-export INITRD_MODULES=${modules[*]}
-export INITRD_HOOKS=${hooks[*]}
-export INITRD_FILES=${files[*]}
+export BOOTSTRAP_INITRD_BINARIES=${binaries[*]}
+export BOOTSTRAP_INITRD_MODULES=${modules[*]}
+export BOOTSTRAP_INITRD_HOOKS=${hooks[*]}
+export BOOTSTRAP_INITRD_FILES=${files[*]}
 
 install-template /etc/mkinitcpio.conf

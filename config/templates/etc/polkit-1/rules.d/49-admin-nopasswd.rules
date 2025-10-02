@@ -1,5 +1,5 @@
 polkit.addRule(function(action, subject) {
-    if (subject.isInGroup("$ADMIN_GROUP")) {
+    if (subject.isInGroup("$BOOTSTRAP_ADMIN_GROUP")) {
         return polkit.Result.YES;
     }
 });

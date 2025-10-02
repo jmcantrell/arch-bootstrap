@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-export GRUB_TOP_LEVEL=/boot/vmlinuz-linux${BOOTSTRAP_KERNEL_USE_LTS:+-lts}
-
 preload_modules=(part_{gpt,msdos} lvm)
 cmdline_linux_default=(
     ${BOOTSTRAP_KERNEL_QUIET:+quiet}
@@ -23,15 +21,15 @@ if ((BOOTSTRAP_USE_LUKS)); then
     fi
     cmdline_linux+=(
         cryptdevice="$cryptdevice"
-        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEYFILE_PATH"
+        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEY_FILE"
     )
-    export GRUB_ENABLE_CRYPTODISK=y
+    export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=y
 else
-    export GRUB_ENABLE_CRYPTODISK=n
+    export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=n
 fi
 
-export GRUB_PRELOAD_MODULES=${preload_modules[*]}
-export GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
-export GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
+export BOOTSTRAP_GRUB_PRELOAD_MODULES=${preload_modules[*]}
+export BOOTSTRAP_GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
+export BOOTSTRAP_GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
 
 install-template /etc/default/grub

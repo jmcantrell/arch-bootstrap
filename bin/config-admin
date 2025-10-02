@@ -17,7 +17,7 @@ chpasswd -R "$BOOTSTRAP_TARGET_MOUNT_DIR" <<<"$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_
 
 if [[ -f ~/.ssh/authorized_keys ]]; then
     rsync -va ~/.ssh/authorized_keys "$BOOTSTRAP_TARGET_MOUNT_DIR"/home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh/
-    arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" chown -R "$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_LOGIN" /home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh
+    arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" chown --verbose --recursive "$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_LOGIN" /home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh
 fi
 
 arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd --lock root

@@ -30,7 +30,6 @@ config-boot
 config-initrd
 
 if ((BOOTSTRAP_USE_LUKS)); then
-    config-luks
     install-luks-keyfile
 fi
 

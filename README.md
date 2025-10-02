@@ -70,6 +70,12 @@ install-target
 
 After installation, the target system is left mounted for inspection or further configuration.
 
+If using full disk encryption, be sure to change the passphrase to something more secure:
+
+```sh
+sudo cryptsetup luksChangeKey <TARGET_DEVICE> --key-slot 0
+```
+
 If all is well, `poweroff` and eject the installation media.
 
 The top-level commands, i.e., `./bin/*-target`, are intentionally kept extremely simple and easy to read, serving as an outline.

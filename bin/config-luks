@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-install-template /usr/local/sbin/passwd-luks

@@ -116,9 +116,9 @@ if ((should_restart_iwd)); then
 fi
 
 if ((confirm)); then
-    cmd="cd /root; ./install"
+    cmd="cd /root && ./install"
     if ((confirm > 1)); then
-        cmd+="; poweroff"
+        cmd+="&& poweroff"
     fi
     runcmd+=("$cmd") 
 fi

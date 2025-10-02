@@ -1,5 +1,11 @@
-git
+bash
 curl
+git
+man-db
+man-pages
+python
+tree
 rsync
 tmux
 vim
+zsh

@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-cryptsetup luksFormat ${BOOTSTRAP_LUKS_PBKDF:+--pbkdf "$BOOTSTRAP_LUKS_PBKDF"} "$BOOTSTRAP_LUKS_DEVICE" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+cryptsetup luksFormat --type luks1 "$BOOTSTRAP_LUKS_DEVICE" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"

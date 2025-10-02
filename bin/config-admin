@@ -21,3 +21,4 @@ if [[ -f ~/.ssh/authorized_keys ]]; then
 fi
 
 arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd --lock root
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd --expire "$BOOTSTRAP_ADMIN_LOGIN"

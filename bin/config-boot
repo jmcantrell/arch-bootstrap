@@ -21,7 +21,7 @@ if ((BOOTSTRAP_USE_LUKS)); then
     fi
     cmdline_linux+=(
         cryptdevice="$cryptdevice"
-        cryptkey=rootfs:"$BOOTSTRAP_LUKS_KEY_FILE"
+        cryptkey=rootfs:"$BOOTSTRAP_LUKS_INITRD_KEY_FILE"
     )
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=y
 else

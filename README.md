@@ -243,7 +243,7 @@ The following variables should be defined and exported before sourcing the initi
 
 - `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_TARGET_DEVICE`
 - `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
-- `BOOTSTRAP_LUKS_KEY_FILE`: The path of the key file used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
+- `BOOTSTRAP_LUKS_INITRD_KEY_FILE`: The path of the key file used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
 
 ### Volume Management

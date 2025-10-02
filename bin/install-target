@@ -4,6 +4,11 @@ set -euo pipefail
 
 create-partitions
 
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    create-uefi
+    open-uefi
+fi
+
 if ((BOOTSTRAP_USE_LUKS)); then
     create-luks
     open-luks
@@ -20,11 +25,6 @@ fi
 create-lvm-root
 create-root
 open-root
-
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    create-uefi
-    open-uefi
-fi
 
 config-boot
 config-initrd

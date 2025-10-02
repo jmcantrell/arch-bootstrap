@@ -90,13 +90,9 @@ export BOOTSTRAP_ROOT_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_L
 export BOOTSTRAP_USE_LUKS=${BOOTSTRAP_USE_LUKS:-0}
 
 if ((BOOTSTRAP_USE_LUKS)); then
-    # TODO: Remove BOOTSTRAP_LUKS_PBKDF once grub supports luks2 default.
-    # https://savannah.gnu.org/bugs/index.php?55093
-    # https://wiki.archlinux.org/title/GRUB#LUKS2
-    export BOOTSTRAP_LUKS_PBKDF=pbkdf2
     export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_SYS_DEVICE
     export BOOTSTRAP_LUKS_MAPPER_NAME=${BOOTSTRAP_LUKS_MAPPER_NAME:-sys}
-    export BOOTSTRAP_LUKS_KEY_FILE=${BOOTSTRAP_LUKS_KEY_FILE:-/crypto_keyfile.bin}
+    export BOOTSTRAP_LUKS_INITRD_KEY_FILE=${BOOTSTRAP_LUKS_INITRD_KEY_FILE:-/crypto_keyfile.bin}
     export BOOTSTRAP_LUKS_PASSPHRASE=${BOOTSTRAP_LUKS_PASSPHRASE:-hunter2}
     export BOOTSTRAP_LVM_DEVICE=/dev/mapper/$BOOTSTRAP_LUKS_MAPPER_NAME
 fi

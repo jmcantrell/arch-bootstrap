@@ -3,10 +3,9 @@
 set -euo pipefail
 
 device=${BOOTSTRAP_LUKS_DEVICE}
-key_file=${BOOTSTRAP_LUKS_KEY_FILE}
-pbkdf=${BOOTSTRAP_LUKS_PBKDF}
+key_file=${BOOTSTRAP_LUKS_INITRD_KEY_FILE}
 
-cryptsetup luksChangeKey "$device" ${pbkdf:+--pbkdf "$pbkdf"} --key-slot 0
+cryptsetup luksChangeKey "$device" --key-slot 0
 
 umask a=
 
@@ -14,7 +13,7 @@ temp_file=$(mktemp)
 trap 'rm -f "$temp_file"' EXIT
 dd bs=512 count=4 if=/dev/random of="$temp_file" iflag=fullblock
 
-cryptsetup luksChangeKey "$device" ${pbkdf:+--pbkdf "$pbkdf"} --key-slot 1 --key-file "$key_file" "$temp_file"
+cryptsetup luksChangeKey "$device" --key-slot 1 --key-file "$key_file" "$temp_file"
 
 mv -f "$temp_file" "$key_file"
 

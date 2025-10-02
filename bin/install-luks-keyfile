@@ -16,7 +16,7 @@ temp_file=$(mktemp)
 trap 'rm -f "$temp_file"' EXIT
 dd bs=512 count=4 if=/dev/random of="$temp_file" iflag=fullblock
 
-cryptsetup luksAddKey ${BOOTSTRAP_LUKS_PBKDF:+--pbkdf "$BOOTSTRAP_LUKS_PBKDF"} --new-key-slot "$key_slot" "$BOOTSTRAP_LUKS_DEVICE" "$temp_file" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+cryptsetup luksAddKey "$BOOTSTRAP_LUKS_DEVICE" ${BOOTSTRAP_LUKS_PBKDF:+--pbkdf "$BOOTSTRAP_LUKS_PBKDF"} --new-key-slot "$key_slot" "$temp_file" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
 
 mkdir -p "$(dirname "$key_file")"
 mv -f "$temp_file" "$key_file"

@@ -17,3 +17,5 @@ dd bs=512 count=4 if=/dev/random of="$temp_file" iflag=fullblock
 cryptsetup luksChangeKey "$device" ${pbkdf:+--pbkdf "$pbkdf"} --key-slot 1 --key-file "$key_file" "$temp_file"
 
 mv -f "$temp_file" "$key_file"
+
+mkinitcpio --allpresets

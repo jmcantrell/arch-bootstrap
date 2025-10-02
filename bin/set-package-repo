@@ -8,16 +8,23 @@ repo_dir=${1:?missing repo directory}
 
 db_file=$(find "$repo_dir" -type f -name "*.db.tar.*")
 
-db_name=${db_file##*/}
-db_name=${db_name%%.db.*}
-
 if [[ -z $db_file ]]; then
     printf "%s: directory is not a package repository: %q\n" "$0" "$repo_dir" >&2
     exit 2
 fi
 
-sed -Ei '/^\[(core|core-testing|extra|extra-testing|multilib|multilib-testing)\]/,+1s/^/#/' "$config_file"
+sed -Ei '/^\[(core|core-testing|extra|extra-testing|multilib|multilib-testing)\]$/,/^$/s/^./#&/' "$config_file"
 
-if ! grep -qxF "[$db_name]" "$config_file"; then
-    printf "\n[%s]\nSigLevel = Optional\nServer = file://%s\n" "$db_name" "$(realpath "$repo_dir")" >>"$config_file"
+db_name=${db_file##*/}
+db_name=${db_name%%.db.*}
+
+if grep -qxF "[$db_name]" "$config_file"; then
+    printf "%s: repository already exists: %s\n" "$0" "$db_name" >&2
+    exit 2
 fi
+
+cat >>"$config_file" <<EOF
+[$db_name]
+SigLevel = Optional
+Server = file://$(realpath "$repo_dir")
+EOF

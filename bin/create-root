@@ -8,7 +8,7 @@ mkdir -p "$BOOTSTRAP_TARGET_MOUNT_DIR"
 
 mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR"
 
-while read -r name _; do
+while read -r name _path; do
     btrfs subvolume create "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
 done < <(print-btrfs-subvolumes)
 

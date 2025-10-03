@@ -4,12 +4,7 @@ set -euo pipefail
 
 arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" groupadd -f "$BOOTSTRAP_ADMIN_GROUP"
 
-if ((BOOTSTRAP_ADMIN_GROUP_NOPASSWD)); then
-    install-template /etc/sudoers.d/49-admin{-nopasswd,}
-    install-template /etc/polkit-1/rules.d/49-admin{-nopasswd,}.rules
-else
-    install-template /etc/sudoers.d/49-admin
-fi
+install-template /etc/sudoers.d/49-admin
 
 arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
 

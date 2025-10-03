@@ -308,7 +308,6 @@ The following variables should be defined and exported before sourcing the initi
 
 - `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
-- `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 
 ## Testing
 

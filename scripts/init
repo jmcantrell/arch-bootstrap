@@ -59,9 +59,7 @@ export BOOTSTRAP_PART_SYS_SIZE=${BOOTSTRAP_PART_SYS_SIZE:-+}
 export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_SYS_DEVICE
 export BOOTSTRAP_LVM_VG_NAME=${BOOTSTRAP_LVM_VG_NAME:-sys}
 
-export BOOTSTRAP_USE_SWAP=${BOOTSTRAP_USE_SWAP:-0}
-
-if ((BOOTSTRAP_USE_SWAP)); then
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
     export BOOTSTRAP_LVM_LV_SWAP_NAME=${BOOTSTRAP_LVM_LV_SWAP_NAME:-swap}
 
     if [[ ! -v BOOTSTRAP_LVM_LV_SWAP_SIZE ]]; then
@@ -87,9 +85,7 @@ export BOOTSTRAP_LVM_LV_ROOT_EXTENTS=${BOOTSTRAP_LVM_LV_ROOT_EXTENTS:-+100%FREE}
 export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
 export BOOTSTRAP_ROOT_DEVICE=/dev/mapper/$BOOTSTRAP_LVM_VG_NAME-$BOOTSTRAP_LVM_LV_ROOT_NAME
 
-export BOOTSTRAP_USE_LUKS=${BOOTSTRAP_USE_LUKS:-0}
-
-if ((BOOTSTRAP_USE_LUKS)); then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_SYS_DEVICE
     export BOOTSTRAP_LUKS_MAPPER_NAME=${BOOTSTRAP_LUKS_MAPPER_NAME:-sys}
     export BOOTSTRAP_LUKS_INITRD_KEY_FILE=${BOOTSTRAP_LUKS_INITRD_KEY_FILE:-/crypto_keyfile.bin}
@@ -125,20 +121,12 @@ if [[ ! -v BOOTSTRAP_GPU_MODULES ]]; then
     unset gpu_modules
 fi
 
-if [[ ! -v BOOTSTRAP_USE_TRIM ]]; then
-    if is-rotational-disk "$BOOTSTRAP_TARGET_DEVICE"; then
-        export BOOTSTRAP_USE_TRIM=0
-    else
-        export BOOTSTRAP_USE_TRIM=1
-    fi
+if [[ ! -v BOOTSTRAP_USE_TRIM ]] && ! is-rotational-disk "$BOOTSTRAP_TARGET_DEVICE"; then
+    export BOOTSTRAP_USE_TRIM=1
 fi
 
-if [[ ! -v BOOTSTRAP_USE_WIRELESS ]]; then
-    if print-network-interfaces | grep -q '^wl'; then
-        export BOOTSTRAP_USE_WIRELESS=1
-    else
-        export BOOTSTRAP_USE_WIRELESS=0
-    fi
+if [[ ! -v BOOTSTRAP_USE_WIRELESS ]] && print-network-interfaces | grep -q '^wl'; then
+    export BOOTSTRAP_USE_WIRELESS=1
 fi
 
 export BOOTSTRAP_KERNEL_TOP_LEVEL=/boot/vmlinuz-linux${BOOTSTRAP_KERNEL_USE_LTS:+-lts}

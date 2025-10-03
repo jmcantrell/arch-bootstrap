@@ -9,18 +9,14 @@ cmdline_linux_default=(
     consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
 )
 
-if ((BOOTSTRAP_USE_SWAP)); then
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
     cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
 fi
 
-if ((BOOTSTRAP_USE_LUKS)); then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     preload_modules+=(cryptodisk luks)
-    cryptdevice=UUID=$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME
-    if ((BOOTSTRAP_USE_TRIM)); then
-        cryptdevice+=:allow-discards
-    fi
     cmdline_linux+=(
-        cryptdevice="$cryptdevice"
+        cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_USE_LUKS:+:allow-discards}"
         cryptkey=rootfs:"$BOOTSTRAP_LUKS_INITRD_KEY_FILE"
     )
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=y

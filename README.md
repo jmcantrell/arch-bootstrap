@@ -30,7 +30,7 @@ Additional configuration:
 - If [wireless networking is enabled](#wireless-networking), any [networks established][iwd-networks] in the live system will be persisted to the target system
 - If [trim is enabled or the installation disk is a solid-state drive](#solid-state-drive), discards will be configured in [LVM][lvm-thin] and [LUKS][luks-trim]
 - A [privileged user](#privileged-user) will be created and the root account will be locked
-- Any SSH public keys authorized in the live system will be persisted to the target system
+- Any SSH public keys authorized in the live system will be authorized for the privileged user
 
 See [configuration](#configuration) for complete details on customizing the installation.
 
@@ -56,7 +56,7 @@ source ./scripts/init
 
 This will validate the environment variables that were set and add `./bin` to `PATH`.
 
-Inspect the modified environment (sensitive data is redacted):
+Inspect the modified environment:
 
 ```sh
 print-config
@@ -69,12 +69,6 @@ install-target
 ```
 
 After installation, the target system is left mounted for inspection or further configuration.
-
-If using full disk encryption, be sure to change the passphrase to something more secure:
-
-```sh
-sudo cryptsetup luksChangeKey <TARGET_DEVICE> --key-slot 0
-```
 
 If all is well, `poweroff` and eject the installation media.
 
@@ -119,7 +113,7 @@ The generated image will be configured to do the following automatically:
 - Authorize any SSH public keys in `~/.ssh` belonging to the user
 - Include any iwd pre-shared keys on the system
 - Enable Multicast DNS on the live system so it can be reached by host name
-- Set the host name of the live system to `bootstrap` or `bootstrap-$BOOTSTRAP_HOSTNAME` (if the environment variable is set)
+- Set the host name of the live system to `$BOOTSTRAP_HOSTNAME` (if the environment variable is set)
 - Try to mount a drive with the label `BOOTSTRAP` to `/mnt/bootstrap`
 - Try to mount a drive with the label `PACKAGES` to `/mnt/packages`
 - Add any configuration (exported environment variables like `BOOTSTRAP_*`) to the file `/root/config` on the live system.
@@ -139,7 +133,7 @@ The virtual machine will be booted with a cloud-init image generated using the [
 
 Additionally, it will do the following:
 
-- Mount the current directory to `/mnt/bootstrap` on the live system
+- Mount the current directory on the host system to `/mnt/bootstrap` on the live system
 - Mount `/var/cache/bootstrap/repo` on the host system to `/mnt/packages` on the live system and [configure offline installation](#offline-installation)
 - Forward TCP port `60022` (or argument to option `-p`) on the host system to TCP port `22` on the virtual machine
 - Allow SSH connections over vsock at client id `42` (or argument to option `-c`)
@@ -170,10 +164,10 @@ To see complete usage details:
 
 The script `./scripts/inject` can make installation over SSH easier:
 
-It will do the following:
+It will do the following on the live system:
 
 - Authorize the SSH keys with write access to this repository
-- Enable Multicast DNS on the live system so it can be reached by host name
+- Enable Multicast DNS so the live system can be reached by host name
 - Fetch an archive of this repository into `/tmp/bootstrap` (if the script is not run locally)
 
 If you already have access to the repository in the live system, just run the script to authorize the keys and enable mDNS:
@@ -189,7 +183,6 @@ curl https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject | bas
 ```
 
 If the network is available automatically after booting, you could run the script by using the `script` boot parameter.
-
 When you see the GRUB menu, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
 
 ```

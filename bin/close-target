@@ -8,7 +8,7 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     close-uefi
 fi
 
-if ((BOOTSTRAP_USE_SWAP)); then
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
     close-swap
     close-lvm-swap
 fi
@@ -16,6 +16,6 @@ fi
 close-lvm-root
 close-lvm
 
-if ((BOOTSTRAP_USE_LUKS)); then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     close-luks
 fi

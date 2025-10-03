@@ -4,7 +4,7 @@ set -euo pipefail
 
 create-partitions
 
-if ((BOOTSTRAP_USE_LUKS)); then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     create-luks
     open-luks
 fi
@@ -16,7 +16,7 @@ fi
 
 create-lvm
 
-if ((BOOTSTRAP_USE_SWAP)); then
+if [[ -v BOOTSTRAP_USE_SWAP ]]; then
     create-lvm-swap
     create-swap
     open-swap
@@ -26,7 +26,7 @@ create-lvm-root
 create-root
 open-root
 
-if ((BOOTSTRAP_USE_LUKS)); then
+if [[ -v BOOTSTRAP_USE_LUKS ]]; then
     install-luks-keyfile
 fi
 
@@ -37,13 +37,13 @@ install-packages
 
 config-lvm
 
-if ((BOOTSTRAP_USE_TRIM)); then
+if [[ -v BOOTSTRAP_USE_TRIM ]]; then
     config-trim
 fi
 
 config-network
 
-if ((BOOTSTRAP_USE_WIRELESS)); then
+if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
     config-wireless
 fi
 

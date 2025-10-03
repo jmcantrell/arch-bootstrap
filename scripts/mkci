@@ -173,7 +173,7 @@ cidata_dir=$temp_dir/cidata
 mkdir -p "$cidata_dir"
 
 cat >"$cidata_dir"/meta-data <<EOF
-local-hostname: bootstrap${BOOTSTRAP_HOSTNAME:+-$BOOTSTRAP_HOSTNAME}
+${BOOTSTRAP_HOSTNAME:+local-hostname: $BOOTSTRAP_HOSTNAME}
 EOF
 
 cat >"$cidata_dir"/user-data <<EOF

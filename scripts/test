@@ -19,9 +19,6 @@ Options:
 
     -e    edit configuration before booting the live system
 
-    -y    proceed with the installation
-          (specify twice to also reboot into the new system)
-
 Arguments:
     ISO_FILE     installation media ISO file
 "
@@ -36,10 +33,10 @@ fi
 vm_opts=()
 mkvm_opts=()
 
-while getopts "p:c:ey" opt; do
+while getopts "p:c:e" opt; do
     case $opt in
     p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
-    e | y) mkvm_opts+=(-"$opt") ;;
+    e) mkvm_opts+=(-"$opt") ;;
     *) exit 2 ;;
     esac
 done

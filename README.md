@@ -247,10 +247,11 @@ The following variables should be defined and exported before sourcing the initi
 
 ### Full Disk Encryption
 
+**NOTE**: The main passphrase (slot 0) will be requested at the beginning of the installation.
+
 - `BOOTSTRAP_USE_LUKS`: If set to a non-empty value, use full disk encryption for `$BOOTSTRAP_TARGET_DEVICE`
-- `BOOTSTRAP_LUKS_PASSPHRASE`: The passphrase to use for full disk encryption (default: `hunter2`, occupies key slot 0)
-- `BOOTSTRAP_LUKS_INITRD_KEY_FILE`: The path of the key file used to allow the initrd to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, occupies key slot 1, generated on demand)
 - `BOOTSTRAP_LUKS_MAPPER_NAME`: The mapper name used for the encrypted partition (default: `sys`)
+- `BOOTSTRAP_LUKS_INITRD_KEY_FILE`: The key file used by the kernel to unlock the system without asking for the passphrase again (default: `/crypto_keyfile.bin`, slot 1, generated on demand)
 
 ### Volume Management
 
@@ -303,8 +304,9 @@ The following variables should be defined and exported before sourcing the initi
 
 ### Privileged User
 
+**NOTE**: The privileged user's password will be requested at the end of the installation.
+
 - `BOOTSTRAP_ADMIN_LOGIN`: The privileged user's login (default: `admin`)
-- `BOOTSTRAP_ADMIN_PASSWORD`: The privileged user's password (default: `hunter2`)
 - `BOOTSTRAP_ADMIN_GROUP`: The group used to determine privileged user status (default: `wheel`)
 - `BOOTSTRAP_ADMIN_GROUP_NOPASSWD`: If set to a non-empty value, users in the group will be allowed to escalate privileges without authenticating
 

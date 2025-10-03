@@ -4,14 +4,14 @@ set -euo pipefail
 
 create-partitions
 
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    create-uefi
-    open-uefi
-fi
-
 if ((BOOTSTRAP_USE_LUKS)); then
     create-luks
     open-luks
+fi
+
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    create-uefi
+    open-uefi
 fi
 
 create-lvm
@@ -26,12 +26,12 @@ create-lvm-root
 create-root
 open-root
 
-config-boot
-config-initrd
-
 if ((BOOTSTRAP_USE_LUKS)); then
     install-luks-keyfile
 fi
+
+config-boot
+config-initrd
 
 install-packages
 
@@ -53,9 +53,10 @@ config-ntp
 config-lang
 config-keymap
 config-mirrors
-config-admin
 config-ssh
 
 install-locale
 install-fstab
 install-boot
+
+config-admin

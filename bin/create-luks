@@ -2,4 +2,10 @@
 
 set -euo pipefail
 
-cryptsetup luksFormat --type luks1 "$BOOTSTRAP_LUKS_DEVICE" <<<"$BOOTSTRAP_LUKS_PASSPHRASE"
+mkdir -p "$(dirname "$BOOTSTRAP_LUKS_KEY_FILE")"
+touch "$BOOTSTRAP_LUKS_KEY_FILE"
+chmod 600 "$BOOTSTRAP_LUKS_KEY_FILE"
+dd bs=512 count=4 if=/dev/random of="$BOOTSTRAP_LUKS_KEY_FILE" iflag=fullblock
+
+cryptsetup luksFormat --key-slot 1 --batch-mode --type luks1 "$BOOTSTRAP_LUKS_DEVICE" "$BOOTSTRAP_LUKS_KEY_FILE"
+cryptsetup luksAddKey --new-key-slot 0 --key-file "$BOOTSTRAP_LUKS_KEY_FILE" "$BOOTSTRAP_LUKS_DEVICE"

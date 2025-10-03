@@ -13,12 +13,10 @@ fi
 
 arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" useradd --create-home --groups users,"$BOOTSTRAP_ADMIN_GROUP" "$BOOTSTRAP_ADMIN_LOGIN"
 
-chpasswd -R "$BOOTSTRAP_TARGET_MOUNT_DIR" <<<"$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_PASSWORD"
-
 if [[ -f ~/.ssh/authorized_keys ]]; then
     rsync -va ~/.ssh/authorized_keys "$BOOTSTRAP_TARGET_MOUNT_DIR"/home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh/
     arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" chown --verbose --recursive "$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_LOGIN" /home/"$BOOTSTRAP_ADMIN_LOGIN"/.ssh
 fi
 
 arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd --lock root
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd --expire "$BOOTSTRAP_ADMIN_LOGIN"
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" passwd "$BOOTSTRAP_ADMIN_LOGIN"

@@ -19,9 +19,6 @@ Options:
 
     -e    edit files before building
 
-    -y    proceed with the installation
-          (specify twice to also power off)
-
 Arguments:
     ISO_FILE    write cloud-init iso to ISO_FILE
 "
@@ -46,14 +43,13 @@ runcmd+=("systemctl stop reflector.service && rm /etc/systemd/system/reflector.s
 runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network && networkctl reload")
 
 edit=0
-confirm=0
 declare -A mount_lines=()
 
 for name in bootstrap packages; do
     mount_lines[/mnt/$name]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
 done
 
-while getopts "m:r:ey" opt; do
+while getopts "m:r:e" opt; do
     case $opt in
     m)
         read -r _ target _ <<<"$OPTARG"
@@ -61,7 +57,6 @@ while getopts "m:r:ey" opt; do
         ;;
     r) runcmd+=("$OPTARG") ;;
     e) edit=1 ;;
-    y) confirm=$((confirm+1)) ;;
     *) exit 2 ;;
     esac
 done
@@ -113,14 +108,6 @@ done < <(sudo find /var/lib/iwd -type f -name "*.psk" -print0)
 
 if ((should_restart_iwd)); then
     runcmd+=("systemctl restart iwd.service")
-fi
-
-if ((confirm)); then
-    cmd="cd /root && ./install"
-    if ((confirm > 1)); then
-        cmd+="&& poweroff"
-    fi
-    runcmd+=("$cmd") 
 fi
 
 config_file=$temp_dir/config

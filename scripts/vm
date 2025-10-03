@@ -38,7 +38,7 @@ if (($# > 0)); then
 fi
 
 opts=()
-unset boot_order_arg
+unset boot_order
 cdrom_id_next=0
 cdrom_device_fmt="scsi-cd,bus=scsi0.0,drive=cdrom%d"
 cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
@@ -47,7 +47,7 @@ while getopts "m:d:i:s:p:" opt; do
     case $opt in
     m) mem_size=$OPTARG ;;
     i)
-        boot_order_arg=d
+        boot_order=d
         cdrom_id=$((cdrom_id_next++))
         opts+=(
             -device "$(printf "$cdrom_device_fmt" "$cdrom_id")"
@@ -66,7 +66,7 @@ disk_file=${1:?missing disk file}
 exec qemu-system-x86_64 \
     -name "$self_name-$$" -m "$mem_size" \
     -cpu host -accel kvm -machine smm=on \
-    ${boot_order_arg:+-boot order="$boot_order_arg"} \
+    ${boot_order:+-boot order="$boot_order"} \
     -device virtio-scsi-pci,id=scsi0 \
     -device vhost-vsock-pci,guest-cid="$vsock_id" \
     -device virtio-net-pci,netdev=net0 \

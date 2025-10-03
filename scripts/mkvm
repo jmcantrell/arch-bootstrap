@@ -26,9 +26,6 @@ Options:
 
     -e    edit configuration before booting the live system
 
-    -y    proceed with the installation
-          (specify twice to also reboot into the new system)
-
 Arguments:
     ISO_FILE     installation media ISO file
     DISK_FILE    data disk image file
@@ -49,11 +46,11 @@ vm_opts=()
 disk_file=$temp_dir/disk.cow
 cidata_file=$temp_dir/cidata.iso
 
-while getopts "m:d:p:c:ey" opt; do
+while getopts "m:d:p:c:e" opt; do
     case $opt in
     m) vm_opts+=(-"$opt") ;;
     p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
-    e | y) ci_opts+=(-"$opt") ;;
+    e) ci_opts+=(-"$opt") ;;
     d) disk_size=$OPTARG ;;
     *) exit 2 ;;
     esac

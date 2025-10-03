@@ -56,10 +56,10 @@ source ./scripts/init
 
 This will validate the environment variables that were set and add `./bin` to `PATH`.
 
-Inspect the modified environment (the `-r` option redacts sensitive data):
+Inspect the modified environment (sensitive data is redacted):
 
 ```sh
-print-config -r
+print-config
 ```
 
 Install the target system:

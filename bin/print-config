@@ -2,12 +2,4 @@
 
 set -euo pipefail
 
-while getopts "r" opt; do
-    case $opt in
-    r) exec > >(sed -E '/^[^=]*PASS(WORD|PHRASE)[^=]*=/s/=.*$/=********/') ;;
-    *) exit 2 ;;
-    esac
-done
-shift $((OPTIND - 1))
-
-set | grep '^BOOTSTRAP_' | sort
+set | grep '^BOOTSTRAP_' | sort | sed -E '/^[^=]*PASS(WORD|PHRASE)[^=]*=/s/=.*$/=********/'

@@ -3,12 +3,11 @@
 set -euo pipefail
 
 if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
-    set-package-repo "$BOOTSTRAP_PACKAGE_REPO_DIR"
+    set-package-repo-dir "$BOOTSTRAP_PACKAGE_REPO_DIR"
 fi
 
 pacman-key --init
 pacman-key --populate
-pacman --sync --refresh --needed --noconfirm archlinux-keyring
 
 readarray -t packages < <(print-packages)
 

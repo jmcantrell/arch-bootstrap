@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-lvchange --verbose --activate n "$BOOTSTRAP_SWAP_DEVICE"
+lvchange --verbose --activate n "$BOOTSTRAP_LVM_LV_SWAP_MAPPER_DEVICE"

@@ -2,15 +2,10 @@
 
 set -euo pipefail
 
-default=${1:-UTC}
-
 link=/etc/localtime
 
-if [[ -f $link ]]; then
-    file=$(realpath "$link")
-    name=${file#*/zoneinfo/}
-else
-    name=$default
-fi
+[[ -L $link ]] || exit 9
 
-printf "%s" "$name"
+file=$(realpath "$link")
+
+printf "%s\n" "${file#*/zoneinfo/}"

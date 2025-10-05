@@ -134,7 +134,7 @@ source ./config
 
 cd /mnt/bootstrap
 
-source ./scripts/init
+source ./init
 
 print-config
 

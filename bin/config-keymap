@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-printf "KEYMAP=%q\n" "$BOOTSTRAP_KEYMAP" >"$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/vconsole.conf

@@ -2,21 +2,26 @@
 
 set -euo pipefail
 
-preload_modules=(part_{gpt,msdos} lvm)
+preload_modules=(part_{gpt,msdos})
+
 cmdline_linux_default=(
     ${BOOTSTRAP_KERNEL_QUIET:+quiet}
-    loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"
-    consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"
+    ${BOOTSTRAP_KERNEL_LOGLEVEL:+loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"}
+    ${BOOTSTRAP_KERNEL_CONSOLEBLANK:+consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"}
 )
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    preload_modules+=(lvm)
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
 fi
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
-        cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_USE_LUKS:+:allow-discards}"
+        cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_ENABLE_TRIM:+:allow-discards}"
         cryptkey=rootfs:"$BOOTSTRAP_LUKS_INITRD_KEY_FILE"
     )
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=y
@@ -24,8 +29,8 @@ else
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=n
 fi
 
-export BOOTSTRAP_GRUB_PRELOAD_MODULES=${preload_modules[*]}
-export BOOTSTRAP_GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
 export BOOTSTRAP_GRUB_CMDLINE_LINUX=${cmdline_linux[*]}
+export BOOTSTRAP_GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_linux_default[*]}
+export BOOTSTRAP_GRUB_PRELOAD_MODULES=${preload_modules[*]}
 
 install-template /etc/default/grub

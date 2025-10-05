@@ -2,9 +2,8 @@
 
 set -euo pipefail
 
-config_file=/etc/pacman.conf
-
-repo_dir=${1:?missing repo directory}
+config_file=${1:?missing config file}
+repo_dir=${2:?missing repo directory}
 
 db_file=$(find "$repo_dir" -type f -name "*.db.tar.*")
 

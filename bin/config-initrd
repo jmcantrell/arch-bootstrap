@@ -2,33 +2,51 @@
 
 set -euo pipefail
 
-binaries=(/usr/bin/btrfs)
+binaries=()
 modules=()
 hooks=(base udev autodetect modconf kms)
 files=()
+
+if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then
+    binaries+=(/usr/bin/btrfs)
+fi
 
 if [[ -v BOOTSTRAP_GPU_MODULES && -n $BOOTSTRAP_GPU_MODULES ]]; then
     readarray -t modules <<<"$BOOTSTRAP_GPU_MODULES"
 fi
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
-    hooks+=(keyboard keymap consolefont)
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
+    hooks+=(keyboard)
+    if [[ -v BOOTSTRAP_KEYMAP && $BOOTSTRAP_KEYMAP != us ]]; then
+        hooks+=(keymap)
+    fi
+    if [[ -v BOOTSTRAP_FONT ]]; then
+        hooks+=(consolefont)
+    fi
     files+=("$BOOTSTRAP_LUKS_INITRD_KEY_FILE")
 fi
 
 hooks+=(block)
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     hooks+=(encrypt)
 fi
 
-hooks+=(lvm2)
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    hooks+=(lvm2)
+fi
 
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     hooks+=(resume)
 fi
 
-hooks+=(filesystems btrfs fsck)
+hooks+=(filesystems)
+
+if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then
+    hooks+=(btrfs)
+fi
+
+hooks+=(fsck)
 
 export BOOTSTRAP_INITRD_BINARIES=${binaries[*]}
 export BOOTSTRAP_INITRD_MODULES=${modules[*]}

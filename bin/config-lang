@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-printf "LANG=%s\n" "$BOOTSTRAP_LANG" >"$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/locale.conf

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+vars=(
+    BOOTSTRAP_LANG
+    BOOTSTRAP_LANGUAGE
+    BOOTSTRAP_LC_CTYPE
+    BOOTSTRAP_LC_NUMERIC
+    BOOTSTRAP_LC_TIME
+    BOOTSTRAP_LC_COLLATE
+    BOOTSTRAP_LC_MONETARY
+    BOOTSTRAP_LC_MESSAGES
+    BOOTSTRAP_LC_PAPER
+    BOOTSTRAP_LC_NAME
+    BOOTSTRAP_LC_ADDRESS
+    BOOTSTRAP_LC_TELEPHONE
+    BOOTSTRAP_LC_MEASUREMENT
+    BOOTSTRAP_LC_IDENTIFICATION
+)
+
+lines=()
+
+for var in "${vars[@]}"; do
+    if [[ -v $var ]]; then
+        lines+=("${var#BOOTSTRAP_}=${!var}")
+    fi
+done
+
+if ((${#lines[@]} > 0)); then
+    printf "%s\n" "${lines[@]}" >"$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/locale.conf
+fi

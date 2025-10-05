@@ -2,6 +2,4 @@
 
 set -euo pipefail
 
-while read -r _name path; do
-    umount --verbose "$BOOTSTRAP_TARGET_MOUNT_DIR/${path#/}"
-done < <(print-btrfs-subvolumes | tac)
+umount --verbose --recursive "$BOOTSTRAP_TARGET_MOUNT_DIR"

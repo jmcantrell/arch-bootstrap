@@ -2,14 +2,12 @@
 
 set -euo pipefail
 
-mkfs.btrfs --verbose --label "$BOOTSTRAP_FS_ROOT_LABEL" "$BOOTSTRAP_ROOT_DEVICE"
-
 mkdir -p "$BOOTSTRAP_TARGET_MOUNT_DIR"
 
-mount --verbose "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR"
+create_cmd=create-root-$BOOTSTRAP_FS_ROOT_KIND
 
-while read -r name _path; do
-    btrfs subvolume create "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
-done < <(print-btrfs-subvolumes)
-
-umount --verbose "$BOOTSTRAP_TARGET_MOUNT_DIR"
+if command -v "$create_cmd" &>/dev/null; then
+    "$create_cmd"
+else
+    create-root-default
+fi

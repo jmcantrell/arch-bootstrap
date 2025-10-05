@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
+    open-root-btrfs-subvolumes
+else
+    open-root-default
+fi

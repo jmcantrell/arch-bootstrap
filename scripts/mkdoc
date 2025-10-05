@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+shopt -s globstar
+
+input_file=./README.md
+
+temp_dir=$(mktemp -d)
+trap 'rm -rf "$temp_dir"' EXIT
+
+csplit -ks -n1 -f "$temp_dir"/before "$input_file" '/<!-- CONFIG START -->/1'
+csplit -ks -n1 -f "$temp_dir"/after "$temp_dir"/before1 '/<!-- CONFIG END -->/'
+
+pat_comment='^[[:space:]]*#+[[:space:]]*(.*)$'
+pat_variable='^[[:space:]]*(#*)[[:space:]]*export[[:space:]]+(BOOTSTRAP_[^=]+)=?(.*)$'
+pat_extra='[[:space:]]*#+[[:space:]]*(.+)$'
+pat_default='\bdefault:'
+pat_example='\be\.g\.\b'
+
+{
+    printf "\n"
+    for file in ./lib/prepare/**/*.bash; do
+        while IFS= read -r line; do
+            if [[ $line =~ $pat_variable ]] && ((${#description[@]} > 0)); then
+                comment=${BASH_REMATCH[1]}
+                variable=${BASH_REMATCH[2]}
+                value=${BASH_REMATCH[3]}
+                info=()
+                unset punct
+                summary=${description[0]}
+                if [[ $summary =~ ^(.*)([.!?])$ ]]; then
+                    summary=${BASH_REMATCH[1]}
+                    punct=${BASH_REMATCH[2]}
+                fi
+                if [[ -n $value ]]; then
+                    if [[ -n $comment ]]; then
+                        if [[ ! ${description[0]} =~ $pat_example ]]; then
+                            info+=("e.g. \`$value\`")
+                        fi
+                    else
+                        if [[ ! ${description[0]} =~ $pat_default ]]; then
+                            default=${value##*:-}
+                            default=${default%%\}*}
+                            info+=("default: \`$default\`")
+                        fi
+                    fi
+                    if [[ $value =~ $pat_extra ]]; then
+                        info+=("${BASH_REMATCH[1]}")
+                    fi
+                    if ((${#info[@]} > 0)); then
+                        if [[ $summary == *\) ]]; then
+                            summary="${summary%)}, "
+                        else
+                            summary+=" ("
+                        fi
+                        for item in "${info[@]}"; do
+                            summary+="$item, "
+                        done
+                        summary=${summary%, }
+                        summary+=")"
+                    fi
+                fi
+                if [[ -v punct ]]; then
+                    summary+=$punct
+                fi
+                description[0]=$summary
+                printf "%s\t" "$variable"
+                printf "%s\t" "$file"
+                printf "%s\n" "${description[0]}"
+                if ((${#description[@]} > 1)); then
+                    printf "\n"
+                    for line in "${description[@]:1}"; do
+                        printf "%s\n" "$line"
+                    done
+                fi
+                printf "\0"
+                unset variable
+                description=()
+            elif [[ $line =~ $pat_comment ]]; then
+                description+=("${BASH_REMATCH[1]}")
+            else
+                unset variable
+                description=()
+            fi
+        done <"$file"
+    done | LC_COLLATE=C sort -z |
+        while IFS=$'\t' read -r -d '' variable file description; do
+            printf "### \`%s\`\n" "$variable"
+            printf "\n<!-- $file -->\n" "$file"
+            printf "\n%s\n" "$description"
+        done
+} >"$temp_dir"/config
+
+sed -Ei 's@`(\w+)\((.+)\)`@[&](https://man.archlinux.org/man/\1.\2)@g' "$temp_dir"/config
+
+cat "$temp_dir"/{before0,config,after1} >"$input_file"

@@ -1,9 +1,7 @@
 base
-btrfs-progs
 linux
 linux-firmware
 linux-lts
-lvm2
 openssh
 reflector
 sudo

@@ -4,7 +4,5 @@ set -euo pipefail
 
 target_file=$BOOTSTRAP_TARGET_MOUNT_DIR/${BOOTSTRAP_LUKS_INITRD_KEY_FILE#/}
 
-chmod 000 "$BOOTSTRAP_LUKS_KEY_FILE"
-
 mkdir -p "$(dirname "$target_file")"
 mv -v "$BOOTSTRAP_LUKS_KEY_FILE" "$target_file"

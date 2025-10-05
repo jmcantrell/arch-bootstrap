@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+vars=(
+    BOOTSTRAP_KEYMAP
+    BOOTSTRAP_KEYMAP_TOGGLE
+    BOOTSTRAP_FONT
+    BOOTSTRAP_FONT_MAP
+    BOOTSTRAP_FONT_UNIMAP
+)
+
+lines=()
+
+for var in "${vars[@]}"; do
+    if [[ -v $var ]]; then
+        lines+=("${var#BOOTSTRAP_}=${!var}")
+    fi
+done
+
+if ((${#lines[@]} > 0)); then
+    printf "%s\n" "${lines[@]}" >"$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/vconsole.conf
+fi

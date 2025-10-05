@@ -4,7 +4,7 @@ set -euo pipefail
 
 create-partitions
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     create-luks
     open-luks
 fi
@@ -14,19 +14,21 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     open-uefi
 fi
 
-create-lvm
-
-if [[ -v BOOTSTRAP_USE_SWAP ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    create-lvm
     create-lvm-swap
+    create-lvm-root
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     create-swap
     open-swap
 fi
 
-create-lvm-root
 create-root
 open-root
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     install-luks-keyfile
 fi
 
@@ -35,27 +37,34 @@ config-initrd
 
 install-packages
 
-config-lvm
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    config-lvm
+fi
 
-if [[ -v BOOTSTRAP_USE_TRIM ]]; then
+if [[ -v BOOTSTRAP_ENABLE_TRIM ]]; then
     config-trim
 fi
 
-config-network
+if [[ -v BOOTSTRAP_HOSTNAME ]]; then
+    config-hostname
+fi
 
-if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+if [[ -v BOOTSTRAP_TIMEZONE ]]; then
+    config-timezone
+fi
+
+config-locale
+config-console
+config-network
+config-mirrors
+config-ntp
+config-ssh
+
+if [[ -v BOOTSTRAP_ENABLE_WIRELESS ]]; then
     config-wireless
 fi
 
-config-hostname
-config-timezone
-config-ntp
-config-lang
-config-keymap
-config-mirrors
-config-ssh
-
-install-locale
+install-locales
 install-fstab
 install-boot
 

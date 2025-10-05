@@ -2,8 +2,12 @@
 
 set -euo pipefail
 
+unset config_file
+
 if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
-    set-package-repo-dir "$BOOTSTRAP_PACKAGE_REPO_DIR"
+    config_file=/tmp/pacman.conf
+    cp /etc/pacman.conf "$config_file"
+    set-package-repo-dir "$config_file" "$BOOTSTRAP_PACKAGE_REPO_DIR"
 fi
 
 pacman-key --init
@@ -11,4 +15,4 @@ pacman-key --populate
 
 readarray -t packages < <(print-packages)
 
-pacstrap "$BOOTSTRAP_TARGET_MOUNT_DIR" "${packages[@]}"
+pacstrap ${config_file:+-C "$config_file"} "$BOOTSTRAP_TARGET_MOUNT_DIR" "${packages[@]}"

@@ -1,0 +1,52 @@
+export BOOTSTRAP_ROOT_DIR=$PWD
+export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
+
+export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
+
+. ./lib/prepare/target.bash
+
+: "${BOOTSTRAP_TARGET_DEVICE:?}"
+
+. ./lib/prepare/swap.bash
+. ./lib/prepare/hardware.bash
+. ./lib/prepare/partitions.bash
+. ./lib/prepare/file_system.bash
+. ./lib/prepare/chroot.bash
+
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
+    . ./lib/prepare/luks.bash
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    . ./lib/prepare/lvm.bash
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
+    export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_PART_SYS_DEVICE
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_LVM && -v BOOTSTRAP_ENABLE_LUKS ]]; then
+    export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_LUKS_MAPPER_DEVICE
+elif [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_PART_SYS_DEVICE
+fi
+
+export BOOTSTRAP_BOOT_DEVICE=$BOOTSTRAP_PART_BOOT_DEVICE
+
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    export BOOTSTRAP_ROOT_DEVICE=$BOOTSTRAP_LVM_LV_ROOT_MAPPER_DEVICE
+elif [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
+    export BOOTSTRAP_ROOT_DEVICE=$BOOTSTRAP_LUKS_MAPPER_DEVICE
+else
+    export BOOTSTRAP_ROOT_DEVICE=$BOOTSTRAP_PART_SYS_DEVICE
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
+    if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+        export BOOTSTRAP_SWAP_DEVICE=$BOOTSTRAP_LVM_LV_SWAP_MAPPER_DEVICE
+    else
+        export BOOTSTRAP_SWAP_DEVICE=$BOOTSTRAP_PART_SWAP_DEVICE
+    fi
+fi
+
+# vi:ft=bash

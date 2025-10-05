@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mount --verbose ${BOOTSTRAP_FS_ROOT_OPTIONS:+--options "$BOOTSTRAP_FS_ROOT_OPTIONS"} "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR"

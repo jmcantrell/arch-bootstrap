@@ -12,11 +12,19 @@ files=(
     "$BOOTSTRAP_CPU_VENDOR_PACKAGE_FILE"
 )
 
-if [[ -v BOOTSTRAP_USE_LUKS ]]; then
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    files+=(lvm)
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     files+=(luks)
 fi
 
-if [[ -v BOOTSTRAP_USE_WIRELESS ]]; then
+if [[ -v BOOTSTRAP_FS_ROOT_PACKAGE_FILE ]]; then
+    files+=("$BOOTSTRAP_FS_ROOT_PACKAGE_FILE")
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_WIRELESS ]]; then
     files+=(wireless)
 fi
 

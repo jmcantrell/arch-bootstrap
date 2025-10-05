@@ -69,7 +69,7 @@ qemu-img create -f qcow2 "$disk_file" -o nocow=on "$disk_size"
 
 export BOOTSTRAP_TARGET_DEVICE=/dev/sda
 export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
-export BOOTSTRAP_USE_TRIM=1
+export BOOTSTRAP_ENABLE_TRIM=1
 
 ./scripts/mkci "${ci_opts[@]}" \
     -m "bootstrap /mnt/bootstrap 9p trans=virtio,version=9p2000.L 0 0" \

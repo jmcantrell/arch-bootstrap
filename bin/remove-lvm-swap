@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-lvremove --verbose "$BOOTSTRAP_SWAP_DEVICE"
+lvremove --verbose "$BOOTSTRAP_LVM_LV_SWAP_MAPPER_DEVICE"

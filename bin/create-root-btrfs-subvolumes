@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+open-root-default
+
+while read -r name _path; do
+    btrfs subvolume create "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
+done < <(print-btrfs-subvolumes)
+
+close-root-default

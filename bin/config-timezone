@@ -2,4 +2,5 @@
 
 set -euo pipefail
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" ln -vsfn /usr/share/zoneinfo/"$BOOTSTRAP_TIMEZONE" /etc/localtime
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
+    ln -vsfn /usr/share/zoneinfo/"$BOOTSTRAP_TIMEZONE" /etc/localtime

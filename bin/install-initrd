@@ -2,4 +2,5 @@
 
 set -euo pipefail
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" mkinitcpio --allpresets
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
+    mkinitcpio --allpresets

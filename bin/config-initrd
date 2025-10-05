@@ -17,7 +17,7 @@ fi
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     hooks+=(keyboard)
-    if [[ -v BOOTSTRAP_KEYMAP && $BOOTSTRAP_KEYMAP != us ]]; then
+    if [[ -v BOOTSTRAP_KEYMAP ]]; then
         hooks+=(keymap)
     fi
     if [[ -v BOOTSTRAP_FONT ]]; then

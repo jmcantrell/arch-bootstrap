@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mount --verbose --mkdir -t tmpfs -o noswap tmpfs "$BOOTSTRAP_SECURE_DIR"

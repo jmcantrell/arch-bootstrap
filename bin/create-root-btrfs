@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
+create-root-default
+
 if [[ -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     create-root-btrfs-subvolumes
-else
-    create-root-default
 fi

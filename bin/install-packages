@@ -15,4 +15,5 @@ pacman-key --populate
 
 readarray -t packages < <(print-packages)
 
-pacstrap ${config_file:+-C "$config_file"} "$BOOTSTRAP_TARGET_MOUNT_DIR" "${packages[@]}"
+pacstrap ${config_file:+-C "$config_file"} \
+    "$BOOTSTRAP_TARGET_MOUNT_DIR" "${packages[@]}"

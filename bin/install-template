@@ -18,4 +18,4 @@ done <"$template_file"
 
 mkdir -p "$(dirname "$rendered_file")"
 envsubst "$variables" <"$template_file" >"$rendered_file"
-chmod --verbose --reference="$template_file" "$rendered_file"
+chmod -v --reference="$template_file" "$rendered_file"

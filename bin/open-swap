@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-swapon --verbose "$BOOTSTRAP_SWAP_DEVICE"
+swapon -v "$BOOTSTRAP_SWAP_DEVICE"

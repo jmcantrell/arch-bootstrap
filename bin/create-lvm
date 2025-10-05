@@ -2,5 +2,6 @@
 
 set -euo pipefail
 
-pvcreate --verbose -ff --yes "$BOOTSTRAP_LVM_DEVICE"
+pvcreate --verbose --yes "$BOOTSTRAP_LVM_DEVICE"
+
 vgcreate --verbose "$BOOTSTRAP_LVM_VG_NAME" "$BOOTSTRAP_LVM_DEVICE"

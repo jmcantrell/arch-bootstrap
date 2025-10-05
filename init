@@ -8,6 +8,7 @@ source "$BOOTSTRAP_LIB_DIR"/prepare/target.bash
 
 : "${BOOTSTRAP_TARGET_DEVICE:?}"
 
+source "$BOOTSTRAP_LIB_DIR"/prepare/secure.bash
 source "$BOOTSTRAP_LIB_DIR"/prepare/swap.bash
 source "$BOOTSTRAP_LIB_DIR"/prepare/hardware.bash
 source "$BOOTSTRAP_LIB_DIR"/prepare/partitions.bash

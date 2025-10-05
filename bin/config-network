@@ -2,9 +2,14 @@
 
 set -euo pipefail
 
-rsync -va {,"${BOOTSTRAP_TARGET_MOUNT_DIR%%/}"}/etc/systemd/networkd.conf.d/
-rsync -va /etc/systemd/network/20-*.network "${BOOTSTRAP_TARGET_MOUNT_DIR%%/}"/etc/systemd/network/
+rsync -va /etc/systemd/networkd.conf.d/ \
+    "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/systemd/networkd.conf.d/
 
-ln -vsfn /run/systemd/resolve/stub-resolv.conf "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/resolv.conf
+rsync -va /etc/systemd/network/20-*.network \
+    "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/systemd/network/
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" systemctl --verbose enable systemd-{networkd,resolved}.service
+ln -vsfn /run/systemd/resolve/stub-resolv.conf \
+    "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/resolv.conf
+
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
+    systemctl -v enable systemd-{networkd,resolved}.service

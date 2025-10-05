@@ -2,10 +2,5 @@
 
 set -euo pipefail
 
-config_file=$BOOTSTRAP_CONFIG_DIR/file_system/btrfs/subvolumes
-
 printf "@ /\n" # the root subvolume
-
-if [[ -f $config_file ]]; then
-    sed -E 's/^@?/@/' "$config_file"
-fi
+sed 's/^/@/' "$BOOTSTRAP_CONFIG_DIR"/file_system/btrfs/subvolumes

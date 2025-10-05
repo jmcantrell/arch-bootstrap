@@ -2,4 +2,5 @@
 
 set -euo pipefail
 
-cryptsetup open --key-file "$BOOTSTRAP_LUKS_KEY_FILE" "$BOOTSTRAP_LUKS_DEVICE" "$BOOTSTRAP_LUKS_MAPPER_NAME"
+cryptsetup open --key-file "$BOOTSTRAP_LUKS_KEY_FILE" \
+    "$BOOTSTRAP_LUKS_DEVICE" "$BOOTSTRAP_LUKS_MAPPER_NAME"

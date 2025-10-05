@@ -4,14 +4,14 @@ if [[ ${BOOTSTRAP_TARGET_DEVICE##*/} == nvme* ]]; then
     part_prefix+=p
 fi
 
-. ./lib/prepare/partition/boot.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/partition/boot.bash
 
 export BOOTSTRAP_PART_BOOT_DEVICE=${part_prefix}1
 
-. ./lib/prepare/partition/sys.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/partition/sys.bash
 
 if [[ -v BOOTSTRAP_ENABLE_SWAP && ! -v BOOTSTRAP_ENABLE_LVM ]]; then
-    . ./lib/prepare/partition/swap.bash
+    source "$BOOTSTRAP_LIB_DIR"/prepare/partition/swap.bash
     export BOOTSTRAP_PART_SWAP_DEVICE=${part_prefix}2
     export BOOTSTRAP_PART_SYS_DEVICE=${part_prefix}3
 else

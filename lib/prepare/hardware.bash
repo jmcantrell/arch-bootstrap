@@ -1,6 +1,6 @@
-. ./lib/prepare/hardware/boot_firmware.bash
-. ./lib/prepare/hardware/memory.bash
-. ./lib/prepare/hardware/cpu.bash
-. ./lib/prepare/hardware/gpu.bash
-. ./lib/prepare/hardware/trim.bash
-. ./lib/prepare/hardware/wireless.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware/boot_firmware.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware/memory.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware/cpu.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware/gpu.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware/trim.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware/wireless.bash

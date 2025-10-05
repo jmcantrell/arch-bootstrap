@@ -1,24 +1,25 @@
 export BOOTSTRAP_ROOT_DIR=$PWD
+export BOOTSTRAP_LIB_DIR=$BOOTSTRAP_ROOT_DIR/lib
 export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
 
 export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
 
-. ./lib/prepare/target.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/target.bash
 
 : "${BOOTSTRAP_TARGET_DEVICE:?}"
 
-. ./lib/prepare/swap.bash
-. ./lib/prepare/hardware.bash
-. ./lib/prepare/partitions.bash
-. ./lib/prepare/file_system.bash
-. ./lib/prepare/chroot.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/swap.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/hardware.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/partitions.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/file_system.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot.bash
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
-    . ./lib/prepare/luks.bash
+    source "$BOOTSTRAP_LIB_DIR"/prepare/luks.bash
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
-    . ./lib/prepare/lvm.bash
+    source "$BOOTSTRAP_LIB_DIR"/prepare/lvm.bash
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then

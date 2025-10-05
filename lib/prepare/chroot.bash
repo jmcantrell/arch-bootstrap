@@ -1,7 +1,7 @@
-. ./lib/prepare/chroot/kernel.bash
-. ./lib/prepare/chroot/hostname.bash
-. ./lib/prepare/chroot/timezone.bash
-. ./lib/prepare/chroot/locale.bash
-. ./lib/prepare/chroot/console.bash
-. ./lib/prepare/chroot/mirrors.bash
-. ./lib/prepare/chroot/admin.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/kernel.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/hostname.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/timezone.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/locale.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/console.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/mirrors.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/chroot/admin.bash

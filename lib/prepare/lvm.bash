@@ -4,8 +4,8 @@
 # The name for the system volume group
 export BOOTSTRAP_LVM_VG_NAME=${BOOTSTRAP_LVM_VG_NAME:-sys}
 
-. ./lib/prepare/lvm/root.bash
+source "$BOOTSTRAP_LIB_DIR"/prepare/lvm/root.bash
 
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-    . ./lib/prepare/lvm/swap.bash
+    source "$BOOTSTRAP_LIB_DIR"/prepare/lvm/swap.bash
 fi

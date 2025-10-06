@@ -236,43 +236,43 @@ Any of the following variables that are needed should be defined and exported be
 
 ### `BOOTSTRAP_ADMIN_GROUP`
 
-<!-- ./lib/prepare/chroot/admin.bash -->
+<!-- ./lib/init/chroot/admin.bash -->
 
 The group used to determine privileged user status (default: `wheel`)
 
 ### `BOOTSTRAP_ADMIN_LOGIN`
 
-<!-- ./lib/prepare/chroot/admin.bash -->
+<!-- ./lib/init/chroot/admin.bash -->
 
 The privileged user's login (default: `admin`)
 
 ### `BOOTSTRAP_BOOT_FIRMWARE`
 
-<!-- ./lib/prepare/hardware/boot_firmware.bash -->
+<!-- ./lib/init/hardware/boot_firmware.bash -->
 
 The boot firmware interface (default: `uefi` if `/sys/firmware/efi/efivars` exists, otherwise `bios`)
 
 ### `BOOTSTRAP_CPU_VENDOR`
 
-<!-- ./lib/prepare/hardware/cpu.bash -->
+<!-- ./lib/init/hardware/cpu.bash -->
 
 The vendor of the system's CPU (choices: `intel` or `amd`, default: parsed from `vendor_id` in `/proc/cpuinfo`)
 
 ### `BOOTSTRAP_ENABLE_LUKS`
 
-<!-- ./lib/prepare/luks.bash -->
+<!-- ./lib/init/luks.bash -->
 
 Flag indicating that full disk encryption should be used for the target device (e.g. `true`)
 
 ### `BOOTSTRAP_ENABLE_LVM`
 
-<!-- ./lib/prepare/lvm.bash -->
+<!-- ./lib/init/lvm.bash -->
 
 Flag indicating that LVM should be used (e.g. `true`)
 
 ### `BOOTSTRAP_ENABLE_SWAP`
 
-<!-- ./lib/prepare/swap.bash -->
+<!-- ./lib/init/swap.bash -->
 
 Flag indicating that a dedicated area for swap should be used (e.g. `true`)
 
@@ -280,7 +280,7 @@ When LVM is enabled, a logical volume is used instead of a partition.
 
 ### `BOOTSTRAP_ENABLE_TRIM`
 
-<!-- ./lib/prepare/hardware/trim.bash -->
+<!-- ./lib/init/hardware/trim.bash -->
 
 Flag indicating that TRIM is supported on the target device (default: set if the target device is not a disk with spinning platters)
 
@@ -289,31 +289,31 @@ The systemd service for `fstrim` will also be scheduled.
 
 ### `BOOTSTRAP_ENABLE_WIRELESS`
 
-<!-- ./lib/prepare/hardware/wireless.bash -->
+<!-- ./lib/init/hardware/wireless.bash -->
 
 Flag indicating that wireless networking will be used (default: set if there are any network interfaces starting with `wl`)
 
 ### `BOOTSTRAP_FONT`
 
-<!-- ./lib/prepare/chroot/console.bash -->
+<!-- ./lib/init/chroot/console.bash -->
 
 The default console font
 
 ### `BOOTSTRAP_FONT_MAP`
 
-<!-- ./lib/prepare/chroot/console.bash -->
+<!-- ./lib/init/chroot/console.bash -->
 
 The default console font map
 
 ### `BOOTSTRAP_FONT_UNIMAP`
 
-<!-- ./lib/prepare/chroot/console.bash -->
+<!-- ./lib/init/chroot/console.bash -->
 
 The default console unicode font map
 
 ### `BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES`
 
-<!-- ./lib/prepare/file_system/root.bash -->
+<!-- ./lib/init/file_system/root.bash -->
 
 Flag indicating that subvolumes should be used for the root file system (e.g. `true`).
 
@@ -324,19 +324,19 @@ the new system.
 
 ### `BOOTSTRAP_FS_ROOT_KIND`
 
-<!-- ./lib/prepare/file_system/root.bash -->
+<!-- ./lib/init/file_system/root.bash -->
 
 The kind of file system to use for the root partition/volume (choices: `ext4`, `btrfs`, or `xfs`, default: `ext4`)
 
 ### `BOOTSTRAP_FS_ROOT_LABEL`
 
-<!-- ./lib/prepare/file_system/root.bash -->
+<!-- ./lib/init/file_system/root.bash -->
 
 The label for the root file system (default: `root`)
 
 ### `BOOTSTRAP_FS_ROOT_OPTIONS`
 
-<!-- ./lib/prepare/file_system/root.bash -->
+<!-- ./lib/init/file_system/root.bash -->
 
 Mount options for the root file system
 
@@ -345,13 +345,13 @@ Multiple lines are joined together with commas.
 
 ### `BOOTSTRAP_FS_SWAP_LABEL`
 
-<!-- ./lib/prepare/file_system/swap.bash -->
+<!-- ./lib/init/file_system/swap.bash -->
 
 The label for the swap file system (default: `swap`)
 
 ### `BOOTSTRAP_GPU_MODULES`
 
-<!-- ./lib/prepare/hardware/gpu.bash -->
+<!-- ./lib/init/hardware/gpu.bash -->
 
 The kernel modules used by the system's GPUs (default: parsed from the output of `lspci -k`, e.g. `i915 xe`)
 
@@ -359,55 +359,55 @@ Multiple values should be separated with a space.
 
 ### `BOOTSTRAP_HOSTNAME`
 
-<!-- ./lib/prepare/chroot/hostname.bash -->
+<!-- ./lib/init/chroot/hostname.bash -->
 
 The system host name (e.g. `arch`)
 
 ### `BOOTSTRAP_KERNEL_CONSOLEBLANK`
 
-<!-- ./lib/prepare/chroot/kernel.bash -->
+<!-- ./lib/init/chroot/kernel.bash -->
 
 The number of seconds of inactivity to wait before putting the display to sleep (e.g. `$((10 * 60))`)
 
 ### `BOOTSTRAP_KERNEL_LOGLEVEL`
 
-<!-- ./lib/prepare/chroot/kernel.bash -->
+<!-- ./lib/init/chroot/kernel.bash -->
 
 Kernel log level (e.g. `4`)
 
 ### `BOOTSTRAP_KERNEL_QUIET`
 
-<!-- ./lib/prepare/chroot/kernel.bash -->
+<!-- ./lib/init/chroot/kernel.bash -->
 
 If set to a non-empty value, include `quiet` in the kernel parameters (e.g. `true`)
 
 ### `BOOTSTRAP_KERNEL_USE_LTS`
 
-<!-- ./lib/prepare/chroot/kernel.bash -->
+<!-- ./lib/init/chroot/kernel.bash -->
 
 Flag indicating that the LTS kernel should be used by default (e.g. `true`)
 
 ### `BOOTSTRAP_KEYMAP`
 
-<!-- ./lib/prepare/chroot/console.bash -->
+<!-- ./lib/init/chroot/console.bash -->
 
 The default keyboard mapping (e.g. `us`)
 
 ### `BOOTSTRAP_KEYMAP_TOGGLE`
 
-<!-- ./lib/prepare/chroot/console.bash -->
+<!-- ./lib/init/chroot/console.bash -->
 
 The default secondary keyboard mapping
 
 ### `BOOTSTRAP_LANG`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default language (default: `C.UTF-8`)
 
 ### `BOOTSTRAP_LANGUAGE`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default language priority list
 
@@ -415,91 +415,91 @@ Multiple should be separated with a colon.
 
 ### `BOOTSTRAP_LC_ADDRESS`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default format for locations
 
 ### `BOOTSTRAP_LC_COLLATE`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default format for sorting and regular expressions
 
 ### `BOOTSTRAP_LC_CTYPE`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default interpretation of byte sequences as characters
 
 ### `BOOTSTRAP_LC_IDENTIFICATION`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default settings for locale metadata
 
 ### `BOOTSTRAP_LC_MEASUREMENT`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default settings related to the measurement system
 
 ### `BOOTSTRAP_LC_MESSAGES`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default language for messages
 
 ### `BOOTSTRAP_LC_MONETARY`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default formatting for monetary-related numeric values
 
 ### `BOOTSTRAP_LC_NAME`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default format used to address persons
 
 ### `BOOTSTRAP_LC_NUMERIC`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default formatting rules for non-monetary numeric values
 
 ### `BOOTSTRAP_LC_PAPER`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default settings related to the dimensions of the standard paper size
 
 ### `BOOTSTRAP_LC_TELEPHONE`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default settings that describe the formats for telephone services
 
 ### `BOOTSTRAP_LC_TIME`
 
-<!-- ./lib/prepare/chroot/locale.bash -->
+<!-- ./lib/init/chroot/locale.bash -->
 
 The default formatting for date and time values
 
 ### `BOOTSTRAP_LUKS_INITRD_KEY_FILE`
 
-<!-- ./lib/prepare/luks.bash -->
+<!-- ./lib/init/luks.bash -->
 
 The path of the key file on the new system used by the kernel to unlock the partition without asking for the passphrase again (slot 1, generated when added, default: `/etc/cryptsetup-keys.d/$BOOTSTRAP_LUKS_MAPPER_NAME.key`)
 
 ### `BOOTSTRAP_LUKS_MAPPER_NAME`
 
-<!-- ./lib/prepare/luks.bash -->
+<!-- ./lib/init/luks.bash -->
 
 The mapper name used for the decrypted partition (default: `sys`)
 
 ### `BOOTSTRAP_LVM_LV_ROOT_EXTENTS`
 
-<!-- ./lib/prepare/lvm/root.bash -->
+<!-- ./lib/init/lvm/root.bash -->
 
 The extents of the root logical volume (default: `+100%FREE`, i.e. use all remaining space)
 
@@ -507,19 +507,19 @@ The extents of the root logical volume (default: `+100%FREE`, i.e. use all remai
 
 ### `BOOTSTRAP_LVM_LV_ROOT_NAME`
 
-<!-- ./lib/prepare/lvm/root.bash -->
+<!-- ./lib/init/lvm/root.bash -->
 
 The name for the root logical volume (default: `root`)
 
 ### `BOOTSTRAP_LVM_LV_SWAP_NAME`
 
-<!-- ./lib/prepare/lvm/swap.bash -->
+<!-- ./lib/init/lvm/swap.bash -->
 
 The name for the swap logical volume (default: `swap`)
 
 ### `BOOTSTRAP_LVM_LV_SWAP_SIZE`
 
-<!-- ./lib/prepare/lvm/swap.bash -->
+<!-- ./lib/init/lvm/swap.bash -->
 
 The size of the swap logical volume (default: `$BOOTSTRAP_MEMORY_SIZE`)
 
@@ -527,19 +527,19 @@ The size of the swap logical volume (default: `$BOOTSTRAP_MEMORY_SIZE`)
 
 ### `BOOTSTRAP_LVM_VG_NAME`
 
-<!-- ./lib/prepare/lvm.bash -->
+<!-- ./lib/init/lvm.bash -->
 
 The name for the system volume group (default: `sys`)
 
 ### `BOOTSTRAP_MEMORY_SIZE`
 
-<!-- ./lib/prepare/hardware/memory.bash -->
+<!-- ./lib/init/hardware/memory.bash -->
 
 The amount of memory available (parsed from the output of `dmidecode`, default: same as ram size)
 
 ### `BOOTSTRAP_MIRROR_COUNTRY`
 
-<!-- ./lib/prepare/chroot/mirrors.bash -->
+<!-- ./lib/init/chroot/mirrors.bash -->
 
 The country used for mirror selection (default: `US`)
 
@@ -547,13 +547,13 @@ See `reflector --list-countries` for possible values.
 
 ### `BOOTSTRAP_MIRROR_LATEST`
 
-<!-- ./lib/prepare/chroot/mirrors.bash -->
+<!-- ./lib/init/chroot/mirrors.bash -->
 
 The maximum number of the most recently synchronized mirrors (default: `5`)
 
 ### `BOOTSTRAP_MIRROR_SORT`
 
-<!-- ./lib/prepare/chroot/mirrors.bash -->
+<!-- ./lib/init/chroot/mirrors.bash -->
 
 The sort criteria used for mirror selection (default: `age`)
 
@@ -561,25 +561,25 @@ See `reflector --help` for possible values.
 
 ### `BOOTSTRAP_PACKAGE_REPO_DIR`
 
-<!-- ./lib/prepare/chroot/mirrors.bash -->
+<!-- ./lib/init/chroot/mirrors.bash -->
 
 Look for packages in this offline package repository directory (e.g. `/mnt/packages`)
 
 ### `BOOTSTRAP_PART_BOOT_NAME`
 
-<!-- ./lib/prepare/partition/boot.bash -->
+<!-- ./lib/init/partition/boot.bash -->
 
 The name of the boot partition (default: `boot`)
 
 ### `BOOTSTRAP_PART_BOOT_SIZE`
 
-<!-- ./lib/prepare/partition/boot.bash -->
+<!-- ./lib/init/partition/boot.bash -->
 
 The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
 
 ### `BOOTSTRAP_PART_BOOT_SIZE_BIOS`
 
-<!-- ./lib/prepare/partition/boot/bios.bash -->
+<!-- ./lib/init/partition/boot/bios.bash -->
 
 The size of BIOS boot partitions (default: `1M`)
 
@@ -587,7 +587,7 @@ The size of BIOS boot partitions (default: `1M`)
 
 ### `BOOTSTRAP_PART_BOOT_SIZE_UEFI`
 
-<!-- ./lib/prepare/partition/boot/uefi.bash -->
+<!-- ./lib/init/partition/boot/uefi.bash -->
 
 The size of UEFI boot partitions (default: `100M`)
 
@@ -595,31 +595,31 @@ The size of UEFI boot partitions (default: `100M`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE`
 
-<!-- ./lib/prepare/partition/boot.bash -->
+<!-- ./lib/init/partition/boot.bash -->
 
 The type of the boot partition (default: `$BOOTSTRAP_PART_BOOT_TYPE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE_BIOS`
 
-<!-- ./lib/prepare/partition/boot/bios.bash -->
+<!-- ./lib/init/partition/boot/bios.bash -->
 
 The type of BIOS boot partitions (default: `21686148-6449-6E6F-744E-656564454649`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE_UEFI`
 
-<!-- ./lib/prepare/partition/boot/uefi.bash -->
+<!-- ./lib/init/partition/boot/uefi.bash -->
 
 The type of UEFI boot partitions (default: `C12A7328-F81F-11D2-BA4B-00A0C93EC93B`)
 
 ### `BOOTSTRAP_PART_SWAP_NAME`
 
-<!-- ./lib/prepare/partition/swap.bash -->
+<!-- ./lib/init/partition/swap.bash -->
 
 The name of the swap partition (default: `swap`)
 
 ### `BOOTSTRAP_PART_SWAP_SIZE`
 
-<!-- ./lib/prepare/partition/swap.bash -->
+<!-- ./lib/init/partition/swap.bash -->
 
 The size of the swap partition (default: `$BOOTSTRAP_MEMORY_SIZE`)
 
@@ -627,19 +627,19 @@ The size of the swap partition (default: `$BOOTSTRAP_MEMORY_SIZE`)
 
 ### `BOOTSTRAP_PART_SWAP_TYPE`
 
-<!-- ./lib/prepare/partition/swap.bash -->
+<!-- ./lib/init/partition/swap.bash -->
 
 The type of the swap partition (default: `0657FD6D-A4AB-43C4-84E5-0933C84B4F4F`)
 
 ### `BOOTSTRAP_PART_SYS_NAME`
 
-<!-- ./lib/prepare/partition/sys.bash -->
+<!-- ./lib/init/partition/sys.bash -->
 
 The name of the system partition (default: `sys`)
 
 ### `BOOTSTRAP_PART_SYS_SIZE`
 
-<!-- ./lib/prepare/partition/sys.bash -->
+<!-- ./lib/init/partition/sys.bash -->
 
 The size of the system partition (default: `+`, i.e. use all remaining space)
 
@@ -647,31 +647,31 @@ The size of the system partition (default: `+`, i.e. use all remaining space)
 
 ### `BOOTSTRAP_PART_SYS_TYPE`
 
-<!-- ./lib/prepare/partition/sys.bash -->
+<!-- ./lib/init/partition/sys.bash -->
 
 The type of the system partition (default: `0FC63DAF-8483-4772-8E79-3D69D8477DE4`)
 
 ### `BOOTSTRAP_TARGET_DEVICE`
 
-<!-- ./lib/prepare/target.bash -->
+<!-- ./lib/init/target.bash -->
 
 The disk that will contain the new system (**WARNING**: all existing data will be destroyed without confirmation, e.g. `/path/to/device`)
 
 ### `BOOTSTRAP_TARGET_MOUNT_DIR`
 
-<!-- ./lib/prepare/target.bash -->
+<!-- ./lib/init/target.bash -->
 
 The path where the new system will be mounted during installation (default: `/mnt/target`)
 
 ### `BOOTSTRAP_TIMEZONE`
 
-<!-- ./lib/prepare/chroot/timezone.bash -->
+<!-- ./lib/init/chroot/timezone.bash -->
 
 The system time zone (default: the time zone in the live environment, if set)
 
 ### `BOOTSTRAP_UEFI_MOUNT_DIR`
 
-<!-- ./lib/prepare/hardware/boot_firmware.bash -->
+<!-- ./lib/init/hardware/boot_firmware.bash -->
 
 The path where the EFI partition will be mounted on the new system (if applicable, default: `/efi`)
 

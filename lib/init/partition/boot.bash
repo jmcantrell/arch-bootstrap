@@ -1,7 +1,7 @@
 # The name of the boot partition
 export BOOTSTRAP_PART_BOOT_NAME=${BOOTSTRAP_PART_BOOT_NAME:-boot}
 
-source "$BOOTSTRAP_LIB_DIR"/prepare/partition/boot/"$BOOTSTRAP_BOOT_FIRMWARE".bash
+source "$BOOTSTRAP_LIB_DIR"/init/partition/boot/"$BOOTSTRAP_BOOT_FIRMWARE".bash
 
 unset part_size_default part_type_default
 

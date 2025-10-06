@@ -19,7 +19,7 @@ pat_example='\be\.g\.\b'
 
 {
     printf "\n"
-    for file in ./lib/prepare/**/*.bash; do
+    for file in ./lib/init/**/*.bash; do
         while IFS= read -r line; do
             if [[ $line =~ $pat_variable ]] && ((${#description[@]} > 0)); then
                 comment=${BASH_REMATCH[1]}

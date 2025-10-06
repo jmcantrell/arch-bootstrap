@@ -2,7 +2,7 @@
 
 An opinionated Arch Linux installer.
 
-Aside from the opinions listed below, the target system should closely match the result of following the [official installation guide][install].
+The target system should closely match the result of following the [official installation guide][install].
 
 ## Opinions
 
@@ -28,11 +28,11 @@ Enabled systemd units:
 
 Additional configuration:
 
-- If [wireless networking is enabled](#bootstrap_enable_wireless), any [networks established][iwd-networks] in the live system will be persisted to the target system
-- If [trim is enabled](#bootstrap_enable_trim), discards will be configured in [LVM][lvm-thin] and [LUKS][luks-trim]
-- A [privileged user](#bootstrap_admin_group) will be created and the root account will be locked
-- Any SSH public keys authorized in the live system will be authorized for the privileged user
+- If [wireless networking is enabled](#bootstrap_enable_wireless), any [networks][iwd-networks] on the live system will be persisted.
+- If [trim is enabled](#bootstrap_enable_trim), discards will be configured in [LVM][lvm-thin] and [LUKS][luks-trim].
+- A [privileged user](#bootstrap_admin_group) will be created and the root account will be locked.
 - If using both LVM and LUKS, the [LVM on LUKS][lvm-on-luks] method will be used.
+- Any SSH public keys authorized on the live system will be persisted.
 
 See [configuration](#configuration) for complete details on customizing the installation.
 
@@ -135,10 +135,11 @@ The virtual machine will be booted with a cloud-init image generated using the [
 
 Additionally, it will do the following:
 
-- Mount the current directory on the host system at `/mnt/bootstrap` on the live system
-- Mount `/var/cache/bootstrap/repo` on the host system at `/mnt/packages` on the live system and [configure offline installation](#offline-installation)
-- Forward TCP port `60022` (or argument to option `-p`) on the host system to TCP port `22` on the virtual machine
-- Allow SSH connections over vsock at client id `42` (or argument to option `-c`)
+- Mount `$PWD` on the host system at `/mnt/bootstrap` on the live system
+- Mount `/var/cache/bootstrap/repo` on the host system at `/mnt/packages` on the live system 
+- Configure [offline installation](#offline-installation) for `/mnt/packages`
+- Forward TCP port `60022` on the host system to port `22` on the virtual machine
+- Allow SSH connections over vsock at client id `42`
 
 To create a virtual machine with the default settings (only the installation disk set):
 
@@ -149,7 +150,7 @@ To create a virtual machine with the default settings (only the installation dis
 To add certain settings, export them before running the script:
 
 ```sh
-export BOOTSTRAP_HOSTNAME=box
+export BOOTSTRAP_HOSTNAME=vm
 export BOOTSTRAP_TIMEZONE=America/Chicago
 export BOOTSTRAP_ADMIN_LOGIN=frank
 
@@ -172,7 +173,7 @@ It will do the following on the live system:
 - Enable Multicast DNS so the live system can be reached by host name
 - Fetch an archive of this repository into `/tmp/bootstrap` (if the script is not run locally)
 
-If you already have access to the repository in the live system, just run the script to authorize the keys and enable mDNS:
+If you already have access to the repository in the live system, run the script normally to authorize the keys and enable mDNS:
 
 ```sh
 ./scripts/inject
@@ -210,7 +211,6 @@ To test the default settings (only the installation disk set):
 To test out certain settings, export them before running the script:
 
 ```sh
-export BOOTSTRAP_HOSTNAME=box
 export BOOTSTRAP_TIMEZONE=America/Chicago
 export BOOTSTRAP_ADMIN_LOGIN=frank
 

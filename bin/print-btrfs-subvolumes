@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-printf "@ /\n" # the root subvolume
-sed 's/^/@/' "$BOOTSTRAP_CONFIG_DIR"/file_system/btrfs/subvolumes

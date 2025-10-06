@@ -13,7 +13,7 @@ source "$BOOTSTRAP_LIB_DIR"/init/offline.bash
 source "$BOOTSTRAP_LIB_DIR"/init/swap.bash
 source "$BOOTSTRAP_LIB_DIR"/init/hardware.bash
 source "$BOOTSTRAP_LIB_DIR"/init/partitions.bash
-source "$BOOTSTRAP_LIB_DIR"/init/file_system.bash
+source "$BOOTSTRAP_LIB_DIR"/init/file_systems.bash
 source "$BOOTSTRAP_LIB_DIR"/init/chroot.bash
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then

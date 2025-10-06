@@ -14,7 +14,7 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
     export BOOTSTRAP_UEFI_MOUNT_DIR=${BOOTSTRAP_UEFI_MOUNT_DIR:-/efi}
 fi
 
-package_file=$BOOTSTRAP_CONFIG_DIR/packages/boot/$BOOTSTRAP_BOOT_FIRMWARE
+package_file=$BOOTSTRAP_CONFIG_DIR/packages/boot_firmwares/$BOOTSTRAP_BOOT_FIRMWARE
 
 if [[ ! -f $package_file ]]; then
     printf "%s: invalid boot firmware: %s\n" "$0" "$BOOTSTRAP_BOOT_FIRMWARE" >&2

@@ -313,39 +313,39 @@ The default console unicode font map
 
 ### `BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES`
 
-<!-- ./lib/init/file_system/root.bash -->
+<!-- ./lib/init/file_systems/root.bash -->
 
 Flag indicating that subvolumes should be used for the root file system (e.g. `true`).
 
-The default values are taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes`.
+The default values are taken from the file `./config/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes`.
 Each line must be of the form `NAME MOUNT` where `NAME` is the name of the
 subvolume and `MOUNT` is the path where the subvolume should be mounted in
 the new system.
 
 ### `BOOTSTRAP_FS_ROOT_KIND`
 
-<!-- ./lib/init/file_system/root.bash -->
+<!-- ./lib/init/file_systems/root.bash -->
 
 The kind of file system to use for the root partition/volume (choices: `ext4`, `btrfs`, or `xfs`, default: `ext4`)
 
 ### `BOOTSTRAP_FS_ROOT_LABEL`
 
-<!-- ./lib/init/file_system/root.bash -->
+<!-- ./lib/init/file_systems/root.bash -->
 
 The label for the root file system (default: `root`)
 
 ### `BOOTSTRAP_FS_ROOT_OPTIONS`
 
-<!-- ./lib/init/file_system/root.bash -->
+<!-- ./lib/init/file_systems/root.bash -->
 
 Mount options for the root file system
 
-The default value is taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/root/options`.
+The default value is taken from the file `./config/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/options`.
 Multiple lines are joined together with commas.
 
 ### `BOOTSTRAP_FS_SWAP_LABEL`
 
-<!-- ./lib/init/file_system/swap.bash -->
+<!-- ./lib/init/file_systems/swap.bash -->
 
 The label for the swap file system (default: `swap`)
 
@@ -567,13 +567,13 @@ Look for packages *only* in this package repository on the live system (e.g. `/m
 
 ### `BOOTSTRAP_PART_BOOT_NAME`
 
-<!-- ./lib/init/partition/boot.bash -->
+<!-- ./lib/init/partitions/boot.bash -->
 
 The name of the boot partition (default: `boot`)
 
 ### `BOOTSTRAP_PART_BOOT_SIZE`
 
-<!-- ./lib/init/partition/boot.bash -->
+<!-- ./lib/init/partitions/boot.bash -->
 
 The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
 
@@ -581,7 +581,7 @@ The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` wher
 
 ### `BOOTSTRAP_PART_BOOT_SIZE_BIOS`
 
-<!-- ./lib/init/partition/boot/bios.bash -->
+<!-- ./lib/init/partitions/boot_firmwares/bios.bash -->
 
 The size of BIOS boot partitions (default: `1M`)
 
@@ -589,7 +589,7 @@ The size of BIOS boot partitions (default: `1M`)
 
 ### `BOOTSTRAP_PART_BOOT_SIZE_UEFI`
 
-<!-- ./lib/init/partition/boot/uefi.bash -->
+<!-- ./lib/init/partitions/boot_firmwares/uefi.bash -->
 
 The size of UEFI boot partitions (default: `100M`)
 
@@ -597,31 +597,31 @@ The size of UEFI boot partitions (default: `100M`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE`
 
-<!-- ./lib/init/partition/boot.bash -->
+<!-- ./lib/init/partitions/boot.bash -->
 
 The type of the boot partition (default: `$BOOTSTRAP_PART_BOOT_TYPE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE_BIOS`
 
-<!-- ./lib/init/partition/boot/bios.bash -->
+<!-- ./lib/init/partitions/boot_firmwares/bios.bash -->
 
 The type of BIOS boot partitions (default: `21686148-6449-6E6F-744E-656564454649`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE_UEFI`
 
-<!-- ./lib/init/partition/boot/uefi.bash -->
+<!-- ./lib/init/partitions/boot_firmwares/uefi.bash -->
 
 The type of UEFI boot partitions (default: `C12A7328-F81F-11D2-BA4B-00A0C93EC93B`)
 
 ### `BOOTSTRAP_PART_SWAP_NAME`
 
-<!-- ./lib/init/partition/swap.bash -->
+<!-- ./lib/init/partitions/swap.bash -->
 
 The name of the swap partition (default: `swap`)
 
 ### `BOOTSTRAP_PART_SWAP_SIZE`
 
-<!-- ./lib/init/partition/swap.bash -->
+<!-- ./lib/init/partitions/swap.bash -->
 
 The size of the swap partition (default: `$BOOTSTRAP_MEMORY_SIZE`)
 
@@ -629,19 +629,19 @@ The size of the swap partition (default: `$BOOTSTRAP_MEMORY_SIZE`)
 
 ### `BOOTSTRAP_PART_SWAP_TYPE`
 
-<!-- ./lib/init/partition/swap.bash -->
+<!-- ./lib/init/partitions/swap.bash -->
 
 The type of the swap partition (default: `0657FD6D-A4AB-43C4-84E5-0933C84B4F4F`)
 
 ### `BOOTSTRAP_PART_SYS_NAME`
 
-<!-- ./lib/init/partition/sys.bash -->
+<!-- ./lib/init/partitions/sys.bash -->
 
 The name of the system partition (default: `sys`)
 
 ### `BOOTSTRAP_PART_SYS_SIZE`
 
-<!-- ./lib/init/partition/sys.bash -->
+<!-- ./lib/init/partitions/sys.bash -->
 
 The size of the system partition (default: `+`, i.e. use all remaining space)
 
@@ -649,7 +649,7 @@ The size of the system partition (default: `+`, i.e. use all remaining space)
 
 ### `BOOTSTRAP_PART_SYS_TYPE`
 
-<!-- ./lib/init/partition/sys.bash -->
+<!-- ./lib/init/partitions/sys.bash -->
 
 The type of the system partition (default: `0FC63DAF-8483-4772-8E79-3D69D8477DE4`)
 

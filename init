@@ -23,18 +23,6 @@ if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
     source "$BOOTSTRAP_LIB_DIR"/prepare/lvm.bash
 fi
 
-if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
-    export BOOTSTRAP_LUKS_DEVICE=$BOOTSTRAP_PART_SYS_DEVICE
-fi
-
-if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
-    if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
-        export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_LUKS_MAPPER_DEVICE
-    else
-        export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_PART_SYS_DEVICE
-    fi
-fi
-
 export BOOTSTRAP_BOOT_DEVICE=$BOOTSTRAP_PART_BOOT_DEVICE
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then

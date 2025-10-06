@@ -9,3 +9,9 @@ source "$BOOTSTRAP_LIB_DIR"/prepare/lvm/root.bash
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     source "$BOOTSTRAP_LIB_DIR"/prepare/lvm/swap.bash
 fi
+
+if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
+    export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_LUKS_MAPPER_DEVICE
+else
+    export BOOTSTRAP_LVM_DEVICE=$BOOTSTRAP_PART_SYS_DEVICE
+fi

@@ -14,7 +14,7 @@ if [[ ! -v BOOTSTRAP_FS_ROOT_OPTIONS ]]; then
     if [[ -f $options_file ]]; then
         BOOTSTRAP_FS_ROOT_OPTIONS=$(paste -sd, "$options_file")
         # Mount options for the root file system
-        # The default value is taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/options`.
+        # The default value is taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/root/options`.
         # Multiple lines are joined together with commas.
         export BOOTSTRAP_FS_ROOT_OPTIONS
     fi
@@ -31,7 +31,7 @@ unset package_file
 export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
 
 # Flag indicating that subvolumes should be used for the root file system.
-# The default values are taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/subvolumes`.
+# The default values are taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes`.
 # Each line must be of the form `NAME MOUNT` where `NAME` is the name of the
 # subvolume and `MOUNT` is the path where the subvolume should be mounted in
 # the new system.

@@ -317,7 +317,7 @@ The default console unicode font map
 
 Flag indicating that subvolumes should be used for the root file system (e.g. `true`).
 
-The default values are taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/subvolumes`.
+The default values are taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes`.
 Each line must be of the form `NAME MOUNT` where `NAME` is the name of the
 subvolume and `MOUNT` is the path where the subvolume should be mounted in
 the new system.
@@ -340,7 +340,7 @@ The label for the root file system (default: `root`)
 
 Mount options for the root file system
 
-The default value is taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/options`.
+The default value is taken from the file `./config/file_system/$BOOTSTRAP_FS_ROOT_KIND/root/options`.
 Multiple lines are joined together with commas.
 
 ### `BOOTSTRAP_FS_SWAP_LABEL`

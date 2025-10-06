@@ -136,7 +136,7 @@ The virtual machine will be booted with a cloud-init image generated using the [
 Additionally, it will do the following:
 
 - Mount `$PWD` on the host system at `/mnt/bootstrap` on the live system
-- Mount `/var/cache/bootstrap/repo` on the host system at `/mnt/packages` on the live system 
+- Mount `/var/cache/bootstrap/repo` on the host system at `/mnt/packages` on the live system
 - Configure [offline installation](#offline-installation) for `/mnt/packages`
 - Forward TCP port `60022` on the host system to port `22` on the virtual machine
 - Allow SSH connections over vsock at client id `42`

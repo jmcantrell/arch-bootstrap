@@ -561,9 +561,9 @@ See `reflector --help` for possible values.
 
 ### `BOOTSTRAP_PACKAGE_REPO_DIR`
 
-<!-- ./lib/init/chroot/mirrors.bash -->
+<!-- ./lib/init/offline.bash -->
 
-Look for packages in this offline package repository directory (e.g. `/mnt/packages`)
+Look for packages *only* in this package repository on the live system (e.g. `/mnt/packages`)
 
 ### `BOOTSTRAP_PART_BOOT_NAME`
 
@@ -576,6 +576,8 @@ The name of the boot partition (default: `boot`)
 <!-- ./lib/init/partition/boot.bash -->
 
 The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
+
+**NOTE**: The value needs to be recognizable by [`sfdisk(8)`](https://man.archlinux.org/man/sfdisk.8).
 
 ### `BOOTSTRAP_PART_BOOT_SIZE_BIOS`
 
@@ -661,7 +663,7 @@ The disk that will contain the new system (**WARNING**: all existing data will b
 
 <!-- ./lib/init/target.bash -->
 
-The path where the new system will be mounted during installation (default: `/mnt/target`)
+The path where the new system will be mounted on the live system (default: `/mnt/target`)
 
 ### `BOOTSTRAP_TIMEZONE`
 

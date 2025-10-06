@@ -8,6 +8,3 @@ export BOOTSTRAP_MIRROR_LATEST=${BOOTSTRAP_MIRROR_LATEST:-5}
 # The country used for mirror selection
 # See `reflector --list-countries` for possible values.
 export BOOTSTRAP_MIRROR_COUNTRY=${BOOTSTRAP_MIRROR_COUNTRY:-US}
-
-# Look for packages in this offline package repository directory
-# export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages

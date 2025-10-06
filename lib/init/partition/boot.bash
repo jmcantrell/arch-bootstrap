@@ -17,6 +17,7 @@ bios)
 esac
 
 # The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
+# **NOTE**: The value needs to be recognizable by `sfdisk(8)`.
 export BOOTSTRAP_PART_BOOT_SIZE=${BOOTSTRAP_PART_BOOT_SIZE:-$part_size_default}
 
 # The type of the boot partition (default: `$BOOTSTRAP_PART_BOOT_TYPE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)

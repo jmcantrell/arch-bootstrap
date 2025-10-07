@@ -2,5 +2,6 @@
 
 set -euo pipefail
 
-mount -vm ${BOOTSTRAP_FS_ROOT_OPTIONS:+--options "$BOOTSTRAP_FS_ROOT_OPTIONS"} \
+mount --verbose --mkdir \
+    ${BOOTSTRAP_FS_ROOT_OPTIONS:+--options "$BOOTSTRAP_FS_ROOT_OPTIONS"} \
     "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR"

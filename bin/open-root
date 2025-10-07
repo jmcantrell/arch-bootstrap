@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-mkdir -p "$BOOTSTRAP_TARGET_MOUNT_DIR"
-
 open_cmd=open-root-$BOOTSTRAP_FS_ROOT_KIND
 
 if command -v "$open_cmd" &>/dev/null; then

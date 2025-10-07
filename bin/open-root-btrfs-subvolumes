@@ -3,6 +3,7 @@
 set -euo pipefail
 
 while read -r name path; do
-    mount -vm -o "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
+    mount --verbose --mkdir \
+        -o "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
         "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR/${path#/}"
 done < <(print-root-subvolumes)

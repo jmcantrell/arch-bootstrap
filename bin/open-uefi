@@ -2,5 +2,5 @@
 
 set -euo pipefail
 
-mount -vm "$BOOTSTRAP_BOOT_DEVICE" \
+mount --verbose --mkdir "$BOOTSTRAP_BOOT_DEVICE" \
     "$BOOTSTRAP_TARGET_MOUNT_DIR/${BOOTSTRAP_UEFI_MOUNT_DIR#/}"

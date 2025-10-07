@@ -19,8 +19,5 @@ uefi)
     ;;
 esac
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    grub-install --recheck "${opts[@]}" "$BOOTSTRAP_TARGET_DEVICE"
-
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    grub-mkconfig --output=/boot/grub/grub.cfg
+chroot-target grub-install --recheck "${opts[@]}" "$BOOTSTRAP_TARGET_DEVICE"
+chroot-target grub-mkconfig --output=/boot/grub/grub.cfg

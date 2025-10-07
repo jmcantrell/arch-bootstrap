@@ -11,7 +11,7 @@ if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then
     binaries+=(/usr/bin/btrfs)
 fi
 
-if [[ -v BOOTSTRAP_GPU_MODULES && -n $BOOTSTRAP_GPU_MODULES ]]; then
+if [[ -n ${BOOTSTRAP_GPU_MODULES:-} ]]; then
     readarray -t modules <<<"$BOOTSTRAP_GPU_MODULES"
 fi
 

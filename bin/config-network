@@ -11,5 +11,4 @@ rsync -va /etc/systemd/network/20-*.network \
 ln -vsfn /run/systemd/resolve/stub-resolv.conf \
     "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/resolv.conf
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    systemctl -v enable systemd-{networkd,resolved}.service
+chroot-target systemctl -v enable systemd-{networkd,resolved}.service

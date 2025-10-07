@@ -379,7 +379,7 @@ Kernel log level (e.g. `4`)
 
 <!-- ./lib/init/chroot/kernel.bash -->
 
-If set to a non-empty value, include `quiet` in the kernel parameters (e.g. `true`)
+Flag indicating that `quiet` should be included in the kernel parameters (e.g. `true`)
 
 ### `BOOTSTRAP_KERNEL_USE_LTS`
 

@@ -10,5 +10,4 @@ while IFS= read -r lang; do
     sed -i "/^#$lang/s/#//" "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/locale.gen
 done <"$config_file"
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    locale-gen
+chroot-target locale-gen

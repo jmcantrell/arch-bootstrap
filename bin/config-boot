@@ -14,10 +14,6 @@ if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
     preload_modules+=(lvm)
 fi
 
-if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-    cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
-fi
-
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     preload_modules+=(cryptodisk luks)
     cmdline_linux+=(
@@ -27,6 +23,10 @@ if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=y
 else
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=n
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
+    cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
 fi
 
 export BOOTSTRAP_GRUB_CMDLINE_LINUX=${cmdline_linux[*]}

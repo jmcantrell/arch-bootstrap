@@ -4,5 +4,4 @@ set -euo pipefail
 
 install-template /etc/xdg/reflector/reflector.conf
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    systemctl -v enable reflector.{service,timer}
+chroot-target systemctl -v enable reflector.{service,timer}

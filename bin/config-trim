@@ -2,5 +2,4 @@
 
 set -euo pipefail
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    systemctl -v enable fstrim.timer
+chroot-target systemctl -v enable fstrim.timer

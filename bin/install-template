@@ -13,7 +13,7 @@ variables=
 while IFS= read -r line; do
     while IFS= read -r name; do
         [[ $name == BOOTSTRAP_* ]] && variables+=\$$name
-    done < <(envsubst -v "${line//-/ }") # envsubst does not recognize -- 86 dashes
+    done < <(envsubst -v "${line//-/ }") # envsubst does not recognize -- so 86 dashes
 done <"$template_file"
 
 mkdir -p "$(dirname "$rendered_file")"

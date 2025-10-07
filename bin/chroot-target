@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" "$@"

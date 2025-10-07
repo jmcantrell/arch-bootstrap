@@ -5,5 +5,4 @@ set -euo pipefail
 rsync -va /var/lib/iwd/ \
     "$BOOTSTRAP_TARGET_MOUNT_DIR"/var/lib/iwd/
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    systemctl -v enable iwd.service
+chroot-target systemctl -v enable iwd.service

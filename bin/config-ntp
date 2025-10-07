@@ -2,8 +2,5 @@
 
 set -euo pipefail
 
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    hwclock --systohc
-
-arch-chroot "$BOOTSTRAP_TARGET_MOUNT_DIR" \
-    systemctl -v enable systemd-timesyncd.service
+chroot-target hwclock --systohc
+chroot-target systemctl -v enable systemd-timesyncd.service

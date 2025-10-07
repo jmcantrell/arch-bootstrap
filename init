@@ -4,17 +4,7 @@ export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
 
 export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
 
-source "$BOOTSTRAP_LIB_DIR"/init/target.bash
-
-: "${BOOTSTRAP_TARGET_DEVICE:?}"
-
-source "$BOOTSTRAP_LIB_DIR"/init/secure.bash
-source "$BOOTSTRAP_LIB_DIR"/init/offline.bash
-source "$BOOTSTRAP_LIB_DIR"/init/swap.bash
-source "$BOOTSTRAP_LIB_DIR"/init/hardware.bash
-source "$BOOTSTRAP_LIB_DIR"/init/partitions.bash
-source "$BOOTSTRAP_LIB_DIR"/init/file_systems.bash
-source "$BOOTSTRAP_LIB_DIR"/init/chroot.bash
+source "$BOOTSTRAP_LIB_DIR"/init/base.bash
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     source "$BOOTSTRAP_LIB_DIR"/init/luks.bash

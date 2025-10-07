@@ -38,6 +38,8 @@ See [configuration](#configuration) for complete details on customizing the inst
 
 ## Usage
 
+### Basic Installation
+
 Boot into the [live environment][iso] and change the directory to this repository.
 
 Set [environment variables](#configuration) to configure installation:

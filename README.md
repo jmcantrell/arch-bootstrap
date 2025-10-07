@@ -373,7 +373,7 @@ The number of seconds of inactivity to wait before putting the display to sleep 
 
 <!-- ./lib/init/chroot/kernel.bash -->
 
-Kernel log level (e.g. `4`)
+The kernel log level (e.g. `4`)
 
 ### `BOOTSTRAP_KERNEL_QUIET`
 

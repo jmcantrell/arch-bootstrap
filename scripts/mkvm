@@ -61,7 +61,7 @@ disk_file=${2:?missing disk file}
 
 export BOOTSTRAP_TARGET_DEVICE=/dev/sda
 export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
-export BOOTSTRAP_ENABLE_TRIM=1
+export BOOTSTRAP_ENABLE_TRIM=true
 
 ./scripts/mkci "${ci_opts[@]}" \
     -m "bootstrap /mnt/bootstrap 9p trans=virtio,version=9p2000.L 0 0" \

@@ -49,7 +49,7 @@ export BOOTSTRAP_TARGET_DEVICE=/dev/sda
 export BOOTSTRAP_ADMIN_LOGIN=bob
 export BOOTSTRAP_MIRROR_SORT=rate
 export BOOTSTRAP_TIMEZONE=America/Chicago
-export BOOTSTRAP_ENABLE_LUKS=1
+export BOOTSTRAP_ENABLE_LUKS=true
 ```
 
 Initialize the environment on the live system:

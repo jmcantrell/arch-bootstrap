@@ -2,13 +2,13 @@
 
 set -euo pipefail
 
-preload_modules=(part_{gpt,msdos})
-
+cmdline_linux=()
 cmdline_linux_default=(
     ${BOOTSTRAP_KERNEL_QUIET:+quiet}
     ${BOOTSTRAP_KERNEL_LOGLEVEL:+loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"}
     ${BOOTSTRAP_KERNEL_CONSOLEBLANK:+consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"}
 )
+preload_modules=(part_{gpt,msdos})
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
     preload_modules+=(lvm)
@@ -26,7 +26,7 @@ else
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-    cmdline_linux=(resume="$BOOTSTRAP_SWAP_DEVICE")
+    cmdline_linux+=(resume="$BOOTSTRAP_SWAP_DEVICE")
 fi
 
 export BOOTSTRAP_GRUB_CMDLINE_LINUX=${cmdline_linux[*]}

@@ -10,7 +10,7 @@ ext4 | btrfs | xfs) ;;
 esac
 
 if [[ ! -v BOOTSTRAP_FS_ROOT_OPTIONS ]]; then
-    options_file="$BOOTSTRAP_CONFIG_DIR"/file_systems/$BOOTSTRAP_FS_ROOT_KIND/options
+    options_file="$BOOTSTRAP_CONFIG_DIR"/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/options
     if [[ -f $options_file ]]; then
         BOOTSTRAP_FS_ROOT_OPTIONS=$(paste -sd, "$options_file")
         # Mount options for the root file system

@@ -13,7 +13,7 @@ Usage:
     $self_name [PACKAGE...]
 
 Arguments:
-    PACKAGE    also install PACKAGE (can be used multiple times)
+    PACKAGE    also install PACKAGE
 
 The package repository will be located at:
     $repo_dir
@@ -35,7 +35,7 @@ trap 'rm -rf "$temp_dir"' EXIT
 
 readarray -t package_names < <(find ./config/packages -type f -exec cat {} +)
 
-pacman -Syu --downloadonly --needed --noconfirm --cachedir "$repo_dir" --dbpath "$temp_dir" "${package_names[@]}" "$@"
+pacman -Syuw --needed --noconfirm --cachedir "$repo_dir" --dbpath "$temp_dir" "${package_names[@]}" "$@"
 paccache --verbose --cachedir "$repo_dir" --remove --keep 1
 
 readarray -t package_files < <(find "$repo_dir" -type f -name "*.pkg.*" \! -name "*.sig")

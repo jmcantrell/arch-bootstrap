@@ -12,6 +12,7 @@ Usage:
 
 Options:
     -d FILE    store disk image in FILE (default: ephemeral)
+    -i FILE    store cloud-init ISO in FILE (default: ephemeral)
 
     -p PORT    forward host PORT to port 22 on the guest
                (tcp only, default: same as ./scripts/vm)
@@ -36,10 +37,11 @@ unset disk_file
 vm_opts=()
 mkvm_opts=()
 
-while getopts "d:p:c:e" opt; do
+while getopts "d:i:p:c:e" opt; do
     case $opt in
     d) disk_file=$OPTARG ;;
     p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
+    i) mkvm_opts+=(-"$opt" "$OPTARG") ;;
     e) mkvm_opts+=(-"$opt") ;;
     *) exit 2 ;;
     esac

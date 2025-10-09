@@ -2,12 +2,10 @@
 
 set -euo pipefail
 
-touch ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
-curl -sSL https://meta.sr.ht/~jmcantrell.keys >>~/.ssh/authorized_keys
+curl -fsSL https://meta.sr.ht/~jmcantrell.keys |
+    install -D -m600 /dev/stdin ~/.ssh/authorized_keys
 
-# Allow this host to be contacted at archiso.local (or whatever hostname is set).
-sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network
+sed -i '/^\[Network\]$/a MulticastDNS=yes' /etc/systemd/network/*.network
 networkctl reload
 
 # It's assumed that if this script is named (i.e. it's not being piped), it
@@ -15,6 +13,6 @@ networkctl reload
 # Otherwise, download an archive of the repository somewhere.
 if [[ ${0##*/} != inject ]]; then
     mkdir -p /tmp/bootstrap
-    curl -sSL https://git.sr.ht/~jmcantrell/arch-bootstrap/archive/main.tar.gz |
+    curl -fsSL https://git.sr.ht/~jmcantrell/arch-bootstrap/archive/main.tar.gz |
         tar -xzf - -C /tmp/bootstrap --strip-components=1
 fi

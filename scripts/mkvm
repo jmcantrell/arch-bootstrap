@@ -13,9 +13,11 @@ Usage:
     $self_name [OPTIONS] ISO_FILE DISK_FILE
 
 Options:
+    -i FILE    store cloud-init ISO in FILE (default: ephemeral)
+
     -m SIZE    specify memory size (default: same as ./scripts/vm)
 
-    -p PORT    forward host PORT to port 22 on the guest
+    -p PORT    forward host PORT to guest port 22
                (tcp only, default: same as ./scripts/vm)
 
     -c ID    set guest vsock client ID
@@ -43,8 +45,9 @@ vm_opts=()
 disk_file=$temp_dir/disk.cow
 cidata_file=$temp_dir/cidata.iso
 
-while getopts "m:d:p:c:e" opt; do
+while getopts "i:m:p:c:e" opt; do
     case $opt in
+    i) cidata_file=$OPTARG ;;
     m) vm_opts+=(-"$opt") ;;
     p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
     e) ci_opts+=(-"$opt") ;;

@@ -20,7 +20,7 @@ Options:
     -i FILE         add iso FILE as a cdrom
     -s NAME=PATH    add PATH as NAME 9p share
 
-    -p PORT    forward host PORT to port 22 on the guest
+    -p PORT    forward host PORT to guest port 22
                (tcp only, default: $host_port)
 
     -c ID    set guest vsock client ID
@@ -43,7 +43,7 @@ cdrom_id_next=0
 cdrom_device_fmt="scsi-cd,bus=scsi0.0,drive=cdrom%d"
 cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
 
-while getopts "m:d:i:s:p:" opt; do
+while getopts "m:i:s:p:c:" opt; do
     case $opt in
     m) mem_size=$OPTARG ;;
     i)
@@ -56,6 +56,7 @@ while getopts "m:d:i:s:p:" opt; do
         ;;
     s) opts+=(-virtfs "local,path=${OPTARG#*=},mount_tag=${OPTARG%%=*},security_model=passthrough") ;;
     p) host_port=$OPTARG ;;
+    c) vsock_id=$OPTARG ;;
     *) exit 2 ;;
     esac
 done

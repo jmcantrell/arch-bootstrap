@@ -28,11 +28,12 @@ Enabled systemd units:
 
 Additional configuration:
 
+- If using both LVM and LUKS, the [LVM on LUKS][lvm-on-luks] method will be used.
 - If [wireless networking is enabled](#bootstrap_enable_wireless), any [networks][iwd-networks] on the live system will be persisted.
 - If [trim is enabled](#bootstrap_enable_trim), discards will be configured in [LVM][lvm-thin] and [LUKS][luks-trim].
-- A [privileged user](#bootstrap_admin_group) will be created and the root account will be locked.
-- If using both LVM and LUKS, the [LVM on LUKS][lvm-on-luks] method will be used.
+- A [privileged user](#bootstrap_admin_group) will be created.
 - Any SSH public keys authorized on the live system will be persisted.
+- The root account will be locked and denied access over SSH.
 
 See [configuration](#configuration) for complete details on customizing the installation.
 

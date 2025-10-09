@@ -2,4 +2,6 @@
 
 set -euo pipefail
 
+install-template /etc/ssh/sshd_config.d/20-deny_root.conf
+
 chroot-target systemctl -v enable sshd.service

@@ -2,7 +2,7 @@
 
 An opinionated Arch Linux installer.
 
-The target system should closely match the result of following the [official installation guide][install].
+The target system will closely match the result of following the [official installation guide][install].
 
 ## Opinions
 

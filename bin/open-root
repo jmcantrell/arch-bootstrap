@@ -2,10 +2,7 @@
 
 set -euo pipefail
 
-open_cmd=open-root-$BOOTSTRAP_FS_ROOT_KIND
-
-if command -v "$open_cmd" &>/dev/null; then
-    "$open_cmd"
-else
-    open-root-default
-fi
+case $BOOTSTRAP_FS_ROOT_KIND in
+btrfs) open-root-btrfs ;;
+*) open-root-default ;;
+esac

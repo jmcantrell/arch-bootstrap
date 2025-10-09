@@ -2,12 +2,7 @@
 
 set -euo pipefail
 
-mkdir -p "$BOOTSTRAP_TARGET_MOUNT_DIR"
-
-create_cmd=create-root-$BOOTSTRAP_FS_ROOT_KIND
-
-if command -v "$create_cmd" &>/dev/null; then
-    "$create_cmd"
-else
-    create-root-default
-fi
+case $BOOTSTRAP_FS_ROOT_KIND in
+btrfs) create-root-btrfs ;;
+*) create-root-default ;;
+esac

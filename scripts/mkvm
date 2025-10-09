@@ -6,8 +6,6 @@ self_name=${0##*/}
 
 repo_dir=/var/cache/bootstrap/repo
 
-disk_size=20G
-
 usage="Create a virtual machine.
 
 Usage:
@@ -16,7 +14,6 @@ Usage:
 
 Options:
     -m SIZE    specify memory size (default: same as ./scripts/vm)
-    -d SIZE    specify disk size (default: $disk_size)
 
     -p PORT    forward host PORT to port 22 on the guest
                (tcp only, default: same as ./scripts/vm)
@@ -51,7 +48,6 @@ while getopts "m:d:p:c:e" opt; do
     m) vm_opts+=(-"$opt") ;;
     p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
     e) ci_opts+=(-"$opt") ;;
-    d) disk_size=$OPTARG ;;
     *) exit 2 ;;
     esac
 done
@@ -59,13 +55,6 @@ shift $((OPTIND - 1))
 
 media_file=${1:?missing media file}
 disk_file=${2:?missing disk file}
-
-if [[ -f $disk_file ]]; then
-    printf "%s: disk file already exists: %q\n" "$0" "$disk_file" >&2
-    exit 2
-fi
-
-qemu-img create -f qcow2 "$disk_file" -o nocow=on "$disk_size"
 
 export BOOTSTRAP_TARGET_DEVICE=/dev/sda
 export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages

@@ -83,7 +83,7 @@ They can also be helpful in other contexts, e.g., troubleshooting the target sys
 
 An [offline package repository][offline-install] can be used to minimize bandwidth usage or if the network is not available.
 
-Transfer the repository to the live system and assign it to [`BOOTSTRAP_PACKAGE_REPO_DIR`](#bootstrap_package_repo_dir).
+Transfer the package repository to the live system and assign the directory to [`BOOTSTRAP_PACKAGE_REPO_DIR`](#bootstrap_package_repo_dir).
 During installation, packages will be pulled **only** from this repository.
 
 To create a package repository at `/var/cache/bootstrap/repo` based on packages defined in `./config/packages/**`:
@@ -137,10 +137,10 @@ The virtual machine will be booted with a cloud-init image generated using the [
 
 Additionally, it will do the following:
 
-- Mount `$PWD` on the host system at `/mnt/bootstrap` on the live system
-- Mount `/var/cache/bootstrap/repo` on the host system at `/mnt/packages` on the live system
+- Mount `$PWD` on the host at `/mnt/bootstrap` on the guest
+- Mount `/var/cache/bootstrap/repo` on the host at `/mnt/packages` on the guest
 - Configure [offline installation](#offline-installation) for `/mnt/packages`
-- Forward TCP port `60022` on the host system to port `22` on the virtual machine
+- Forward TCP port `60022` on the host to port `22` on the guest
 - Allow SSH connections over vsock at client id `42`
 
 To create a virtual machine with the default settings (only the installation disk set):
@@ -156,7 +156,7 @@ export BOOTSTRAP_HOSTNAME=vm
 export BOOTSTRAP_TIMEZONE=America/Chicago
 export BOOTSTRAP_ADMIN_LOGIN=frank
 
-./scripts/test /path/to/archlinux.iso /path/to/disk.cow
+./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
 ```
 
 To see complete usage details:

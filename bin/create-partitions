@@ -2,26 +2,23 @@
 
 set -euo pipefail
 
-parts=(
-    "$BOOTSTRAP_PART_BOOT_SIZE"
-    "$BOOTSTRAP_PART_BOOT_TYPE"
-    "$BOOTSTRAP_PART_BOOT_NAME"
-)
+fields=(size type name)
+parts=(boot ${BOOTSTRAP_PART_SWAP_SIZE:+swap} sys)
 
-if [[ -v BOOTSTRAP_PART_SWAP_SIZE ]]; then
-    parts+=(
-        "$BOOTSTRAP_PART_SWAP_SIZE"
-        "$BOOTSTRAP_PART_SWAP_TYPE"
-        "$BOOTSTRAP_PART_SWAP_NAME"
-    )
-fi
+format=
+for field in "${fields[@]}"; do
+    format+="$field=%s, "
+done
+format=${format%, }
 
-parts+=(
-    "$BOOTSTRAP_PART_SYS_SIZE"
-    "$BOOTSTRAP_PART_SYS_TYPE"
-    "$BOOTSTRAP_PART_SYS_NAME"
-)
+values=()
+for part in "${parts[@]}"; do
+    for field in "${fields[@]}"; do
+        var=BOOTSTRAP_PART_${part@U}_${field@U}
+        values+=("${!var}")
+    done
+done
 
-printf -v lines "size=%s, type=%s, name=%s\n" "${parts[@]}"
+printf -v lines "$format\n" "${values[@]}"
 
 printf "label: gpt\n%s\n" "$lines" | sfdisk "$BOOTSTRAP_TARGET_DEVICE"

@@ -20,16 +20,16 @@ if [[ -v BOOTSTRAP_FS_ROOT_PACKAGE_FILE ]]; then
     files+=("$BOOTSTRAP_FS_ROOT_PACKAGE_FILE")
 fi
 
+if [[ -v BOOTSTRAP_ENABLE_WIRELESS ]]; then
+    files+=(hardware/wireless)
+fi
+
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     files+=(luks)
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
     files+=(lvm)
-fi
-
-if [[ -v BOOTSTRAP_ENABLE_WIRELESS ]]; then
-    files+=(wireless)
 fi
 
 if [[ -f extra ]]; then

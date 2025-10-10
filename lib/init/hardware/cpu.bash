@@ -8,7 +8,7 @@ if [[ ! -v BOOTSTRAP_CPU_VENDOR ]]; then
     unset reply
 fi
 
-package_file=$BOOTSTRAP_CONFIG_DIR/packages/cpu_vendors/$BOOTSTRAP_CPU_VENDOR
+package_file=$BOOTSTRAP_CONFIG_DIR/packages/hardware/cpu_vendors/$BOOTSTRAP_CPU_VENDOR
 
 if [[ ! -f $package_file ]]; then
     printf "%s: invalid cpu vendor: %s\n" "$0" "$BOOTSTRAP_CPU_VENDOR" >&2

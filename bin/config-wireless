@@ -2,6 +2,15 @@
 
 set -euo pipefail
 
+chroot-target ln -vsfn \
+    /usr/lib/systemd/network/80-wifi-station.network.example \
+    /etc/systemd/network/80-wifi-station.network
+
+install-template /etc/systemd/network/80-wifi-station.network.d/ignore-carrier-loss.conf
+install-template /etc/systemd/network/80-wifi-station.network.d/mdns.conf
+install-template /etc/systemd/network/80-wifi-station.network.d/required-for-online.conf
+install-template /etc/systemd/network/80-wifi-station.network.d/route-metric.conf
+
 rsync -va /var/lib/iwd/ \
     "$BOOTSTRAP_TARGET_MOUNT_DIR"/var/lib/iwd/
 

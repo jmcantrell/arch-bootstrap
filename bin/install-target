@@ -66,6 +66,10 @@ if [[ -v BOOTSTRAP_ENABLE_WIRELESS ]]; then
     config-wireless
 fi
 
+if [[ -v BOOTSTRAP_ENABLE_ETHERNET ]]; then
+    config-ethernet
+fi
+
 install-locales
 install-fstab
 install-boot

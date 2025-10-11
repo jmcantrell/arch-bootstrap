@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+chroot-target ln -vsfn \
+    /usr/lib/systemd/network/89-ethernet.network.example \
+    /etc/systemd/network/89-ethernet.network
+
+install-template /etc/systemd/network/89-ethernet.network.d/mdns.conf
+install-template /etc/systemd/network/89-ethernet.network.d/required-for-online.conf
+install-template /etc/systemd/network/89-ethernet.network.d/route-metric.conf

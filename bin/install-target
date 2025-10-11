@@ -11,27 +11,27 @@ if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     open-luks
 fi
 
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    create-uefi
-    open-uefi
-fi
-
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
     create-lvm
     create-lvm-swap
     create-lvm-root
 fi
 
+create-root
+open-root
+
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     create-swap
     open-swap
 fi
 
-create-root
-open-root
-
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     install-luks-keyfile
+fi
+
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    create-uefi
+    open-uefi
 fi
 
 config-boot

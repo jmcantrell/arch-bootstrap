@@ -11,8 +11,11 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
+    -b    use BIOS boot firmware instead of UEFI
+
     -d FILE    store disk image in FILE (default: ephemeral)
     -i FILE    store cloud-init ISO in FILE (default: ephemeral)
+    -u FILE    store UEFI firmware variables in FILE (default: ephemeral)
 
     -p PORT    forward host PORT to port 22 on the guest
                (tcp only, default: same as ./scripts/vm)
@@ -33,12 +36,15 @@ if (($# > 0)); then
     fi
 fi
 
-unset disk_file
+boot_firmware=${BOOTSTRAP_BOOT_FIRMWARE:-uefi}
+unset uefi_file disk_file
 vm_opts=()
 mkvm_opts=()
 
-while getopts "d:i:p:c:e" opt; do
+while getopts "bd:i:u:p:c:e" opt; do
     case $opt in
+    b) boot_firmware=bios ;;
+    u) uefi_file=$OPTARG ;;
     d) disk_file=$OPTARG ;;
     p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
     i) mkvm_opts+=(-"$opt" "$OPTARG") ;;
@@ -50,12 +56,22 @@ shift $((OPTIND - 1))
 
 media_file=${1:?missing media file}
 
-if [[ ! -v disk_file ]]; then
-    temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
-    trap 'rm -rf "$temp_dir"' EXIT
-    disk_file=$temp_dir/disk.cow
+temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
+trap 'rm -rf "$temp_dir"' EXIT
+
+if [[ $boot_firmware == uefi ]]; then
+    if [[ ! -v uefi_file ]]; then
+        uefi_file=$temp_dir/uefi_vars.fd
+    fi
+    if [[ ! -f $uefi_file ]]; then
+        cp /usr/share/edk2/x64/OVMF_VARS.4m.fd "$uefi_file"
+    fi
+    vm_opts+=(-u "$uefi_file")
 fi
 
+if [[ ! -v disk_file ]]; then
+    disk_file=$temp_dir/disk.cow
+fi
 if [[ ! -f $disk_file ]]; then
     qemu-img create -f qcow2 "$disk_file" -o nocow=on 20G
 fi

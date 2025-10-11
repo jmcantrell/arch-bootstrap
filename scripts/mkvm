@@ -13,9 +13,10 @@ Usage:
     $self_name [OPTIONS] ISO_FILE DISK_FILE
 
 Options:
-    -i FILE    store cloud-init ISO in FILE (default: ephemeral)
-
     -m SIZE    specify memory size (default: same as ./scripts/vm)
+
+    -i FILE    store cloud-init ISO in FILE (default: ephemeral)
+    -u FILE    use UEFI and store in FILE
 
     -p PORT    forward host PORT to guest port 22
                (tcp only, default: same as ./scripts/vm)
@@ -45,11 +46,11 @@ vm_opts=()
 disk_file=$temp_dir/disk.cow
 cidata_file=$temp_dir/cidata.iso
 
-while getopts "i:m:p:c:e" opt; do
+while getopts "m:i:u:p:c:e" opt; do
     case $opt in
     i) cidata_file=$OPTARG ;;
     m) vm_opts+=(-"$opt") ;;
-    p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
+    u | p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
     e) ci_opts+=(-"$opt") ;;
     *) exit 2 ;;
     esac

@@ -17,7 +17,9 @@ Usage:
 Options:
     -m SIZE    specify memory size (default: $mem_size)
 
-    -i FILE         add iso FILE as a cdrom
+    -i FILE    add iso FILE as a cdrom
+    -u FILE    use UEFI boot firmware and store in FILE
+
     -s NAME=PATH    add PATH as NAME 9p share
 
     -p PORT    forward host PORT to guest port 22
@@ -38,14 +40,15 @@ if (($# > 0)); then
 fi
 
 opts=()
-unset boot_order
+unset boot_order uefi_file
 cdrom_id_next=0
 cdrom_device_fmt="scsi-cd,bus=scsi0.0,drive=cdrom%d"
 cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
 
-while getopts "m:i:s:p:c:" opt; do
+while getopts "m:i:u:s:p:c:" opt; do
     case $opt in
     m) mem_size=$OPTARG ;;
+    u) uefi_file=$OPTARG ;;
     i)
         boot_order=d
         cdrom_id=$((cdrom_id_next++))
@@ -63,6 +66,13 @@ done
 shift $((OPTIND - 1))
 
 disk_file=${1:?missing disk file}
+
+if [[ -v uefi_file ]]; then
+    opts+=(
+        -drive 'if=pflash,format=raw,unit=0,readonly=on,file=/usr/share/ovmf/x64/OVMF_CODE.4m.fd'
+        -drive "if=pflash,format=raw,unit=1,file=$uefi_file"
+    )
+fi
 
 exec qemu-system-x86_64 \
     -name "$self_name-$$" -m "$mem_size" \

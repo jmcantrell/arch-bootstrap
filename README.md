@@ -261,6 +261,12 @@ The boot firmware interface (default: `uefi` if `/sys/firmware/efi/efivars` exis
 
 The vendor of the system's CPU (choices: `intel` or `amd`, default: parsed from `vendor_id` in `/proc/cpuinfo`)
 
+### `BOOTSTRAP_ENABLE_ETHERNET`
+
+<!-- ./lib/init/hardware/ethernet.bash -->
+
+Flag indicating that wired networking will be used (default: set if there are any network interfaces starting with `en`)
+
 ### `BOOTSTRAP_ENABLE_LUKS`
 
 <!-- ./lib/init/luks.bash -->

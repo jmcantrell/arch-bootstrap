@@ -2,13 +2,30 @@
 
 set -euo pipefail
 
-rsync -va /etc/systemd/networkd.conf.d/ \
-    "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/systemd/networkd.conf.d/
-
-rsync -va /etc/systemd/network/20-*.network \
-    "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/systemd/network/
-
 ln -vsfn /run/systemd/resolve/stub-resolv.conf \
     "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/resolv.conf
+
+install-template /etc/systemd/system/systemd-networkd-wait-online.service.d/any-dns.conf
+
+if [[ -v BOOTSTRAP_ENABLE_WIRELESS ]]; then
+    chroot-target ln -vsfn \
+        /usr/lib/systemd/network/80-wifi-station.network.example \
+        /etc/systemd/network/80-wifi-station.network
+
+    install-template /etc/systemd/network/80-wifi-station.network.d/ignore-carrier-loss.conf
+    install-template /etc/systemd/network/80-wifi-station.network.d/mdns.conf
+    install-template /etc/systemd/network/80-wifi-station.network.d/required-for-online.conf
+    install-template /etc/systemd/network/80-wifi-station.network.d/route-metric.conf
+fi
+
+if [[ -v BOOTSTRAP_ENABLE_ETHERNET ]]; then
+    chroot-target ln -vsfn \
+        /usr/lib/systemd/network/89-ethernet.network.example \
+        /etc/systemd/network/89-ethernet.network
+
+    install-template /etc/systemd/network/89-ethernet.network.d/mdns.conf
+    install-template /etc/systemd/network/89-ethernet.network.d/required-for-online.conf
+    install-template /etc/systemd/network/89-ethernet.network.d/route-metric.conf
+fi
 
 chroot-target systemctl -v enable systemd-{networkd,resolved}.service

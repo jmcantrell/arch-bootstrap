@@ -263,7 +263,7 @@ The vendor of the system's CPU (choices: `intel` or `amd`, default: parsed from 
 
 ### `BOOTSTRAP_ENABLE_ETHERNET`
 
-<!-- ./lib/init/hardware/ethernet.bash -->
+<!-- ./lib/init/hardware/network/ethernet.bash -->
 
 Flag indicating that wired networking will be used (default: set if there are any network interfaces starting with `en`)
 
@@ -298,7 +298,7 @@ The systemd service for `fstrim` will also be scheduled.
 
 ### `BOOTSTRAP_ENABLE_WIRELESS`
 
-<!-- ./lib/init/hardware/wireless.bash -->
+<!-- ./lib/init/hardware/network/wireless.bash -->
 
 Flag indicating that wireless networking will be used (default: set if there are any network interfaces starting with `wl`)
 

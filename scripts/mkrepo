@@ -4,7 +4,7 @@ set -euo pipefail
 
 self_name=${0##*/}
 
-repo_dir=/var/cache/bootstrap/repo
+repo_dir=/var/lib/bootstrap/repo
 
 usage="Create/update a custom repository for bootstrapping.
 

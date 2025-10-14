@@ -87,7 +87,7 @@ An [offline package repository][offline-install] can be used to minimize bandwid
 Transfer the package repository to the live system and assign the directory to [`BOOTSTRAP_PACKAGE_REPO_DIR`](#bootstrap_package_repo_dir).
 During installation, packages will be pulled **only** from this repository.
 
-To create a package repository at `/var/cache/bootstrap/repo` based on packages defined in `./config/packages/**`:
+To create a package repository at `/var/lib/bootstrap/repo` based on packages defined in `./config/packages/**`:
 
 ```sh
 ./scripts/mkrepo
@@ -139,7 +139,7 @@ The virtual machine will be booted with a cloud-init image generated using the [
 Additionally, it will do the following:
 
 - Mount `$PWD` on the host at `/mnt/bootstrap` on the guest
-- Mount `/var/cache/bootstrap/repo` on the host at `/mnt/packages` on the guest
+- Mount `/var/lib/bootstrap/repo` on the host at `/mnt/packages` on the guest
 - Configure [offline installation](#offline-installation) for `/mnt/packages`
 - Forward TCP port `60022` on the host to port `22` on the guest
 - Allow SSH connections over vsock at client id `42`
@@ -372,23 +372,11 @@ Multiple values should be separated with a space.
 
 The system host name (e.g. `arch`)
 
-### `BOOTSTRAP_KERNEL_CONSOLEBLANK`
+### `BOOTSTRAP_KERNEL_PARAMETERS`
 
 <!-- ./lib/init/chroot/kernel.bash -->
 
-The number of seconds of inactivity to wait before putting the display to sleep (e.g. `$((10 * 60))`)
-
-### `BOOTSTRAP_KERNEL_LOGLEVEL`
-
-<!-- ./lib/init/chroot/kernel.bash -->
-
-The kernel log level (e.g. `4`)
-
-### `BOOTSTRAP_KERNEL_QUIET`
-
-<!-- ./lib/init/chroot/kernel.bash -->
-
-Flag indicating that `quiet` should be included in the kernel parameters (e.g. `true`)
+Extra boot parameters (e.g. `quiet loglevel=4 consoleblank=600`, default: ``).
 
 ### `BOOTSTRAP_KERNEL_USE_LTS`
 

@@ -3,11 +3,5 @@
 
 export BOOTSTRAP_KERNEL_TOP_LEVEL=/boot/vmlinuz-linux${BOOTSTRAP_KERNEL_USE_LTS:+-lts}
 
-# Flag indicating that `quiet` should be included in the kernel parameters
-# export BOOTSTRAP_KERNEL_QUIET=true
-
-# The kernel log level
-# export BOOTSTRAP_KERNEL_LOGLEVEL=4
-
-# The number of seconds of inactivity to wait before putting the display to sleep
-# export BOOTSTRAP_KERNEL_CONSOLEBLANK=$((10 * 60))
+# Extra boot parameters (e.g. `quiet loglevel=4 consoleblank=600`).
+export BOOTSTRAP_KERNEL_PARAMETERS=${BOOTSTRAP_KERNEL_PARAMETERS:-}

@@ -4,7 +4,8 @@ set -euo pipefail
 
 self_name=${0##*/}
 
-repo_dir=/var/lib/bootstrap/repo
+repo_name=bootstrap
+repo_dir=/var/lib/$repo_name/repo
 
 usage="Create/update a custom repository for bootstrapping.
 
@@ -33,11 +34,11 @@ temp_dir=/tmp/$self_name-db-$$
 mkdir -p "$temp_dir"
 trap 'rm -rf "$temp_dir"' EXIT
 
-readarray -t package_names < <(find ./config/packages -type f -exec cat {} +)
+readarray -t package_names < <(find ./config/packages -type f -exec cat {} + | sort -u)
 
 pacman -Syuw --needed --noconfirm --cachedir "$repo_dir" --dbpath "$temp_dir" "${package_names[@]}" "$@"
 paccache --verbose --cachedir "$repo_dir" --remove --keep 1
 
 readarray -t package_files < <(find "$repo_dir" -type f -name "*.pkg.*" \! -name "*.sig")
 
-repo-add --new --remove --include-sigs "$repo_dir"/bootstrap.db.tar.zst "${package_files[@]}"
+repo-add --new --remove --include-sigs "$repo_dir/$repo_name".db.tar.zst "${package_files[@]}"

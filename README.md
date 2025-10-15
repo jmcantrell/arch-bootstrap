@@ -45,27 +45,25 @@ Boot into the [live environment][iso] and change the directory to this repositor
 
 Set [environment variables](#configuration) to configure installation:
 
-```sh
-export BOOTSTRAP_TARGET_DEVICE=/dev/sda
-export BOOTSTRAP_ADMIN_LOGIN=bob
-export BOOTSTRAP_MIRROR_SORT=rate
-export BOOTSTRAP_TIMEZONE=America/Chicago
-export BOOTSTRAP_ENABLE_LUKS=true
-```
+    export BOOTSTRAP_TARGET_DEVICE=/dev/sda
+    export BOOTSTRAP_ADMIN_LOGIN=bob
+    export BOOTSTRAP_MIRROR_SORT=rate
+    export BOOTSTRAP_TIMEZONE=America/Chicago
+    export BOOTSTRAP_ENABLE_LUKS=true
 
 Initialize the environment on the live system:
 
-    # source ./init
+    source ./init
 
 This will validate the environment variables that were set and add `./bin` to `PATH`.
 
 Inspect the modified environment:
 
-    # print-config
+    print-config
 
 Install the target system:
 
-    # install-target
+    install-target
 
 After installation, the target system is left mounted for inspection or further configuration.
 
@@ -83,15 +81,15 @@ During installation, packages will be pulled **only** from this repository.
 
 To create a package repository at `/var/lib/bootstrap/repo` based on packages defined in `./config/packages/**`:
 
-    $ ./scripts/mkrepo
+    ./scripts/mkrepo
 
 Extra packages can be provided as arguments to the script:
 
-    $ ./scripts/mkrepo tmux git
+    ./scripts/mkrepo tmux git
 
 To see complete usage details:
 
-    $ ./scripts/mkrepo --help
+    ./scripts/mkrepo --help
 
 ### Automated Installation
 
@@ -114,7 +112,7 @@ The generated image will be configured to do the following automatically:
 
 To see complete usage details:
 
-    $ ./scripts/mkci --help
+    ./scripts/mkci --help
 
 ### Virtual Machine Installation
 
@@ -132,21 +130,19 @@ Additionally, it will do the following:
 
 To create a virtual machine with the default settings (only the installation disk set):
 
-    $ ./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
+    ./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
 
 To add certain settings, export them before running the script:
 
-```sh
-export BOOTSTRAP_HOSTNAME=vm
-export BOOTSTRAP_TIMEZONE=America/Chicago
-export BOOTSTRAP_ADMIN_LOGIN=frank
-```
+    export BOOTSTRAP_HOSTNAME=vm
+    export BOOTSTRAP_TIMEZONE=America/Chicago
+    export BOOTSTRAP_ADMIN_LOGIN=frank
 
-    $ ./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
+    ./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
 
 To see complete usage details:
 
-    $ ./scripts/mkvm --help
+    ./scripts/mkvm --help
 
 ### Remote Installation
 
@@ -160,11 +156,11 @@ It will do the following on the live system:
 
 If you already have access to the repository in the live system, run the script normally to authorize the keys and enable mDNS:
 
-    # ./scripts/inject
+    ./scripts/inject
 
 To also download the repository, `curl` the script into `bash`:
 
-    # curl https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject | bash -s
+    curl https://git.sr.ht/~jmcantrell/arch-bootstrap/blob/main/scripts/inject | bash -s
 
 If the network is available automatically after booting, you could run the script by using the `script` boot parameter.
 When you see the GRUB menu, press <kbd>Tab</kbd> to edit the kernel command line and add the following:
@@ -183,20 +179,18 @@ After powering off the live system, the new system will be booted.
 
 To test the default settings (only the installation disk set):
 
-    $ ./scripts/test /path/to/archlinux.iso
+    ./scripts/test /path/to/archlinux.iso
 
 To test out certain settings, export them before running the script:
 
-```sh
-export BOOTSTRAP_TIMEZONE=America/Chicago
-export BOOTSTRAP_ADMIN_LOGIN=frank
-```
+    export BOOTSTRAP_TIMEZONE=America/Chicago
+    export BOOTSTRAP_ADMIN_LOGIN=frank
 
-    $ ./scripts/test /path/to/archlinux.iso
+    ./scripts/test /path/to/archlinux.iso
 
 To see complete usage details:
 
-    $ ./scripts/test --help
+    ./scripts/test --help
 
 ## Configuration
 

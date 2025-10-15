@@ -4,10 +4,12 @@ set -euo pipefail
 
 unset config_file
 
-if [[ -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
+if [[ -v BOOTSTRAP_PACKAGE_REPO_SERVER ]]; then
     config_file=/tmp/pacman.conf
     cp /etc/pacman.conf "$config_file"
-    set-package-repo-dir "$config_file" "$BOOTSTRAP_PACKAGE_REPO_DIR"
+    set-package-repo "$config_file" \
+        "$BOOTSTRAP_PACKAGE_REPO_NAME" \
+        "$BOOTSTRAP_PACKAGE_REPO_SERVER"
 fi
 
 pacman-key --init

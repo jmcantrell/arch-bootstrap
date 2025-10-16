@@ -6,9 +6,9 @@
 # If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first file found in this directory matching `*.db.tar.*`.
 # export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
 
-# The package repository name
-# If `BOOTSTRAP_PACKAGE_REPO_SERVER` is set, the name must be explicitly set.
-# If `BOOTSTRAP_PACKAGE_REPO_DIR` is set and the name is not, the name will be taken from the first file found matching `*.db.tar.*`.
+# The package repository name for `BOOTSTRAP_PACKAGE_REPO_{SERVER,DIR}`
+# If `BOOTSTRAP_PACKAGE_REPO_SERVER` is set, this name must be explicitly set.
+# If `BOOTSTRAP_PACKAGE_REPO_DIR` is set and this name is not, the name will be taken from the first file found matching `*.db.tar.*`.
 # export BOOTSTRAP_PACKAGE_REPO_NAME=custom
 
 if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER && -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then

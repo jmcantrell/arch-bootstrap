@@ -524,7 +524,7 @@ See `reflector --help` for possible values.
 
 ### `BOOTSTRAP_PACKAGE_REPO_DIR`
 
-<!-- ./lib/init/offline.bash -->
+<!-- ./lib/init/packages.bash -->
 
 Look for packages *only* in this package repository on the live system (e.g. `/mnt/packages`)
 
@@ -532,16 +532,16 @@ If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first fil
 
 ### `BOOTSTRAP_PACKAGE_REPO_NAME`
 
-<!-- ./lib/init/offline.bash -->
+<!-- ./lib/init/packages.bash -->
 
-The package repository name (e.g. `custom`)
+The package repository name for `BOOTSTRAP_PACKAGE_REPO_{SERVER,DIR}` (e.g. `custom`)
 
-If `BOOTSTRAP_PACKAGE_REPO_SERVER` is set, the name must be explicitly set.
-If `BOOTSTRAP_PACKAGE_REPO_DIR` is set and the name is not, the name will be taken from the first file found matching `*.db.tar.*`.
+If `BOOTSTRAP_PACKAGE_REPO_SERVER` is set, this name must be explicitly set.
+If `BOOTSTRAP_PACKAGE_REPO_DIR` is set and this name is not, the name will be taken from the first file found matching `*.db.tar.*`.
 
 ### `BOOTSTRAP_PACKAGE_REPO_SERVER`
 
-<!-- ./lib/init/offline.bash -->
+<!-- ./lib/init/packages.bash -->
 
 Look for packages *only* in this package repository on a remote system (e.g. `http://packages.local:8080`)
 

@@ -138,7 +138,7 @@ source ./init
 
 print-config
 
-if [[ ! -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
+if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER ]]; then
     refresh-mirrors
 fi
 

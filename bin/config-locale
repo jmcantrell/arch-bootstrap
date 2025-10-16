@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-vars=(
+variables=(
     BOOTSTRAP_LANG
     BOOTSTRAP_LANGUAGE
     BOOTSTRAP_LC_CTYPE
@@ -21,9 +21,9 @@ vars=(
 
 lines=()
 
-for var in "${vars[@]}"; do
-    if [[ -v $var ]]; then
-        lines+=("${var#BOOTSTRAP_}=${!var}")
+for variable in "${variables[@]}"; do
+    if [[ -v $variable ]]; then
+        lines+=("${variable#BOOTSTRAP_}=${!variable}")
     fi
 done
 

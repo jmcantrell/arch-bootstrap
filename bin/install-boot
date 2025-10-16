@@ -5,18 +5,8 @@ set -euo pipefail
 opts=()
 
 case $BOOTSTRAP_BOOT_FIRMWARE in
-bios)
-    opts+=(
-        --target=i386-pc
-    )
-    ;;
-uefi)
-    opts+=(
-        --target=x86_64-efi
-        --bootloader-id=GRUB
-        --efi-directory="$BOOTSTRAP_UEFI_MOUNT_DIR"
-    )
-    ;;
+bios) opts+=(--target=i386-pc) ;;
+uefi) opts+=(--target=x86_64-efi --bootloader-id=GRUB --efi-directory="$BOOTSTRAP_UEFI_MOUNT_DIR") ;;
 esac
 
 chroot-target grub-install --recheck "${opts[@]}" "$BOOTSTRAP_TARGET_DEVICE"

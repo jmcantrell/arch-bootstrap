@@ -2,10 +2,18 @@
 
 set -euo pipefail
 
-chroot-target ln -vsfn \
-    /usr/lib/systemd/network/89-ethernet.network.example \
-    /etc/systemd/network/89-ethernet.network
+file_name=89-ethernet.network
 
-install-template /etc/systemd/network/89-ethernet.network.d/mdns.conf
-install-template /etc/systemd/network/89-ethernet.network.d/required-for-online.conf
-install-template /etc/systemd/network/89-ethernet.network.d/route-metric.conf
+config_names=(
+    multicast-dns
+    required-for-online
+    route-metric
+)
+
+chroot-target ln -vsfn \
+    /usr/lib/systemd/network/"$file_name".example \
+    /etc/systemd/network/"$file_name"
+
+for config_name in "${config_names[@]}"; do
+    install-template /etc/systemd/network/"$file_name".d/"$config_name".conf
+done

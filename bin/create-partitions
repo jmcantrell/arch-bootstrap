@@ -14,8 +14,8 @@ format=${format%, }
 values=()
 for part in "${parts[@]}"; do
     for field in "${fields[@]}"; do
-        var=BOOTSTRAP_PART_${part@U}_${field@U}
-        values+=("${!var}")
+        variable=BOOTSTRAP_PART_${part@U}_${field@U}
+        values+=("${!variable}")
     done
 done
 

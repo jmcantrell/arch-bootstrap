@@ -7,9 +7,8 @@ unset config_file
 if [[ -v BOOTSTRAP_PACKAGE_REPO_SERVER ]]; then
     config_file=/tmp/pacman.conf
     cp /etc/pacman.conf "$config_file"
-    set-package-repo "$config_file" \
-        "$BOOTSTRAP_PACKAGE_REPO_NAME" \
-        "$BOOTSTRAP_PACKAGE_REPO_SERVER"
+    sed -Ei "/^\\[((core|extra|multilib)(-testing)?|$BOOTSTRAP_PACKAGE_REPO_NAME)\\]$/,/^$/s/^./#&/" "$config_file"
+    printf '\n[%s]\nSigLevel = Optional\nServer = %s\n' "$BOOTSTRAP_PACKAGE_REPO_NAME" "$BOOTSTRAP_PACKAGE_REPO_SERVER" >>"$config_file"
 fi
 
 pacman-key --init
@@ -17,5 +16,4 @@ pacman-key --populate
 
 readarray -t packages < <(print-packages)
 
-pacstrap ${config_file:+-C "$config_file"} \
-    "$BOOTSTRAP_TARGET_MOUNT_DIR" "${packages[@]}"
+pacstrap ${config_file:+-C "$config_file"} "$BOOTSTRAP_TARGET_MOUNT_DIR" "${packages[@]}"

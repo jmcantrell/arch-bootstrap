@@ -2,14 +2,22 @@
 
 set -euo pipefail
 
-chroot-target ln -vsfn \
-    /usr/lib/systemd/network/80-wifi-station.network.example \
-    /etc/systemd/network/80-wifi-station.network
+file_name=80-wifi-station.network
 
-install-template /etc/systemd/network/80-wifi-station.network.d/ignore-carrier-loss.conf
-install-template /etc/systemd/network/80-wifi-station.network.d/mdns.conf
-install-template /etc/systemd/network/80-wifi-station.network.d/required-for-online.conf
-install-template /etc/systemd/network/80-wifi-station.network.d/route-metric.conf
+config_names=(
+    ignore-carrier-loss
+    multicast-dns
+    required-for-online
+    route-metric
+)
+
+chroot-target ln -vsfn \
+    /usr/lib/systemd/network/"$file_name".example \
+    /etc/systemd/network/"$file_name"
+
+for config_name in "${config_names[@]}"; do
+    install-template /etc/systemd/network/"$file_name".d/"$config_name".conf
+done
 
 rsync -va /var/lib/iwd/ \
     "$BOOTSTRAP_TARGET_MOUNT_DIR"/var/lib/iwd/

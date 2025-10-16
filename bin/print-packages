@@ -36,4 +36,4 @@ if [[ -f extra ]]; then
     files+=(extra)
 fi
 
-cat "${files[@]}"
+sort -u "${files[@]}"

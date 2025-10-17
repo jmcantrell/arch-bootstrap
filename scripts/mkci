@@ -15,6 +15,9 @@ Options:
     -m MOUNT    add MOUNT line to fstab
                 (where MOUNT is like 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
 
+    -f MAPPING    add file MAPPING to the live system
+                  (where MAPPING is like 'PATH[@PERMISSIONS]=FILE')
+
     -r COMMAND    add COMMAND to be run after boot
 
     -e    edit files before building
@@ -36,7 +39,7 @@ write_files=()
 runcmd=()
 
 # Mask the reflector service so it doesn't try to start.
-write_files+=("$(jo -- path=/etc/systemd/system/reflector.service owner='root:root' -s permissions=0000)")
+write_files+=("$(jo -- path=/etc/systemd/system/reflector.service -s permissions=0000)")
 
 # Stop the reflector service and unmask it so that it can possibly be used later.
 runcmd+=("systemctl stop reflector.service && rm /etc/systemd/system/reflector.service && systemctl daemon-reload")
@@ -45,15 +48,26 @@ runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.netwo
 edit=0
 declare -A mount_lines=()
 
-for name in bootstrap packages; do
+for name in bootstrap{,_packages}; do
     mount_lines[/mnt/$name]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
 done
 
-while getopts "m:r:e" opt; do
+while getopts "m:f:r:e" opt; do
     case $opt in
     m)
         read -r _ target _ <<<"$OPTARG"
         mount_lines[$target]=$OPTARG
+        ;;
+    f)
+        path=${OPTARG%%=*}
+        file=${OPTARG##*=}
+        if [[ $path == *@* ]]; then
+            permissions=${path##*@}
+            path=${path%%@*}
+        else
+            permissions=$(stat -L -c %a "$file")
+        fi
+        write_files+=("$(jo -- encoding=b64 path="$path" -s permissions="$permissions" content=%"$file")")
         ;;
     r) runcmd+=("$OPTARG") ;;
     e) edit=1 ;;
@@ -110,31 +124,32 @@ if ((should_restart_iwd)); then
     runcmd+=("systemctl restart iwd.service")
 fi
 
-config_file=$temp_dir/config
+env_file=$temp_dir/env
 
-set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >"$config_file"
-printf "\n# vi:ft=bash\n" >>"$config_file"
+set | awk '/^BOOTSTRAP_/ { print "export " $0 }' >"$env_file"
+printf "\n# vi:ft=bash\n" >>"$env_file"
 
-write_files+=("$(jo -- encoding=b64 path=/root/config owner='root:root' -s permissions='0600' content=%"$config_file")")
+write_files+=("$(jo -- encoding=b64 path=/root/bootstrap.env -s permissions='0600' content=%"$env_file")")
 
-install_file=$temp_dir/install
+script_file=$temp_dir/script
 
-cat >"$install_file" <<EOF
+cat >"$script_file" <<EOF
 #!/usr/bin/env bash
 
 set -euo pipefail
 
+self_name=\${0##*/}
+
 cd /root
 
-log_file=\$PWD/install.log
+log_file=\$PWD/\$self_name.log
+env_file=\$PWD/\$self_name.env
+local_script=\$PWD/\$self_name.local
 
 exec > >(tee "\$log_file") 2>&1
 
-source ./config
-
-cd /mnt/bootstrap
-
-source ./init
+source "\$env_file"
+source /mnt/bootstrap/init
 
 print-config
 
@@ -144,10 +159,19 @@ fi
 
 install-target
 
+if [[ -f \$local_script && -x \$local_script ]]; then
+    "\$local_script"
+fi
+
 cp -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/var/log "\$log_file"
+
+if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
+    chroot-target mkdir -p /.snapshots/@
+    chroot-target btrfs subvolume snapshot -r / /.snapshots/@/"\$self_name"
+fi
 EOF
 
-write_files+=("$(jo -- encoding=b64 path=/root/install owner='root:root' -s permissions='0755' content=%"$install_file")")
+write_files+=("$(jo -- encoding=b64 path=/root/bootstrap -s permissions='0755' content=%"$script_file")")
 
 user_data=()
 
@@ -182,7 +206,7 @@ $(jo "${user_data[@]}" | yq -p json)
 EOF
 
 if ((edit)); then
-    $EDITOR "$config_file" "$install_file" "$cidata_dir"/{user,meta}-data
+    $EDITOR "$env_file" "$script_file" "$cidata_dir"/{user,meta}-data
 fi
 
 mkdir -p "$(dirname "$iso_file")"

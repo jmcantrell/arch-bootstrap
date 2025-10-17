@@ -61,17 +61,22 @@ media_file=${1:?missing media file}
 disk_file=${2:?missing disk file}
 
 export BOOTSTRAP_TARGET_DEVICE=/dev/sda
-export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
 export BOOTSTRAP_ENABLE_TRIM=true
 
-./scripts/mkci "${ci_opts[@]}" \
-    -m "bootstrap /mnt/bootstrap 9p trans=virtio,version=9p2000.L 0 0" \
-    -m "packages /mnt/packages 9p trans=virtio,version=9p2000.L 0 0" \
-    "$cidata_file"
+declare -A mounts=(
+    [bootstrap]=$PWD
+)
 
-./scripts/vm "${vm_opts[@]}" \
-    -i "$media_file" \
-    -i "$cidata_file" \
-    -s bootstrap="$PWD" \
-    -s packages="$repo_dir" \
-    "$disk_file"
+if [[ -d $repo_dir ]]; then
+    mounts[bootstrap_packages]=$repo_dir
+    export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/bootstrap_packages
+fi
+
+for mount_name in "${!mounts[@]}"; do
+    ci_opts+=(-m "$mount_name /mnt/$mount_name 9p trans=virtio,version=9p2000.L 0 0")
+    vm_opts+=(-s "$mount_name=${mounts[$mount_name]}")
+done
+
+./scripts/mkci "${ci_opts[@]}" "$cidata_file"
+
+./scripts/vm "${vm_opts[@]}" -i "$media_file" -i "$cidata_file" "$disk_file"

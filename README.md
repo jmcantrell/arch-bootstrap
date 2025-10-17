@@ -106,9 +106,14 @@ The generated image will be configured to do the following automatically:
 - Enable Multicast DNS on the live system so it can be reached by host name
 - Set the host name of the live system to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname) (if the environment variable is set)
 - Try to mount a drive with the label `BOOTSTRAP` at `/mnt/bootstrap`
-- Try to mount a drive with the label `PACKAGES` at `/mnt/packages`
+- Try to mount a drive with the label `BOOTSTRAP_PACKAGES` at `/mnt/bootstrap_packages`
 - Add configuration to the file `/root/config` on the live system
-- Create an installation entry point script at `/root/install` on the live system that logs its output to `/root/install.log` and `/var/log/install.log` on the target system
+- Create a file at `/root/bootstrap.env` with all `BOOTSTRAP_*` variables visible to `./scripts/mkci`
+- Create an installation entry point script at `/root/bootstrap` on the live system that does the following:
+  - Perform a [basic installation](#basic-installation) using the configuration in `/root/bootstrap.env`
+  - Log output to `/root/bootstrap.log` and `/var/log/bootstrap.log` on the target system
+  - If it exists and is executable, the file `/root/bootstrap.local` will be run
+  - If using btrfs subvolumes, create a root snapshot at `/.snapshots/@/bootstrap` after installation
 
 To see complete usage details:
 
@@ -526,7 +531,7 @@ See `reflector --help` for possible values.
 
 <!-- ./lib/init/packages.bash -->
 
-Look for packages *only* in this package repository on the live system (e.g. `/mnt/packages`)
+Look for packages _only_ in this package repository on the live system (e.g. `/mnt/packages`)
 
 If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first file found in this directory matching `*.db.tar.*`.
 
@@ -543,7 +548,7 @@ If `BOOTSTRAP_PACKAGE_REPO_DIR` is set and this name is not, the name will be ta
 
 <!-- ./lib/init/packages.bash -->
 
-Look for packages *only* in this package repository on a remote system (e.g. `http://packages.local:8080`)
+Look for packages _only_ in this package repository on a remote system (e.g. `http://packages.local:8080`)
 
 If this is set, it's required to also set `BOOTSTRAP_PACKAGE_REPO_NAME`.
 

@@ -1,4 +1,4 @@
-root_dir=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+root_dir=$(dirname "$(readlink -f -- "$0")")
 
 export BOOTSTRAP_ROOT_DIR=$root_dir
 export BOOTSTRAP_LIB_DIR=$BOOTSTRAP_ROOT_DIR/lib

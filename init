@@ -1,6 +1,4 @@
-root_dir=$(dirname "$(readlink -f -- "$0")")
-
-export BOOTSTRAP_ROOT_DIR=$root_dir
+export BOOTSTRAP_ROOT_DIR=$PWD
 export BOOTSTRAP_LIB_DIR=$BOOTSTRAP_ROOT_DIR/lib
 export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
 

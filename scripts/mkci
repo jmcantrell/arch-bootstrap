@@ -149,7 +149,10 @@ local_script=\$PWD/\$self_name.local
 exec > >(tee "\$log_file") 2>&1
 
 source "\$env_file"
-source /mnt/bootstrap/init
+
+cd /mnt/bootstrap
+
+source ./init
 
 print-config
 
@@ -158,6 +161,8 @@ if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER ]]; then
 fi
 
 install-target
+
+cd /root
 
 if [[ -f \$local_script && -x \$local_script ]]; then
     "\$local_script"

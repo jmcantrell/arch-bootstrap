@@ -3,6 +3,11 @@
 set -euo pipefail
 
 cmdline=()
+cmdline_default=(
+    ${BOOTSTRAP_KERNEL_QUIET:+quiet}
+    ${BOOTSTRAP_KERNEL_LOGLEVEL:+loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"}
+    ${BOOTSTRAP_KERNEL_CONSOLEBLANK:+consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"}
+)
 preload_modules=(part_{gpt,msdos})
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
@@ -25,6 +30,7 @@ if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
 fi
 
 export BOOTSTRAP_GRUB_CMDLINE_LINUX=${cmdline[*]}
+export BOOTSTRAP_GRUB_CMDLINE_LINUX_DEFAULT=${cmdline_default[*]}
 export BOOTSTRAP_GRUB_PRELOAD_MODULES=${preload_modules[*]}
 
 install-template /etc/default/grub

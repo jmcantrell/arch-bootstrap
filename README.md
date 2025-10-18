@@ -343,11 +343,29 @@ Multiple values should be separated with a space.
 
 The system host name (e.g. `arch`)
 
+### `BOOTSTRAP_KERNEL_CONSOLEBLANK`
+
+<!-- ./lib/init/chroot/kernel.bash -->
+
+The number of seconds of inactivity to wait before putting the display to sleep (e.g. `$((10 * 60))`)
+
+### `BOOTSTRAP_KERNEL_LOGLEVEL`
+
+<!-- ./lib/init/chroot/kernel.bash -->
+
+The kernel log level (e.g. `4`)
+
 ### `BOOTSTRAP_KERNEL_PARAMETERS`
 
 <!-- ./lib/init/chroot/kernel.bash -->
 
-Extra boot parameters (e.g. `quiet loglevel=4 consoleblank=600`, default: ``).
+Extra boot parameters (e.g. `acpi_mask_gpe=0x6D`)
+
+### `BOOTSTRAP_KERNEL_QUIET`
+
+<!-- ./lib/init/chroot/kernel.bash -->
+
+Flag indicating that `quiet` should be included in the kernel parameters (e.g. `true`)
 
 ### `BOOTSTRAP_KERNEL_USE_LTS`
 

@@ -52,7 +52,10 @@ while read -r group_name package_name; do
 done < <(pacman -Sg "${!package_names_top[@]}")
 
 # Get all dependencies of top-level packages.
-readarray -t package_names_all < <(
+declare -A package_names_all=()
+while IFS= read -r package_name; do
+    package_names_all[$package_name]=1
+done < <(
     printf "%s\n" "${!package_names_top[@]}" |
         parallel -n1 pactree --sync --linear |
         grep -v '[<>=]' | sort -u
@@ -65,23 +68,39 @@ else
     mkdir -p "$repo_dir"
 fi
 
+package_names_to_remove=()
+
+# Remove unnecessary packages.
+package_pattern='^.*/(.*)(-[^-]+){3}'
+while IFS= read -r package_file; do
+    if [[ $package_file =~ $package_pattern ]]; then
+        package_name=${BASH_REMATCH[1]}
+        if [[ ! -v package_names_all[$package_name] ]]; then
+            package_names_to_remove+=("$package_name")
+            rm -vf "$package_file"{,.sig}
+        fi
+    fi
+done < <(find "$repo_dir" -type f -name "*.pkg.*" \! -name "*.sig")
+
 # Seed repository with packages from cache.
-for package_name in "${package_names_all[@]}"; do
+for package_name in "${!package_names_all[@]}"; do
     for src_file in "$cache_dir/$package_name"-*.pkg.*; do
         dst_file=$repo_dir/${src_file##*/}
-        if [[ ! -f $dst_file ]]; then
-            ln -vsfn "$src_file" "$dst_file"
+        if [[ ! -f $dst_file || ! -L $dst_file ]]; then
+            rm -f "$dst_file"
+            ln -vsn "$src_file" "$dst_file"
         fi
     done
 done
 
 # Download missing packages.
-printf "%s\n" "${package_names_all[@]}" |
+printf "%s\n" "${!package_names_all[@]}" |
     pacman -Syuw --noconfirm --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
 
 # Only keep the latest packages.
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 
-repo-add --new --remove --include-sigs \
-    "$repo_dir/$repo_name".db.tar.zst \
-    "$repo_dir"/*.pkg.tar.zst
+db_file=$repo_dir/$repo_name.db.tar.zst
+
+repo-remove "$db_file" "${package_names_to_remove[@]}"
+repo-add --new --remove --include-sigs "$db_file" "$repo_dir"/*.pkg.tar.zst

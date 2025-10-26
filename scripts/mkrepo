@@ -6,6 +6,7 @@ self_name=${0##*/}
 
 repo_name=bootstrap
 repo_dir=/var/lib/$repo_name/repo
+cache_dir=/var/cache/pacman/pkg
 
 usage="Create/update a custom repository for bootstrapping.
 
@@ -34,12 +35,47 @@ fi
 
 temp_dir=/tmp/${repo_name}-db
 trap 'rm -rf "$temp_dir"' EXIT
-mkdir -p "$temp_dir" 
+mkdir -p "$temp_dir"
 
-# Remove any broken symlinks.
-find "$repo_dir" -xtype l -delete
+declare -A package_names_top=()
 
-find ./config/packages -type f -exec cat {} + | sort -u |
+# Load all top-level package names.
+while IFS= read -r package_name; do
+    package_names_top[$package_name]=1
+done < <(find ./config/packages -type f -exec cat {} + | sort -u)
+
+# Expand group names to package names.
+while read -r group_name package_name; do
+    unset "package_names_top[$group_name]"
+    package_names_top[$package_name]=1
+done < <(pacman -Sg "${!package_names_top[@]}")
+
+# Get all dependencies of top-level packages.
+readarray -t package_names_all < <(
+    printf "%s\n" "${!package_names_top[@]}" |
+        parallel -n1 pactree --sync --linear |
+        grep -v '[<>=]' | sort -u
+)
+
+if [[ -d $repo_dir ]]; then
+    # Remove any packages that disappeared from the cache.
+    find "$repo_dir" -xtype l -delete -print
+else
+    mkdir -p "$repo_dir"
+fi
+
+# Seed repository with packages from cache.
+for package_name in "${package_names_all[@]}"; do
+    for src_file in "$cache_dir/$package_name"-*.pkg.*; do
+        dst_file=$repo_dir/${src_file##*/}
+        if [[ ! -f $dst_file ]]; then
+            ln -vsfn "$src_file" "$dst_file"
+        fi
+    done
+done
+
+# Download missing packages.
+printf "%s\n" "${package_names_all[@]}" |
     pacman -Syuw --noconfirm --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
 
 # Only keep the latest packages.
@@ -48,12 +84,3 @@ paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 repo-add --new --remove --include-sigs \
     "$repo_dir/$repo_name".db.tar.zst \
     "$repo_dir"/*.pkg.tar.zst
-
-# Deduplicate downloaded packages that are cached.
-for src_file in /var/cache/pacman/pkg/*.pkg.tar.zst{,.sig}; do
-    dst_file=$repo_dir/${src_file##*/}
-    if [[ -f $dst_file && ! -L $dst_file ]]; then
-        rm -f "$dst_file"
-        ln -vsn "$src_file" "$dst_file"
-    fi
-done

@@ -7,16 +7,15 @@ self_name=${0##*/}
 
 repo_name=bootstrap
 repo_dir=/var/lib/$repo_name/repo
+repo_db_file=$repo_dir/$repo_name.db.tar.zst
+
 cache_dir=/var/cache/pacman/pkg
 
 usage="Create/update a custom repository for bootstrapping.
 
 Usage:
     $self_name -h|--help
-    $self_name [PACKAGE...]
-
-Arguments:
-    PACKAGE    also install PACKAGE
+    $self_name
 
 This will create a pacman repository named ${repo_name@Q} at the following path:
 
@@ -100,7 +99,5 @@ printf "%s\n" "${!package_names_all[@]}" |
 # Only keep the latest packages.
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 
-db_file=$repo_dir/$repo_name.db.tar.zst
-
-repo-remove "$db_file" "${package_names_to_remove[@]}"
-repo-add --new --remove --include-sigs "$db_file" "$repo_dir"/*.pkg.tar.zst
+repo-remove "$repo_db_file" "${package_names_to_remove[@]}"
+repo-add --new --remove --include-sigs "$repo_db_file" "$repo_dir"/*.pkg.tar.zst

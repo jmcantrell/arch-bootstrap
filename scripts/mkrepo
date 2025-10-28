@@ -9,19 +9,15 @@ repo_name=bootstrap
 repo_dir=/var/lib/$repo_name/repo
 repo_db_file=$repo_dir/$repo_name.db.tar.zst
 
-cache_dir=/var/cache/pacman/pkg
-
-usage="Create/update a custom repository for bootstrapping.
+usage="Create a custom repository for bootstrapping.
 
 Usage:
     $self_name -h|--help
-    $self_name
+    $self_name [DIRECTORY]
 
-This will create a pacman repository named ${repo_name@Q} at the following path:
-
-    $repo_dir
-
-This repository will contain all packages needed to bootstrap an Arch Linux system.
+Arguments:
+    DIRECTORY    create repository in DIRECTORY
+                 (default: $repo_dir)
 "
 
 if (($# > 0)); then
@@ -37,67 +33,10 @@ temp_dir=/tmp/${repo_name}-db
 trap 'rm -rf "$temp_dir"' EXIT
 mkdir -p "$temp_dir"
 
-declare -A package_names_top=()
-
-# Load all top-level package names.
-while IFS= read -r package_name; do
-    package_names_top[$package_name]=1
-done < <(find ./config/packages -type f -exec cat {} + | sort -u)
-
-# Expand group names to package names.
-while read -r group_name package_name; do
-    unset "package_names_top[$group_name]"
-    package_names_top[$package_name]=1
-done < <(pacman -Sg "${!package_names_top[@]}")
-
-# Get all dependencies of top-level packages.
-declare -A package_names_all=()
-while IFS= read -r package_name; do
-    package_names_all[$package_name]=1
-done < <(
-    printf "%s\n" "${!package_names_top[@]}" |
-        parallel -n1 pactree --sync --linear |
-        grep -v '[<>=]' | sort -u
-)
-
-if [[ -d $repo_dir ]]; then
-    # Remove any packages that disappeared from the cache.
-    find "$repo_dir" -xtype l -delete -print
-else
-    mkdir -p "$repo_dir"
-fi
-
-package_names_to_remove=()
-
-# Remove unnecessary packages.
-package_pattern='^.*/(.*)(-[^-]+){3}'
-while IFS= read -r package_file; do
-    if [[ $package_file =~ $package_pattern ]]; then
-        package_name=${BASH_REMATCH[1]}
-        if [[ ! -v package_names_all[$package_name] ]]; then
-            package_names_to_remove+=("$package_name")
-            rm -vf "$package_file"{,.sig}
-        fi
-    fi
-done < <(find "$repo_dir" -type f -name "*.pkg.*" \! -name "*.sig")
-
-# Seed repository with packages from cache.
-for package_name in "${!package_names_all[@]}"; do
-    for src_file in "$cache_dir/$package_name"-*.pkg.*; do
-        dst_file=$repo_dir/${src_file##*/}
-        if [[ ! -f $dst_file || ! -L $dst_file ]]; then
-            rm -f "$dst_file"
-            ln -vsn "$src_file" "$dst_file"
-        fi
-    done
-done
-
-# Download missing packages.
-printf "%s\n" "${!package_names_all[@]}" |
+mkdir -p "$repo_dir"
+find ./config/packages -type f -exec cat {} + | sort -u |
     pacman -Syuw --noconfirm --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
 
-# Only keep the latest packages.
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 
-repo-remove "$repo_db_file" "${package_names_to_remove[@]}"
 repo-add --new --remove --include-sigs "$repo_db_file" "$repo_dir"/*.pkg.tar.zst

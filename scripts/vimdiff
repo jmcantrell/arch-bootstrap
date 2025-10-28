@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+templates_dir=$PWD/config/templates
+
+file=$(realpath -e "${1:?missing file}")
+
+if [[ $file == "$templates_dir"/* ]]; then
+    template_file=$file
+    system_file=${file#"$templates_dir"/}
+else
+    template_file=$templates_dir/${file##/}
+    system_file=$file
+fi
+
+vimdiff "$template_file" "$system_file"

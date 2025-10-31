@@ -162,13 +162,13 @@ fi
 
 install-target
 
-cd /root
-
 if [[ -f \$local_script && -x \$local_script ]]; then
+    cd /root
     "\$local_script"
 fi
 
-cp -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/var/log "\$log_file"
+install -D -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log "\$log_file"
+install -DT "\$env_file" "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc/bootstrap/env
 
 if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     chroot-target mkdir -p /.snapshots/@

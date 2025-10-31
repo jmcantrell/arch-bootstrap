@@ -111,10 +111,10 @@ The generated image will be configured to do the following automatically:
 - Create a file at `/root/bootstrap.env` with all `BOOTSTRAP_*` variables visible to `./scripts/mkci`
 - Create an installation entry point script at `/root/bootstrap` on the live system that does the following:
   - Perform a [basic installation](#basic-installation) using the configuration in `/root/bootstrap.env`
-  - Log output to `/root/bootstrap.log` and `/var/log/bootstrap.log` on the target system
-  - If it exists and is executable, the file `/root/bootstrap.local` will be run
-  - If using btrfs subvolumes, create a root snapshot at `/.snapshots/@/bootstrap` after installation
-
+  - Log output to `/root/bootstrap.log` and `/usr/local/var/log/bootstrap.log` on the target system
+  - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap/env` on the target system
+  - If it exists and is executable, the file `/root/bootstrap.local` will be run after installation
+  - If using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes), create a root snapshot at `/.snapshots/@/bootstrap` on the target system after installation
 To see complete usage details:
 
     ./scripts/mkci --help

@@ -14,4 +14,4 @@ else
     system_file=$file
 fi
 
-vimdiff "$template_file" "$system_file"
+vimdiff "$system_file" "$template_file"

@@ -4,7 +4,7 @@ set -euo pipefail
 
 binaries=()
 modules=()
-hooks=(base udev autodetect modconf kms)
+hooks=(base udev autodetect microcode modconf kms)
 files=()
 
 if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then

@@ -5,7 +5,7 @@ set -euo pipefail
 dd bs=512 count=4 if=/dev/random iflag=fullblock |
     install -D -m0000 /dev/stdin "$BOOTSTRAP_LUKS_KEY_FILE"
 
-cryptsetup luksFormat --batch-mode --type luks1 --key-slot 1 \
+cryptsetup luksFormat --batch-mode --key-slot 1 \
     "$BOOTSTRAP_LUKS_DEVICE" "$BOOTSTRAP_LUKS_KEY_FILE"
 
 cryptsetup luksAddKey --new-key-slot 0 \

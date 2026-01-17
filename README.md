@@ -83,10 +83,6 @@ To create a package repository at `/var/lib/bootstrap/repo` based on packages de
 
     ./scripts/mkrepo
 
-Extra packages can be provided as arguments to the script:
-
-    ./scripts/mkrepo tmux git
-
 To see complete usage details:
 
     ./scripts/mkrepo --help

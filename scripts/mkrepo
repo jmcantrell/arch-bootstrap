@@ -5,9 +5,7 @@ shopt -s nullglob
 
 self_name=${0##*/}
 
-repo_name=bootstrap
-repo_dir=/var/lib/$repo_name/repo
-repo_db_file=$repo_dir/$repo_name.db.tar.zst
+default_repo_dir=/var/lib/bootstrap/repo
 
 usage="Create a custom repository for bootstrapping.
 
@@ -17,7 +15,7 @@ Usage:
 
 Arguments:
     DIRECTORY    create repository in DIRECTORY
-                 (default: $repo_dir)
+                 (default: ${default_repo_dir@Q})
 "
 
 if (($# > 0)); then
@@ -29,7 +27,9 @@ fi
 
 ((EUID == 0)) || exec sudo "$0" "$@"
 
-temp_dir=/tmp/${repo_name}-db
+repo_dir=${1:-$default_repo_dir}
+
+temp_dir=/tmp/bootstrap-db
 trap 'rm -rf "$temp_dir"' EXIT
 mkdir -p "$temp_dir"
 
@@ -39,4 +39,4 @@ find ./config/packages -type f -exec cat {} + | sort -u |
 
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 
-repo-add --new --remove --include-sigs "$repo_db_file" "$repo_dir"/*.pkg.tar.zst
+repo-add --new --remove --include-sigs "$repo_dir"/bootstrap.db.tar.zst "$repo_dir"/*.pkg.tar.zst

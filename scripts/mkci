@@ -49,7 +49,7 @@ edit=0
 declare -A mount_lines=()
 
 for name in bootstrap{,_packages}; do
-    mount_lines[/mnt/$name]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
+    mount_lines["/mnt/$name"]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
 done
 
 while getopts "m:f:r:e" opt; do

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+while IFS= read -r -d '' file; do
+    if [[ $file == *.bash ]] || head -n1 "$file" | grep -qxF "#!/usr/bin/env bash"; then
+        printf "%s\0" "$file"
+    fi
+done < <(git ls-files -z) | xargs -0 shellcheck

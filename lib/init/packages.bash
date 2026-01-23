@@ -1,10 +1,10 @@
 # Look for packages _only_ in this package repository on a remote system
 # If this is set, it's required to also set `BOOTSTRAP_PACKAGE_REPO_NAME`.
-# export BOOTSTRAP_PACKAGE_REPO_SERVER=http://packages.local:8080
+# export BOOTSTRAP_PACKAGE_REPO_SERVER=http://repo.local:8080
 
 # Look for packages _only_ in this package repository on the live system
 # If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first file found in this directory matching `*.db.tar.*`.
-# export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/packages
+# export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/repo
 
 # The package repository name for `BOOTSTRAP_PACKAGE_REPO_{SERVER,DIR}`
 # If `BOOTSTRAP_PACKAGE_REPO_SERVER` is set, this name must be explicitly set.

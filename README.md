@@ -55,7 +55,7 @@ Initialize the environment on the live system:
 
     source ./init
 
-This will validate the environment variables that were set and add `./bin` to `PATH`.
+This will validate the environment variables that were set and add `$PWD/bin` to `PATH`.
 
 Inspect the modified environment:
 
@@ -545,7 +545,7 @@ See `reflector --help` for possible values.
 
 <!-- ./lib/init/packages.bash -->
 
-Look for packages _only_ in this package repository on the live system (e.g. `/mnt/packages`)
+Look for packages _only_ in this package repository on the live system (e.g. `/mnt/repo`)
 
 If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first file found in this directory matching `*.db.tar.*`.
 
@@ -562,7 +562,7 @@ If `BOOTSTRAP_PACKAGE_REPO_DIR` is set and this name is not, the name will be ta
 
 <!-- ./lib/init/packages.bash -->
 
-Look for packages _only_ in this package repository on a remote system (e.g. `http://packages.local:8080`)
+Look for packages _only_ in this package repository on a remote system (e.g. `http://repo.local:8080`)
 
 If this is set, it's required to also set `BOOTSTRAP_PACKAGE_REPO_NAME`.
 

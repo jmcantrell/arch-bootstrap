@@ -68,8 +68,8 @@ declare -A mounts=(
 )
 
 if [[ -d $repo_dir ]]; then
-    mounts[bootstrap_packages]=$repo_dir
-    export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/bootstrap_packages
+    mounts[bootstrap_repo]=$repo_dir
+    export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/bootstrap_repo
 fi
 
 for mount_name in "${!mounts[@]}"; do

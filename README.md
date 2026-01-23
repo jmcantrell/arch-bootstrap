@@ -102,7 +102,7 @@ The generated image will be configured to do the following automatically:
 - Enable Multicast DNS on the live system so it can be reached by host name
 - Set the host name of the live system to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname) (if the environment variable is set)
 - Try to mount a drive with the label `BOOTSTRAP` at `/mnt/bootstrap`
-- Try to mount a drive with the label `BOOTSTRAP_PACKAGES` at `/mnt/bootstrap_packages`
+- Try to mount a drive with the label `BOOTSTRAP_REPO` at `/mnt/bootstrap_repo`
 - Add configuration to the file `/root/config` on the live system
 - Create a file at `/root/bootstrap.env` with all `BOOTSTRAP_*` variables visible to `./scripts/mkci`
 - Create an installation entry point script at `/root/bootstrap` on the live system that does the following:
@@ -124,8 +124,8 @@ The virtual machine will be booted with a cloud-init image generated using the [
 Additionally, it will do the following:
 
 - Mount `$PWD` on the host at `/mnt/bootstrap` on the guest
-- Mount `/var/lib/bootstrap/repo` on the host at `/mnt/bootstrap_packages` on the guest
-- Configure [offline installation](#offline-installation) for `/mnt/bootstrap_packages`
+- Mount `/var/lib/bootstrap/repo` on the host at `/mnt/bootstrap_repo` on the guest
+- Configure [offline installation](#offline-installation) for `/mnt/bootstrap_repo`
 - Forward TCP port `60022` on the host to port `22` on the guest
 - Allow SSH connections over vsock at client id `42`
 

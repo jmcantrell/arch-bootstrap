@@ -48,7 +48,7 @@ runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.netwo
 edit=0
 declare -A mount_lines=()
 
-for name in bootstrap{,_packages}; do
+for name in bootstrap{,_repo}; do
     mount_lines["/mnt/$name"]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
 done
 

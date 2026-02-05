@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-shred -v "$@" "$BOOTSTRAP_TARGET_DEVICE"

@@ -12,18 +12,18 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
-    -m MOUNT    add MOUNT line to fstab
-                (where MOUNT is like 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
+    -e            edit files before building
+
+    -m MOUNT      add MOUNT line to fstab
+                  (where MOUNT is like 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
 
     -f MAPPING    add file MAPPING to the live system
                   (where MAPPING is like 'PATH[@PERMISSIONS]=FILE')
 
     -r COMMAND    add COMMAND to be run after boot
 
-    -e    edit files before building
-
 Arguments:
-    ISO_FILE    write cloud-init iso to ISO_FILE
+    ISO_FILE      write cloud-init iso to ISO_FILE
 "
 
 if (($# > 0)); then
@@ -38,10 +38,8 @@ mounts=()
 write_files=()
 runcmd=()
 
-# Mask the reflector service so it doesn't try to start.
 write_files+=("$(jo -- path=/etc/systemd/system/reflector.service -s permissions=0000)")
 
-# Stop the reflector service and unmask it so that it can possibly be used later.
 runcmd+=("systemctl stop reflector.service && rm /etc/systemd/system/reflector.service && systemctl daemon-reload")
 runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network && networkctl reload")
 
@@ -138,13 +136,11 @@ cat >"$script_file" <<EOF
 
 set -euo pipefail
 
-self_name=\${0##*/}
-
 cd /root
 
-log_file=\$PWD/\$self_name.log
-env_file=\$PWD/\$self_name.env
-local_script=\$PWD/\$self_name.local
+log_file=\$PWD/bootstrap.log
+env_file=\$PWD/bootstrap.env
+local_script=\$PWD/bootstrap.local
 
 exec > >(tee "\$log_file") 2>&1
 
@@ -172,7 +168,7 @@ install -DT "\$env_file" "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc/bootstrap/
 
 if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     chroot-target mkdir -p /.snapshots/@
-    chroot-target btrfs subvolume snapshot -r / /.snapshots/@/"\$self_name"
+    chroot-target btrfs subvolume snapshot -r / /.snapshots/@/bootstrap
 fi
 EOF
 

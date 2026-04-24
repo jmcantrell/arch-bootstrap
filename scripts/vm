@@ -15,21 +15,21 @@ Usage:
     $self_name [OPTIONS] DISK_FILE
 
 Options:
-    -m SIZE    specify memory size (default: $mem_size)
+    -m SIZE         specify memory size (default: $mem_size)
 
-    -i FILE    add iso FILE as a cdrom
-    -u FILE    use UEFI boot firmware and store in FILE
+    -i FILE         add iso FILE as a cdrom
+    -u FILE         use UEFI boot firmware and store in FILE
 
     -s NAME=PATH    add PATH as NAME 9p share
 
-    -p PORT    forward host PORT to guest port 22
-               (tcp only, default: $host_port)
+    -p PORT         forward host PORT to guest port 22
+                    (tcp only, default: $host_port)
 
-    -c ID    set guest vsock client ID
-             (default: $vsock_id)
+    -c ID           set guest vsock client ID
+                    (default: $vsock_id)
 
 Arguments:
-    DISK_FILE    data disk image file
+    DISK_FILE       data disk image file
 "
 
 if (($# > 0)); then

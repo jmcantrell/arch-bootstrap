@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+shopt -s nullglob globstar
 
 templates_dir=$PWD/config/templates
 
 changed=0
 
-while IFS= read -r template_file; do
-    system_file=/${template_file#"$templates_dir"/}
-    if [[ -f $system_file ]]; then
-        diff --recursive --no-dereference --unified --color \
-            "$system_file" "$template_file" || changed=1
+for template_file in "$templates_dir"/**; do
+    if [[ -f $template_file ]]; then
+        system_file=/${template_file#"$templates_dir"/}
+        if [[ -f $system_file ]]; then
+            diff -ur --no-dereference --color "$system_file" "$template_file" || changed=1
+        fi
     fi
-done < <(find "$templates_dir" -type f)
+done
 
 exit "$changed"

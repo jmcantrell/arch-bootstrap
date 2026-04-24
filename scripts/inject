@@ -14,5 +14,5 @@ networkctl reload
 if [[ ${0##*/} != inject ]]; then
     mkdir -p /tmp/bootstrap
     curl -fsSL https://git.sr.ht/~jmcantrell/arch-bootstrap/archive/main.tar.gz |
-        tar -xzf - -C /tmp/bootstrap --strip-components=1
+        tar -xz -f- -C /tmp/bootstrap --strip-components=1
 fi

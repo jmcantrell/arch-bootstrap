@@ -11,19 +11,19 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
-    -b    use BIOS boot firmware instead of UEFI
+    -e           edit configuration before booting the live system
 
-    -d FILE    store disk image in FILE (default: ephemeral)
-    -i FILE    store cloud-init ISO in FILE (default: ephemeral)
-    -u FILE    store UEFI firmware variables in FILE (default: ephemeral)
+    -b           use BIOS boot firmware instead of UEFI
 
-    -p PORT    forward host PORT to port 22 on the guest
-               (tcp only, default: same as ./scripts/vm)
+    -d FILE      store disk image in FILE (default: ephemeral)
+    -i FILE      store cloud-init ISO in FILE (default: ephemeral)
+    -u FILE      store UEFI firmware variables in FILE (default: ephemeral)
 
-    -c ID    set guest vsock client ID
-             (default: same as ./scripts/vm)
+    -p PORT      forward host PORT to port 22 on the guest
+                 (tcp only, default: same as ./scripts/vm)
 
-    -e    edit configuration before booting the live system
+    -c ID        set guest vsock client ID
+                 (default: same as ./scripts/vm)
 
 Arguments:
     ISO_FILE     installation media ISO file

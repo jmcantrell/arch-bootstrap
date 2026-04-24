@@ -13,18 +13,18 @@ Usage:
     $self_name [OPTIONS] ISO_FILE DISK_FILE
 
 Options:
-    -m SIZE    specify memory size (default: same as ./scripts/vm)
+    -e           edit configuration before booting the live system
 
-    -i FILE    store cloud-init ISO in FILE (default: ephemeral)
-    -u FILE    use UEFI and store in FILE
+    -m SIZE      specify memory size (default: same as ./scripts/vm)
 
-    -p PORT    forward host PORT to guest port 22
-               (tcp only, default: same as ./scripts/vm)
+    -i FILE      store cloud-init ISO in FILE (default: ephemeral)
+    -u FILE      use UEFI and store in FILE
 
-    -c ID    set guest vsock client ID
-             (default: same as ./scripts/vm)
+    -p PORT      forward host PORT to guest port 22
+                 (tcp only, default: same as ./scripts/vm)
 
-    -e    edit configuration before booting the live system
+    -c ID        set guest vsock client ID
+                 (default: same as ./scripts/vm)
 
 Arguments:
     ISO_FILE     installation media ISO file

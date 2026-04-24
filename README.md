@@ -93,24 +93,26 @@ The Arch Linux ISO uses [cloud-init] which can be configured to automate the ins
 
 The script `./scripts/mkci` can be used to create a cloud-init ISO (requires `xorriso`, `jo`, and `yq`).
 
-The generated image will be configured to do the following automatically:
+The generated image will be configured to do the following automatically on the live system:
 
-- Authorize any SSH public keys added to ssh-agent
-- Authorize any SSH public keys in `~/.ssh/authorized_keys`
-- Authorize any SSH public keys in `~/.ssh` belonging to the user
-- Include any iwd pre-shared keys on the system
-- Enable Multicast DNS on the live system so it can be reached by host name
-- Set the host name of the live system to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname) (if the environment variable is set)
+- Authorize any SSH public keys added to the user's ssh-agent on the host system
+- Authorize any SSH public keys in `~/.ssh/authorized_keys` on the
+  host system
+- Authorize any SSH public keys in `~/.ssh` belonging to the user on
+  the host system
+- Add any iwd pre-shared keys from the host system
+- Enable Multicast DNS so the live system can be reached by host name
+- Set the host name to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname) (if the environment variable is set)
 - Try to mount a drive with the label `BOOTSTRAP` at `/mnt/bootstrap`
 - Try to mount a drive with the label `BOOTSTRAP_REPO` at `/mnt/bootstrap_repo`
-- Add configuration to the file `/root/config` on the live system
-- Create a file at `/root/bootstrap.env` with all `BOOTSTRAP_*` variables visible to `./scripts/mkci`
-- Create an installation entry point script at `/root/bootstrap` on the live system that does the following:
+- Create a configuration file at `/root/bootstrap.env` containing all `BOOTSTRAP_*` variables visible to `./scripts/mkci`
+- Create an installation script at `/root/bootstrap` that does the following:
   - Perform a [basic installation](#basic-installation) using the configuration in `/root/bootstrap.env`
   - Log output to `/root/bootstrap.log` and `/usr/local/var/log/bootstrap.log` on the target system
   - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap/env` on the target system
   - If it exists and is executable, the file `/root/bootstrap.local` will be run after installation
   - If using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes), create a root snapshot at `/.snapshots/@/bootstrap` on the target system after installation
+
 To see complete usage details:
 
     ./scripts/mkci --help
@@ -129,17 +131,23 @@ Additionally, it will do the following:
 - Forward TCP port `60022` on the host to port `22` on the guest
 - Allow SSH connections over vsock at client id `42`
 
-To create a virtual machine with the default settings (only the installation disk set):
+To create a virtual machine with the default settings:
 
     ./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
 
-To add certain settings, export them before running the script:
+The virtual machine can be configured as you would expect:
 
     export BOOTSTRAP_HOSTNAME=vm
     export BOOTSTRAP_TIMEZONE=America/Chicago
     export BOOTSTRAP_ADMIN_LOGIN=frank
 
     ./scripts/mkvm /path/to/archlinux.iso /path/to/disk.cow
+
+The following settings are controlled by the script and will be ignored.
+
+    BOOTSTRAP_TARGET_DEVICE
+    BOOTSTRAP_ENABLE_TRIM
+    BOOTSTRAP_PACKAGE_REPO_DIR
 
 To see complete usage details:
 
@@ -178,11 +186,11 @@ The ephemeral virtual machine will be created using the [script described earlie
 
 After powering off the live system, the new system will be booted.
 
-To test the default settings (only the installation disk set):
+To test the default settings:
 
     ./scripts/test /path/to/archlinux.iso
 
-To test out certain settings, export them before running the script:
+The virtual machine can be configured as you would expect:
 
     export BOOTSTRAP_TIMEZONE=America/Chicago
     export BOOTSTRAP_ADMIN_LOGIN=frank
@@ -261,7 +269,7 @@ When LVM is enabled, a logical volume is used instead of a partition.
 Flag indicating that TRIM is supported on the target device (default: set if the target device is not a disk with spinning platters)
 
 If LUKS and/or LVM is enabled, they will be configured to issue discards.
-The systemd service for `fstrim` will also be scheduled.
+The systemd timer for `fstrim` will also be scheduled.
 
 ### `BOOTSTRAP_ENABLE_WIRELESS`
 
@@ -361,7 +369,7 @@ Extra boot parameters (e.g. `acpi_mask_gpe=0x6D`)
 
 <!-- ./lib/init/chroot/kernel.bash -->
 
-Flag indicating that `quiet` should be included in the kernel parameters (e.g. `true`)
+Flag indicating that "quiet" should be included in the kernel parameters (e.g. `true`)
 
 ### `BOOTSTRAP_KERNEL_USE_LTS`
 
@@ -393,7 +401,7 @@ The default language (default: `C.UTF-8`)
 
 The default language priority list
 
-Multiple should be separated with a colon.
+Multiple values should be separated with a colon.
 
 ### `BOOTSTRAP_LC_ADDRESS`
 
@@ -517,7 +525,7 @@ The name for the system volume group (default: `sys`)
 
 <!-- ./lib/init/hardware/memory.bash -->
 
-The amount of memory available (parsed from the output of `dmidecode`, default: same as ram size)
+The amount of memory available (parsed from the output of `dmidecode`, default: same as ram size, e.g. `16G`)
 
 ### `BOOTSTRAP_MIRROR_COUNTRY`
 

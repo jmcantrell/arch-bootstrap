@@ -2,7 +2,7 @@
 export BOOTSTRAP_LANG=${BOOTSTRAP_LANG:-C.UTF-8}
 
 # The default language priority list
-# Multiple should be separated with a colon.
+# Multiple values should be separated with a colon.
 # export BOOTSTRAP_LANGUAGE
 
 # The default interpretation of byte sequences as characters

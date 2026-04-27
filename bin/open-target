@@ -10,12 +10,15 @@ if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     open-luks
 fi
 
-open-lvm
-
-if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-    open-lvm-swap
-    open-swap
+if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
+    open-lvm
+    if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
+        open-lvm-swap
+    fi
+    open-lvm-root
 fi
 
-open-lvm-root
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
+    open-swap
+fi
 open-root

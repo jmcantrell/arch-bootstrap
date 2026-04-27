@@ -2,14 +2,12 @@
 
 set -euo pipefail
 
-config_file=$BOOTSTRAP_CONFIG_DIR/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes
-
 open-root-default
 
 if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then
     while read -r name _path; do
         btrfs subvolume create "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
-    done <"$config_file"
+    done < <(print-root-subvolumes)
 fi
 
 close-root

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+config_file=$BOOTSTRAP_CONFIG_DIR/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes
+
+if [[ ! -f $config_file ]]; then
+    printf "%s: subvolumes configuration does not exist: %q\n" "$0" "$config_file" >&2
+    exit 78
+fi
+
+cat "$config_file"

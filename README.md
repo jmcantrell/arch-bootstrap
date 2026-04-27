@@ -99,23 +99,23 @@ The script `./scripts/mkci` can be used to create a cloud-init ISO (requires `xo
 
 The generated image will be configured to do the following automatically on the live system:
 
-- Authorize any SSH public keys added to the user's ssh-agent on the host system
-- Authorize any SSH public keys in `~/.ssh/authorized_keys` on the
-  host system
-- Authorize any SSH public keys in `~/.ssh` belonging to the user on
-  the host system
+- Try to mount the following drives:
+  - A drive with the label `BOOTSTRAP` at `/mnt/bootstrap`
+  - A drive with the label `BOOTSTRAP_REPO` at `/mnt/bootstrap_repo`
 - Add any iwd pre-shared keys from the host system
+- Try to set the host name to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname)
+- Authorize any SSH public keys from the following places on the host system:
+  - Public keys added to the user's ssh-agent
+  - Public keys in the file `~/.ssh/authorized_keys`
+  - Public keys in `~/.ssh` belonging to the user
 - Enable Multicast DNS so the live system can be reached by host name
-- Set the host name to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname) (if the environment variable is set)
-- Try to mount a drive with the label `BOOTSTRAP` at `/mnt/bootstrap`
-- Try to mount a drive with the label `BOOTSTRAP_REPO` at `/mnt/bootstrap_repo`
-- Create a configuration file at `/root/bootstrap.env` containing all `BOOTSTRAP_*` variables visible to `./scripts/mkci`
+- Create a configuration file at `/root/bootstrap.env` containing all `BOOTSTRAP_*` variables
 - Create an installation script at `/root/bootstrap` that does the following:
   - Perform a [basic installation](#basic-installation) using the configuration in `/root/bootstrap.env`
+  - Run the script `/root/bootstrap.local` (if it exists and is executable)
   - Log output to `/root/bootstrap.log` and `/usr/local/var/log/bootstrap.log` on the target system
   - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap/env` on the target system
-  - If it exists and is executable, the file `/root/bootstrap.local` will be run after installation
-  - If using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes), create a root snapshot at `/.snapshots/@/bootstrap` on the target system after installation
+  - Create a root file system snapshot at `/.snapshots/@/bootstrap` (if using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes))
 
 To see complete usage details:
 
@@ -127,12 +127,12 @@ The script `./scripts/mkvm` can be used to bootstrap a virtual machine (requires
 
 The virtual machine will be booted with a cloud-init image generated using the [script described earlier](#automated-installation).
 
-Additionally, it will do the following:
+Additionally, it will do the following on the guest system:
 
-- Mount `$PWD` on the host at `/mnt/bootstrap` on the guest
-- Mount `/var/lib/bootstrap/repo` on the host at `/mnt/bootstrap_repo` on the guest
-- Configure [offline installation](#offline-installation) for `/mnt/bootstrap_repo`
-- Forward TCP port `60022` on the host to port `22` on the guest
+- Mount `$PWD` from the host system at `/mnt/bootstrap`
+- Try to mount `/var/lib/bootstrap/repo` from the host system at `/mnt/bootstrap_repo`
+- Try to configure [offline installation](#offline-installation) for `/mnt/bootstrap_repo`
+- Forward TCP port `60022` on the host system to port `22`
 - Allow SSH connections over vsock at client id `42`
 
 To create a virtual machine with the default settings:

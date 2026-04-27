@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
+    close-uefi
+fi
+
 close-root
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     close-swap
@@ -17,8 +21,4 @@ fi
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     close-luks
-fi
-
-if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
-    close-uefi
 fi

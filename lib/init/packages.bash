@@ -12,7 +12,7 @@
 # export BOOTSTRAP_PACKAGE_REPO_NAME=custom
 
 if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER && -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
-    repo_db_file=$(find -L "$BOOTSTRAP_PACKAGE_REPO_DIR" -type f -name "*.db.tar.*" | head -n1)
+    repo_db_file=$(find -L "$BOOTSTRAP_PACKAGE_REPO_DIR" -maxdepth 1 -type f -name "*.db.tar.*" | head -n1)
 
     if [[ -z $repo_db_file ]]; then
         printf "%s: unable to find any database files in the package repository: %q\n" "$0" "$BOOTSTRAP_PACKAGE_REPO_DIR" >&2

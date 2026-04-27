@@ -156,6 +156,7 @@ if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER ]]; then
     refresh-mirrors
 fi
 
+create-target
 install-target
 
 if [[ -f \$local_script && -x \$local_script ]]; then

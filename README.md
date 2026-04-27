@@ -61,7 +61,11 @@ Inspect the modified environment:
 
     print-config
 
-Install the target system:
+Create and mount partitions and file systems:
+
+    create-target
+
+Install packages and configure operating system:
 
     install-target
 
@@ -70,7 +74,7 @@ After installation, the target system is left mounted for inspection or further 
 If all is well, `poweroff` and eject the installation media.
 
 The top-level commands, i.e., `./bin/*-target`, are intentionally kept extremely simple and easy to read, serving as an outline.
-They can also be helpful in other contexts, e.g., troubleshooting the target system (see `./bin/{open,close,remove,wipe}-target`).
+They can also be helpful in other contexts, e.g., troubleshooting the target system (see `./bin/{create,open,close,remove,wipe}-target`).
 
 ### Offline Installation
 

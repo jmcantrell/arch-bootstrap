@@ -2,14 +2,8 @@
 
 set -euo pipefail
 
-if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
-    while read -r name path; do
-        mount --verbose --mkdir \
-            -o "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
-            "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR/${path#/}"
-    done <"$BOOTSTRAP_CONFIG_DIR"/file_systems/"$BOOTSTRAP_FS_ROOT_KIND"/root/subvolumes
+if [[ -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
+    open-root-subvolumes
 else
-    mount --verbose --mkdir \
-        ${BOOTSTRAP_FS_ROOT_OPTIONS:+--options "$BOOTSTRAP_FS_ROOT_OPTIONS"} \
-        "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR"
+    open-root-default
 fi

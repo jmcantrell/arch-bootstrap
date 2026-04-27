@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-cat "$BOOTSTRAP_CONFIG_DIR"/file_systems/"$BOOTSTRAP_FS_ROOT_KIND"/root/subvolumes

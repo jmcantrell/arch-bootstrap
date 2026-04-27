@@ -55,7 +55,7 @@ Initialize the environment on the live system:
 
     source ./init
 
-This will validate the environment variables that were set and add `$PWD/bin` to `PATH`.
+This will validate the configuration and add `$PWD/bin` to `PATH`.
 
 Inspect the modified environment:
 
@@ -369,7 +369,7 @@ Extra boot parameters (e.g. `acpi_mask_gpe=0x6D`)
 
 <!-- ./lib/init/chroot/kernel.bash -->
 
-Flag indicating that "quiet" should be included in the kernel parameters (e.g. `true`)
+Flag indicating that `quiet` should be included in the kernel parameters (e.g. `true`)
 
 ### `BOOTSTRAP_KERNEL_USE_LTS`
 

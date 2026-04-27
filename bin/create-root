@@ -2,7 +2,12 @@
 
 set -euo pipefail
 
-case $BOOTSTRAP_FS_ROOT_KIND in
-btrfs) create-root-btrfs ;;
-*) create-root-default ;;
-esac
+mkfs."$BOOTSTRAP_FS_ROOT_KIND" -L "$BOOTSTRAP_FS_ROOT_LABEL" "$BOOTSTRAP_ROOT_DEVICE"
+
+if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
+    open-root
+    while read -r name _path; do
+        btrfs subvolume create "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
+    done <"$BOOTSTRAP_CONFIG_DIR"/file_systems/"$BOOTSTRAP_FS_ROOT_KIND"/root/subvolumes
+    close-root
+fi

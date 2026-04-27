@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+sfdisk --delete "$BOOTSTRAP_TARGET_DEVICE"

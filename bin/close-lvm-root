@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-lvchange --verbose --activate n "$BOOTSTRAP_LVM_LV_ROOT_MAPPER_DEVICE"

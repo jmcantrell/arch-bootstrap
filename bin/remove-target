@@ -3,10 +3,6 @@
 set -euo pipefail
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
-    remove-lvm-root
-    if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-        remove-lvm-swap
-    fi
     remove-lvm
 fi
 

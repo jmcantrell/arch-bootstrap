@@ -7,15 +7,12 @@ if [[ $BOOTSTRAP_BOOT_FIRMWARE == uefi ]]; then
 fi
 
 close-root
+
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
     close-swap
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
-    close-lvm-root
-    if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-        close-lvm-swap
-    fi
     close-lvm
 fi
 

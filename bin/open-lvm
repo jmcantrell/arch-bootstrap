@@ -3,3 +3,9 @@
 set -euo pipefail
 
 vgchange --verbose --activate y "$BOOTSTRAP_LVM_VG_NAME"
+
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
+    lvchange --verbose --activate y "$BOOTSTRAP_LVM_LV_SWAP_MAPPER_DEVICE"
+fi
+
+lvchange --verbose --activate y "$BOOTSTRAP_LVM_LV_ROOT_MAPPER_DEVICE"

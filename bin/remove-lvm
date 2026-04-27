@@ -2,5 +2,11 @@
 
 set -euo pipefail
 
+lvremove --verbose "$BOOTSTRAP_LVM_LV_ROOT_MAPPER_DEVICE"
+
+if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
+    lvremove --verbose "$BOOTSTRAP_LVM_LV_SWAP_MAPPER_DEVICE"
+fi
+
 vgremove --verbose "$BOOTSTRAP_LVM_VG_NAME"
 pvremove --verbose "$BOOTSTRAP_LVM_DEVICE"

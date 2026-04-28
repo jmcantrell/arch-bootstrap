@@ -74,7 +74,7 @@ After installation, the target system is left mounted for inspection or further 
 If all is well, `poweroff` and eject the installation media.
 
 The top-level commands, i.e., `./bin/*-target`, are intentionally kept extremely simple and easy to read, serving as an outline.
-They can also be helpful in other contexts, e.g., troubleshooting the target system (see `./bin/{create,open,close,remove,wipe}-target`).
+They can also be helpful in other contexts, e.g., troubleshooting the target system.
 
 ### Offline Installation
 
@@ -112,7 +112,7 @@ The generated image will be configured to do the following automatically on the 
 - Create a configuration file at `/root/bootstrap.env` containing all `BOOTSTRAP_*` variables
 - Create an installation script at `/root/bootstrap` that does the following:
   - Perform a [basic installation](#basic-installation) using the configuration in `/root/bootstrap.env`
-  - Run the script `/root/bootstrap.local` (if it exists and is executable)
+  - Run the script `/root/bootstrap.local` after installation (if it exists and is executable)
   - Log output to `/root/bootstrap.log` and `/usr/local/var/log/bootstrap.log` on the target system
   - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap/env` on the target system
   - Create a root file system snapshot at `/.snapshots/@/bootstrap` (if using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes))
@@ -131,9 +131,9 @@ Additionally, it will do the following on the guest system:
 
 - Mount `$PWD` from the host system at `/mnt/bootstrap`
 - Try to mount `/var/lib/bootstrap/repo` from the host system at `/mnt/bootstrap_repo`
-- Try to configure [offline installation](#offline-installation) for `/mnt/bootstrap_repo`
+- Configure [offline installation](#offline-installation) for `/mnt/bootstrap_repo` (if mounted)
 - Forward TCP port `60022` on the host system to port `22`
-- Allow SSH connections over vsock at client id `42`
+- Allow SSH connections over vsock on client id `42`
 
 To create a virtual machine with the default settings:
 
@@ -184,9 +184,9 @@ The script will be run similarly to the curl command above once the live system 
 
 ## Testing
 
-Installation can be tested in a virtual machine using the script `./scripts/test`.
+Installation can be tested in an ephemeral virtual machine using the script `./scripts/test`.
 
-The ephemeral virtual machine will be created using the [script described earlier](#virtual-machine-installation).
+The virtual machine will be created using the [script described earlier](#virtual-machine-installation).
 
 After powering off the live system, the new system will be booted.
 
@@ -305,6 +305,7 @@ The default console unicode font map
 
 Flag indicating that subvolumes should be used for the root file system (e.g. `true`).
 
+When the file system does not support subvolumes, this setting has no effect.
 The default values are taken from the file `./config/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes`.
 Each line must be of the form `NAME MOUNT` where `NAME` is the name of the
 subvolume and `MOUNT` is the path where the subvolume should be mounted in
@@ -529,7 +530,7 @@ The name for the system volume group (default: `sys`)
 
 <!-- ./lib/init/hardware/memory.bash -->
 
-The amount of memory available (parsed from the output of `dmidecode`, default: same as ram size, e.g. `16G`)
+The amount of memory available (default: parsed from the output of `dmidecode`, i.e. same as ram size, e.g. `16G`)
 
 ### `BOOTSTRAP_MIRROR_COUNTRY`
 
@@ -588,7 +589,7 @@ The name of the boot partition (default: `boot`)
 
 <!-- ./lib/init/partitions/boot.bash -->
 
-The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
+The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS` depending on the value of `$BOOTSTRAP_BOOT_FIRMWARE`)
 
 **NOTE**: The value needs to be recognizable by [`sfdisk(8)`](https://man.archlinux.org/man/sfdisk.8).
 
@@ -612,7 +613,7 @@ The size of UEFI boot partitions (default: `100M`)
 
 <!-- ./lib/init/partitions/boot.bash -->
 
-The type of the boot partition (default: `$BOOTSTRAP_PART_BOOT_TYPE_<KIND>` where `<KIND>` is `UEFI` or `BIOS`)
+The type of the boot partition (default: `$BOOTSTRAP_PART_BOOT_TYPE_<KIND>` where `<KIND>` is `UEFI` or `BIOS` depending on the value of `$BOOTSTRAP_BOOT_FIRMWARE`)
 
 ### `BOOTSTRAP_PART_BOOT_TYPE_BIOS`
 

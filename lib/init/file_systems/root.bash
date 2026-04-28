@@ -33,6 +33,7 @@ unset package_file
 export BOOTSTRAP_FS_ROOT_LABEL=${BOOTSTRAP_FS_ROOT_LABEL:-root}
 
 # Flag indicating that subvolumes should be used for the root file system.
+# When the file system does not support subvolumes, this setting has no effect.
 # The default values are taken from the file `./config/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/subvolumes`.
 # Each line must be of the form `NAME MOUNT` where `NAME` is the name of the
 # subvolume and `MOUNT` is the path where the subvolume should be mounted in

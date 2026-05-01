@@ -64,7 +64,7 @@ if [[ $boot_firmware == uefi ]]; then
         uefi_file=$temp_dir/uefi_vars.fd
     fi
     if [[ ! -f $uefi_file ]]; then
-        cp /usr/share/edk2/x64/OVMF_VARS.4m.fd "$uefi_file"
+        cp -vi /usr/share/edk2/x64/OVMF_VARS.4m.fd "$uefi_file"
     fi
     vm_opts+=(-u "$uefi_file")
 fi

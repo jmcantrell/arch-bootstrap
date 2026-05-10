@@ -8,7 +8,7 @@ cmdline_default=(
     ${BOOTSTRAP_KERNEL_LOGLEVEL:+loglevel="$BOOTSTRAP_KERNEL_LOGLEVEL"}
     ${BOOTSTRAP_KERNEL_CONSOLEBLANK:+consoleblank="$BOOTSTRAP_KERNEL_CONSOLEBLANK"}
 )
-preload_modules=(part_{gpt,msdos})
+preload_modules=(part_gpt)
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
     preload_modules+=(lvm)

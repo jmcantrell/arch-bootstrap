@@ -560,6 +560,7 @@ See `reflector --help` for possible values.
 
 Look for packages _only_ in this package repository on the live system (e.g. `/mnt/repo`)
 
+If this is set, it's required to be an absolute path.
 If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first file found in this directory matching `*.db.tar.*`.
 
 ### `BOOTSTRAP_PACKAGE_REPO_NAME`

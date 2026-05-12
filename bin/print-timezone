@@ -6,6 +6,6 @@ link=/etc/localtime
 
 [[ -L $link ]] || exit 9
 
-file=$(realpath "$link")
+IFS= read -r -d '' file < <(readlink -z -- "$link")
 
 printf "%s\n" "${file#*/zoneinfo/}"

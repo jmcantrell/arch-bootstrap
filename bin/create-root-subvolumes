@@ -6,7 +6,7 @@ open-root-default
 
 if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then
     while read -r name _path; do
-        btrfs subvolume create "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
+        btrfs subvolume create -- "$BOOTSTRAP_TARGET_MOUNT_DIR/$name"
     done < <(print-root-subvolumes)
 fi
 

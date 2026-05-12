@@ -25,7 +25,7 @@ if (($# > 0)); then
     fi
 fi
 
-((EUID == 0)) || exec sudo "$0" "$@"
+((EUID == 0)) || exec sudo -- "$0" "$@"
 
 repo_dir=${1:-$default_repo_dir}
 
@@ -33,10 +33,9 @@ temp_dir=/tmp/bootstrap-db
 trap 'rm -rf "$temp_dir"' EXIT
 mkdir -p "$temp_dir"
 
-mkdir -p "$repo_dir"
-find ./config/packages -type f -exec cat {} + | sort -u |
+find ./config/packages -type f -exec cat -- {} + | sort -u |
     pacman -Syuw --noconfirm --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
 
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 
-repo-add --new --remove --include-sigs "$repo_dir"/bootstrap.db.tar.zst "$repo_dir"/*.pkg.tar.zst
+repo-add --new --remove --include-sigs -- "$repo_dir"/bootstrap.db.tar.zst "$repo_dir"/*.pkg.tar.zst

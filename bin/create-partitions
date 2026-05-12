@@ -21,4 +21,4 @@ done
 
 printf -v lines "$format\n" "${values[@]}"
 
-printf "label: gpt\n%s\n" "$lines" | sfdisk "$BOOTSTRAP_TARGET_DEVICE"
+printf "label: gpt\n%s\n" "$lines" | sfdisk -- "$BOOTSTRAP_TARGET_DEVICE"

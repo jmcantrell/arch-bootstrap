@@ -6,6 +6,6 @@ if [[ $BOOTSTRAP_FS_ROOT_KIND == btrfs ]]; then
     while read -r name path; do
         mount --verbose --mkdir \
             -o "${BOOTSTRAP_FS_ROOT_OPTIONS:+$BOOTSTRAP_FS_ROOT_OPTIONS,}subvol=$name" \
-            "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR/${path#/}"
+            -- "$BOOTSTRAP_ROOT_DEVICE" "$BOOTSTRAP_TARGET_MOUNT_DIR/${path#/}"
     done < <(print-root-subvolumes)
 fi

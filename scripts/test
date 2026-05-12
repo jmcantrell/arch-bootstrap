@@ -56,8 +56,8 @@ shift $((OPTIND - 1))
 
 media_file=${1:?missing media file}
 
-temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
-trap 'rm -rf "$temp_dir"' EXIT
+temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
+trap 'rm -rf -- "$temp_dir"' EXIT
 
 if [[ $boot_firmware == uefi ]]; then
     if [[ ! -v uefi_file ]]; then
@@ -73,9 +73,9 @@ if [[ ! -v disk_file ]]; then
     disk_file=$temp_dir/disk.cow
 fi
 if [[ ! -f $disk_file ]]; then
-    qemu-img create -f qcow2 "$disk_file" -o nocow=on 20G
+    qemu-img create -f qcow2 -o nocow=on -- "$disk_file" 20G
 fi
 
-./scripts/mkvm "${vm_opts[@]}" "${mkvm_opts[@]}" "$media_file" "$disk_file"
+./scripts/mkvm "${vm_opts[@]}" "${mkvm_opts[@]}" -- "$media_file" "$disk_file"
 
-./scripts/vm "${vm_opts[@]}" "$disk_file"
+./scripts/vm "${vm_opts[@]}" -- "$disk_file"

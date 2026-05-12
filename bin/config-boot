@@ -16,7 +16,7 @@ fi
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
     cmdline+=(
-        cryptdevice=UUID="$(blkid -s UUID -o value "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_ENABLE_TRIM:+:allow-discards}"
+        cryptdevice=UUID="$(blkid -s UUID -o value -- "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_ENABLE_TRIM:+:allow-discards}"
         cryptkey=rootfs:"$BOOTSTRAP_LUKS_INITRD_KEY_FILE"
     )
     preload_modules+=(cryptodisk luks)

@@ -20,11 +20,11 @@ fi
 
 input_file=./README.md
 
-temp_dir=$(mktemp -td "$self_name-$$".XXXXXXXXXX)
-trap 'rm -rf "$temp_dir"' EXIT
+temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
+trap 'rm -rf -- "$temp_dir"' EXIT
 
-csplit -ks -n1 -f "$temp_dir"/before "$input_file" '/<!-- CONFIG START -->/1'
-csplit -ks -n1 -f "$temp_dir"/after "$temp_dir"/before1 '/<!-- CONFIG END -->/'
+csplit -ks -n1 -f "$temp_dir"/before -- "$input_file" '/<!-- CONFIG START -->/1'
+csplit -ks -n1 -f "$temp_dir"/after -- "$temp_dir"/before1 '/<!-- CONFIG END -->/'
 
 pat_comment='^[[:space:]]*#+[[:space:]]*(.*)$'
 pat_variable='^[[:space:]]*(#*)[[:space:]]*export[[:space:]]+(BOOTSTRAP_[^=]+)=?(.*)$'
@@ -108,4 +108,4 @@ pat_example='\be\.g\.\b'
 
 sed -Ei 's@`(\w+)\((.+)\)`@[&](https://man.archlinux.org/man/\1.\2)@g' "$temp_dir"/config
 
-cat "$temp_dir"/{before0,config,after1} >"$input_file"
+cat -- "$temp_dir"/{before0,config,after1} >"$input_file"

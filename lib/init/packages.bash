@@ -3,6 +3,7 @@
 # export BOOTSTRAP_PACKAGE_REPO_SERVER=http://repo.local:8080
 
 # Look for packages _only_ in this package repository on the live system
+# If this is set, it's required to be an absolute path.
 # If `BOOTSTRAP_PACKAGE_REPO_NAME` is not set, it will be taken from the first file found in this directory matching `*.db.tar.*`.
 # export BOOTSTRAP_PACKAGE_REPO_DIR=/mnt/repo
 
@@ -12,7 +13,12 @@
 # export BOOTSTRAP_PACKAGE_REPO_NAME=custom
 
 if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER && -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; then
-    repo_db_file=$(find -L "$BOOTSTRAP_PACKAGE_REPO_DIR" -maxdepth 1 -type f -name "*.db.tar.*" | head -n1)
+    if [[ $BOOTSTRAP_PACKAGE_REPO_DIR != /* ]]; then
+        printf "%s: package repo directory must be absolute: %q\n" "$0" "$BOOTSTRAP_PACKAGE_REPO_DIR" >&2
+        return 2
+    fi
+
+    repo_db_file=$(find -L -- "$BOOTSTRAP_PACKAGE_REPO_DIR" -maxdepth 1 -type f -name "*.db.tar.*" | head -n1)
 
     if [[ -z $repo_db_file ]]; then
         printf "%s: unable to find any database files in the package repository: %q\n" "$0" "$BOOTSTRAP_PACKAGE_REPO_DIR" >&2
@@ -26,7 +32,7 @@ if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER && -v BOOTSTRAP_PACKAGE_REPO_DIR ]]; th
         unset repo_name
     fi
 
-    repo_server=file://$(realpath "$BOOTSTRAP_PACKAGE_REPO_DIR")
+    repo_server=file://$BOOTSTRAP_PACKAGE_REPO_DIR
     export BOOTSTRAP_PACKAGE_REPO_SERVER=$repo_server
     unset repo_db_file repo_server
 fi

@@ -63,7 +63,7 @@ while getopts "m:f:r:e" opt; do
             permissions=${path##*@}
             path=${path%%@*}
         else
-            permissions=$(stat -L -c %a "$file")
+            permissions=$(stat -L -c %a -- "$file")
         fi
         write_files+=("$(jo -- encoding=b64 path="$path" -s permissions="$permissions" content=%"$file")")
         ;;
@@ -76,8 +76,8 @@ shift $((OPTIND - 1))
 
 iso_file=${1:?missing iso file}
 
-temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
-trap 'rm -rf "$temp_dir"' EXIT
+temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
+trap 'rm -rf -- "$temp_dir"' EXIT
 
 for line in "${mount_lines[@]}"; do
     read -ra tokens <<<"$line"
@@ -104,7 +104,7 @@ fi
 
 for pubkey_file in ~/.ssh/*.pub; do
     privkey_file=${pubkey_file%.*}
-    if [[ -f $pubkey_file && -f $privkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s "$pubkey_file" -; then
+    if [[ -f $pubkey_file && -f $privkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s -- "$pubkey_file" -; then
         ssh_pubkeys[$(<"$pubkey_file")]=1
     fi
 done
@@ -142,7 +142,7 @@ log_file=\$PWD/bootstrap.log
 env_file=\$PWD/bootstrap.env
 local_script=\$PWD/bootstrap.local
 
-exec > >(tee "\$log_file") 2>&1
+exec > >(tee -- "\$log_file") 2>&1
 
 source "\$env_file"
 
@@ -164,8 +164,8 @@ if [[ -f \$local_script && -x \$local_script ]]; then
     "\$local_script"
 fi
 
-install -D -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log "\$log_file"
-install -DT "\$env_file" "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc/bootstrap/env
+install -D -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log -- "\$log_file"
+install -DT -- "\$env_file" "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc/bootstrap/env
 
 if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     chroot-target mkdir -p /.snapshots/@
@@ -196,7 +196,7 @@ fi
 umask 077
 
 cidata_dir=$temp_dir/cidata
-mkdir -p "$cidata_dir"
+mkdir -p -- "$cidata_dir"
 
 cat >"$cidata_dir"/meta-data <<EOF
 ${BOOTSTRAP_HOSTNAME:+local-hostname: $BOOTSTRAP_HOSTNAME}
@@ -204,12 +204,12 @@ EOF
 
 cat >"$cidata_dir"/user-data <<EOF
 #cloud-config
-$(jo "${user_data[@]}" | yq -p json)
+$(jo -- "${user_data[@]}" | yq -p json)
 EOF
 
 if ((edit)); then
-    $EDITOR "$env_file" "$script_file" "$cidata_dir"/{user,meta}-data
+    $EDITOR -- "$env_file" "$script_file" "$cidata_dir"/{user,meta}-data
 fi
 
-mkdir -p "$(dirname "$iso_file")"
+mkdir -p -- "$(dirname -- "$iso_file")"
 xorriso -as genisoimage -output "$iso_file" -volid CIDATA -joliet -rock "$cidata_dir"/*

@@ -12,7 +12,7 @@ esac
 if [[ ! -v BOOTSTRAP_FS_ROOT_OPTIONS ]]; then
     options_file="$BOOTSTRAP_CONFIG_DIR"/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/options
     if [[ -f $options_file ]]; then
-        BOOTSTRAP_FS_ROOT_OPTIONS=$(paste -sd, "$options_file")
+        BOOTSTRAP_FS_ROOT_OPTIONS=$(paste -sd, -- "$options_file")
         # Mount options for the root file system
         # The default value is taken from the file `./config/file_systems/$BOOTSTRAP_FS_ROOT_KIND/root/options`.
         # Multiple lines are joined together with commas.

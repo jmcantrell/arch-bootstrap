@@ -11,7 +11,7 @@ for template_file in "$templates_dir"/**; do
     if [[ -f $template_file ]]; then
         system_file=/${template_file#"$templates_dir"/}
         if [[ -f $system_file ]]; then
-            diff -ur --no-dereference --color "$system_file" "$template_file" || changed=1
+            diff -ur --no-dereference --color -- "$system_file" "$template_file" || changed=1
         fi
     fi
 done

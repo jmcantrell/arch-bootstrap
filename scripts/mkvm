@@ -38,8 +38,8 @@ if (($# > 0)); then
     fi
 fi
 
-temp_dir=$(mktemp -d -t "$self_name-$$".XXXXXXXXXX)
-trap 'rm -rf "$temp_dir"' EXIT
+temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
+trap 'rm -rf -- "$temp_dir"' EXIT
 
 ci_opts=()
 vm_opts=()
@@ -79,6 +79,6 @@ for mount_name in "${!mounts[@]}"; do
     vm_opts+=(-s "$mount_name=${mounts[$mount_name]}")
 done
 
-./scripts/mkci "${ci_opts[@]}" "$cidata_file"
+./scripts/mkci "${ci_opts[@]}" -- "$cidata_file"
 
-./scripts/vm "${vm_opts[@]}" -i "$media_file" -i "$cidata_file" "$disk_file"
+./scripts/vm "${vm_opts[@]}" -i "$media_file" -i "$cidata_file" -- "$disk_file"

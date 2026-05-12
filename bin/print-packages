@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-exec > >(sort -u)
-
 cd "$BOOTSTRAP_CONFIG_DIR"/packages
 
 files=(base)
@@ -36,4 +34,4 @@ if [[ -f extra ]]; then
     files+=(extra)
 fi
 
-sort -u "${files[@]}"
+sort -u -- "${files[@]}"

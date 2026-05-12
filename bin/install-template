@@ -16,6 +16,6 @@ while IFS= read -r line; do
     done < <(envsubst -v "${line//-/ }") # envsubst does not recognize -- so 86 dashes
 done <"$template_file"
 
-mkdir -p "$(dirname "$rendered_file")"
+mkdir -p -- "$(dirname -- "$rendered_file")"
 envsubst "$variables" <"$template_file" >"$rendered_file"
-chmod -v --reference="$template_file" "$rendered_file"
+chmod -v --reference="$template_file" -- "$rendered_file"

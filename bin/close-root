@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-umount --verbose --recursive "$BOOTSTRAP_TARGET_MOUNT_DIR"
+umount --verbose --recursive -- "$BOOTSTRAP_TARGET_MOUNT_DIR"

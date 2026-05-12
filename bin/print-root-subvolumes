@@ -9,4 +9,4 @@ if [[ ! -f $config_file ]]; then
     exit 78
 fi
 
-cat "$config_file"
+cat -- "$config_file"

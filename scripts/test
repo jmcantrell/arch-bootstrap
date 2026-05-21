@@ -43,13 +43,13 @@ mkvm_opts=()
 
 while getopts "bd:i:u:p:c:e" opt; do
     case $opt in
-    b) boot_firmware=bios ;;
-    u) uefi_file=$OPTARG ;;
-    d) disk_file=$OPTARG ;;
-    p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
-    i) mkvm_opts+=(-"$opt" "$OPTARG") ;;
-    e) mkvm_opts+=(-"$opt") ;;
-    *) exit 2 ;;
+        b) boot_firmware=bios ;;
+        u) uefi_file=$OPTARG ;;
+        d) disk_file=$OPTARG ;;
+        p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
+        i) mkvm_opts+=(-"$opt" "$OPTARG") ;;
+        e) mkvm_opts+=(-"$opt") ;;
+        *) exit 2 ;;
     esac
 done
 shift $((OPTIND - 1))

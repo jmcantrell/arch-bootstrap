@@ -6,14 +6,14 @@ source "$BOOTSTRAP_LIB_DIR"/init/partitions/boot_firmwares/"$BOOTSTRAP_BOOT_FIRM
 unset part_size_default part_type_default
 
 case $BOOTSTRAP_BOOT_FIRMWARE in
-uefi)
-    part_size_default=$BOOTSTRAP_PART_BOOT_SIZE_UEFI
-    part_type_default=$BOOTSTRAP_PART_BOOT_TYPE_UEFI
-    ;;
-bios)
-    part_size_default=$BOOTSTRAP_PART_BOOT_SIZE_BIOS
-    part_type_default=$BOOTSTRAP_PART_BOOT_TYPE_BIOS
-    ;;
+    uefi)
+        part_size_default=$BOOTSTRAP_PART_BOOT_SIZE_UEFI
+        part_type_default=$BOOTSTRAP_PART_BOOT_TYPE_UEFI
+        ;;
+    bios)
+        part_size_default=$BOOTSTRAP_PART_BOOT_SIZE_BIOS
+        part_type_default=$BOOTSTRAP_PART_BOOT_TYPE_BIOS
+        ;;
 esac
 
 # The size of the boot partition (default: `$BOOTSTRAP_PART_BOOT_SIZE_<KIND>` where `<KIND>` is `UEFI` or `BIOS` depending on the value of `$BOOTSTRAP_BOOT_FIRMWARE`)

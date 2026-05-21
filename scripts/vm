@@ -47,20 +47,20 @@ cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
 
 while getopts "m:i:u:s:p:c:" opt; do
     case $opt in
-    m) mem_size=$OPTARG ;;
-    u) uefi_file=$OPTARG ;;
-    i)
-        boot_order=d
-        cdrom_id=$((cdrom_id_next++))
-        opts+=(
-            -device "$(printf "$cdrom_device_fmt" "$cdrom_id")"
-            -drive "$(printf "$cdrom_drive_fmt" "$cdrom_id" "$OPTARG")"
-        )
-        ;;
-    s) opts+=(-virtfs "local,path=${OPTARG#*=},mount_tag=${OPTARG%%=*},security_model=passthrough") ;;
-    p) host_port=$OPTARG ;;
-    c) vsock_id=$OPTARG ;;
-    *) exit 2 ;;
+        m) mem_size=$OPTARG ;;
+        u) uefi_file=$OPTARG ;;
+        i)
+            boot_order=d
+            cdrom_id=$((cdrom_id_next++))
+            opts+=(
+                -device "$(printf "$cdrom_device_fmt" "$cdrom_id")"
+                -drive "$(printf "$cdrom_drive_fmt" "$cdrom_id" "$OPTARG")"
+            )
+            ;;
+        s) opts+=(-virtfs "local,path=${OPTARG#*=},mount_tag=${OPTARG%%=*},security_model=passthrough") ;;
+        p) host_port=$OPTARG ;;
+        c) vsock_id=$OPTARG ;;
+        *) exit 2 ;;
     esac
 done
 shift $((OPTIND - 1))

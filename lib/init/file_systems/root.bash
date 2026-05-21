@@ -2,11 +2,11 @@
 export BOOTSTRAP_FS_ROOT_KIND=${BOOTSTRAP_FS_ROOT_KIND:-ext4}
 
 case $BOOTSTRAP_FS_ROOT_KIND in
-ext4 | btrfs | xfs) ;;
-*)
-    printf "%s: unrecognized file system: %s\n" "$0" "$BOOTSTRAP_FS_ROOT_KIND" >&2
-    return 2
-    ;;
+    ext4 | btrfs | xfs) ;;
+    *)
+        printf "%s: unrecognized file system: %s\n" "$0" "$BOOTSTRAP_FS_ROOT_KIND" >&2
+        return 2
+        ;;
 esac
 
 if [[ ! -v BOOTSTRAP_FS_ROOT_OPTIONS ]]; then

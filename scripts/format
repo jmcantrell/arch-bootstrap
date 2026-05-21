@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-shfmt --write --indent 4 .
+shfmt --write --case-indent --indent 4 .

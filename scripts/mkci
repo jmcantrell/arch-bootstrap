@@ -52,24 +52,24 @@ done
 
 while getopts "m:f:r:e" opt; do
     case $opt in
-    m)
-        read -r _ target _ <<<"$OPTARG"
-        mount_lines[$target]=$OPTARG
-        ;;
-    f)
-        path=${OPTARG%%=*}
-        file=${OPTARG##*=}
-        if [[ $path == *@* ]]; then
-            permissions=${path##*@}
-            path=${path%%@*}
-        else
-            permissions=$(stat -L -c %a -- "$file")
-        fi
-        write_files+=("$(jo -- encoding=b64 path="$path" -s permissions="$permissions" content=%"$file")")
-        ;;
-    r) runcmd+=("$OPTARG") ;;
-    e) edit=1 ;;
-    *) exit 2 ;;
+        m)
+            read -r _ target _ <<<"$OPTARG"
+            mount_lines[$target]=$OPTARG
+            ;;
+        f)
+            path=${OPTARG%%=*}
+            file=${OPTARG##*=}
+            if [[ $path == *@* ]]; then
+                permissions=${path##*@}
+                path=${path%%@*}
+            else
+                permissions=$(stat -L -c %a -- "$file")
+            fi
+            write_files+=("$(jo -- encoding=b64 path="$path" -s permissions="$permissions" content=%"$file")")
+            ;;
+        r) runcmd+=("$OPTARG") ;;
+        e) edit=1 ;;
+        *) exit 2 ;;
     esac
 done
 shift $((OPTIND - 1))

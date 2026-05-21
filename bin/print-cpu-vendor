@@ -7,12 +7,12 @@ vendor_id=$(grep -m1 '^vendor_id\b' /proc/cpuinfo | awk '{ print $NF }')
 unset vendor_name
 
 case $vendor_id in
-GenuineIntel) vendor_name=intel ;;
-AuthenticAMD) vendor_name=amd ;;
-*)
-    printf "%s: unrecognized cpu vendor id: %s\n" "$0" "$vendor_id" >&2
-    exit 1
-    ;;
+    GenuineIntel) vendor_name=intel ;;
+    AuthenticAMD) vendor_name=amd ;;
+    *)
+        printf "%s: unrecognized cpu vendor id: %s\n" "$0" "$vendor_id" >&2
+        exit 1
+        ;;
 esac
 
 printf "%s" "$vendor_name"

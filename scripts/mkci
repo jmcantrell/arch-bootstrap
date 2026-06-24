@@ -164,8 +164,8 @@ if [[ -f \$local_script && -x \$local_script ]]; then
     "\$local_script"
 fi
 
-install -D -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log -- "\$log_file"
-install -DT -- "\$env_file" "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc/bootstrap/env
+mkdir -p "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc && mv -t "\$_" "\$env_file"
+mkdir -p "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log && mv -t "\$_" "\$log_file"
 
 if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     chroot-target mkdir -p /.snapshots/@

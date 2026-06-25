@@ -114,7 +114,7 @@ The generated image will be configured to do the following automatically on the 
   - Perform a [basic installation](#basic-installation) using the configuration in `/root/bootstrap.env`
   - Run the script `/root/bootstrap.local` after installation (if it exists and is executable)
   - Log output to `/root/bootstrap.log` and `/usr/local/var/log/bootstrap.log` on the target system
-  - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap/env` on the target system
+  - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap.env` on the target system
   - Create a root file system snapshot at `/.snapshots/@/bootstrap` (if using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes))
 
 To see complete usage details:

@@ -11,9 +11,12 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
-    -e           edit configuration before booting the live system
+    -e    edit configuration before booting the live system
 
-    -b           use BIOS boot firmware instead of UEFI
+    -b    use BIOS boot firmware instead of UEFI
+
+    -s    include user's ssh public keys
+    -k    include system's iwd pre-shared keys
 
     -d FILE      store disk image in FILE (default: ephemeral)
     -i FILE      store cloud-init ISO in FILE (default: ephemeral)
@@ -36,19 +39,19 @@ if (($# > 0)); then
     fi
 fi
 
-boot_firmware=${BOOTSTRAP_BOOT_FIRMWARE:-uefi}
+boot_firmware=${BOOTSTRAP_BOOT_FIRMWARE:-bios}
 unset uefi_file disk_file
 vm_opts=()
 mkvm_opts=()
 
-while getopts "bd:i:u:p:c:e" opt; do
+while getopts "bd:i:u:p:c:esk" opt; do
     case $opt in
         b) boot_firmware=bios ;;
         u) uefi_file=$OPTARG ;;
         d) disk_file=$OPTARG ;;
         p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
         i) mkvm_opts+=(-"$opt" "$OPTARG") ;;
-        e) mkvm_opts+=(-"$opt") ;;
+        e | s | k) mkvm_opts+=(-"$opt") ;;
         *) exit 2 ;;
     esac
 done

@@ -12,7 +12,10 @@ Usage:
     $self_name [OPTIONS] ISO_FILE
 
 Options:
-    -e            edit files before building
+    -e    edit files before building
+
+    -s    include user's ssh public keys
+    -k    include system's iwd pre-shared keys
 
     -m MOUNT      add MOUNT line to fstab
                   (where MOUNT is like 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
@@ -44,14 +47,19 @@ runcmd+=("systemctl stop reflector.service && rm /etc/systemd/system/reflector.s
 runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network && networkctl reload")
 
 edit=0
+include_ssh=0
+include_keys=0
 declare -A mount_lines=()
 
 for name in bootstrap{,_repo}; do
     mount_lines["/mnt/$name"]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
 done
 
-while getopts "m:f:r:e" opt; do
+while getopts "eskm:f:r:" opt; do
     case $opt in
+        e) edit=1 ;;
+        s) include_ssh=1 ;;
+        k) include_keys=1 ;;
         m)
             read -r _ target _ <<<"$OPTARG"
             mount_lines[$target]=$OPTARG
@@ -68,7 +76,6 @@ while getopts "m:f:r:e" opt; do
             write_files+=("$(jo -- encoding=b64 path="$path" -s permissions="$permissions" content=%"$file")")
             ;;
         r) runcmd+=("$OPTARG") ;;
-        e) edit=1 ;;
         *) exit 2 ;;
     esac
 done
@@ -88,35 +95,39 @@ for line in "${mount_lines[@]}"; do
     mounts+=("$(jo -a -- "${args[@]}")")
 done
 
-declare -A ssh_pubkeys=()
+if ((include_ssh)); then
+    declare -A ssh_pubkeys=()
 
-if reply=$(ssh-add -L); then
-    while IFS= read -r pubkey; do
-        ssh_pubkeys[$pubkey]=1
-    done <<<"$reply"
-fi
-
-if [[ -f ~/.ssh/authorized_keys ]]; then
-    while IFS= read -r pubkey; do
-        ssh_pubkeys[$pubkey]=1
-    done <~/.ssh/authorized_keys
-fi
-
-for pubkey_file in ~/.ssh/*.pub; do
-    privkey_file=${pubkey_file%.*}
-    if [[ -f $pubkey_file && -f $privkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s -- "$pubkey_file" -; then
-        ssh_pubkeys[$(<"$pubkey_file")]=1
+    if reply=$(ssh-add -L); then
+        while IFS= read -r pubkey; do
+            ssh_pubkeys[$pubkey]=1
+        done <<<"$reply"
     fi
-done
 
-users+=("$(jo name=root ssh_authorized_keys="$(jo -a "${!ssh_pubkeys[@]}")")")
+    if [[ -f ~/.ssh/authorized_keys ]]; then
+        while IFS= read -r pubkey; do
+            ssh_pubkeys[$pubkey]=1
+        done <~/.ssh/authorized_keys
+    fi
+
+    for pubkey_file in ~/.ssh/*.pub; do
+        privkey_file=${pubkey_file%.*}
+        if [[ -f $pubkey_file && -f $privkey_file ]] && ssh-keygen -y -f "$privkey_file" | cmp -s -- "$pubkey_file" -; then
+            ssh_pubkeys[$(<"$pubkey_file")]=1
+        fi
+    done
+
+    users+=("$(jo name=root ssh_authorized_keys="$(jo -a "${!ssh_pubkeys[@]}")")")
+fi
 
 should_restart_iwd=0
 
-while IFS= read -r -d '' psk_file; do
-    should_restart_iwd=1
-    write_files+=("$(sudo jo encoding=b64 path="$psk_file" content=%"$psk_file")")
-done < <(sudo find /var/lib/iwd -type f -name "*.psk" -print0)
+if ((include_keys)); then
+    while IFS= read -r -d '' psk_file; do
+        should_restart_iwd=1
+        write_files+=("$(sudo jo encoding=b64 path="$psk_file" content=%"$psk_file")")
+    done < <(sudo find /var/lib/iwd -type f -name "*.psk" -print0)
+fi
 
 if ((should_restart_iwd)); then
     runcmd+=("systemctl restart iwd.service")

@@ -8,12 +8,10 @@ usage="Test installation in a virtual machine.
 
 Usage:
     $self_name -h|--help
-    $self_name [OPTIONS] ISO_FILE
+    $self_name [OPTIONS] MEDIA
 
 Options:
     -e    edit configuration before booting the live system
-
-    -b    use BIOS boot firmware instead of UEFI
 
     -s    include user's ssh public keys
     -k    include system's iwd pre-shared keys
@@ -29,7 +27,7 @@ Options:
                  (default: same as ./scripts/vm)
 
 Arguments:
-    ISO_FILE     installation media ISO file
+    MEDIA    specify installation iso file
 "
 
 if (($# > 0)); then
@@ -44,9 +42,8 @@ unset uefi_file disk_file
 vm_opts=()
 mkvm_opts=()
 
-while getopts "bd:i:u:p:c:esk" opt; do
+while getopts "d:i:u:p:c:esk" opt; do
     case $opt in
-        b) boot_firmware=bios ;;
         u) uefi_file=$OPTARG ;;
         d) disk_file=$OPTARG ;;
         p | c) vm_opts+=(-"$opt" "$OPTARG") ;;

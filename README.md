@@ -89,7 +89,7 @@ To create a package repository at `/var/lib/bootstrap/repo` based on packages de
 
 To see complete usage details:
 
-    ./scripts/mkrepo --help
+    ./scripts/mkrepo -h
 
 ### Automated Installation
 
@@ -102,12 +102,7 @@ The generated image will be configured to do the following automatically on the 
 - Try to mount the following drives:
   - A drive with the label `BOOTSTRAP` at `/mnt/bootstrap`
   - A drive with the label `BOOTSTRAP_REPO` at `/mnt/bootstrap_repo`
-- Add any iwd pre-shared keys from the host system
 - Try to set the host name to [`$BOOTSTRAP_HOSTNAME`](#bootstrap_hostname)
-- Authorize any SSH public keys from the following places on the host system:
-  - Public keys added to the user's ssh-agent
-  - Public keys in the file `~/.ssh/authorized_keys`
-  - Public keys in `~/.ssh` belonging to the user
 - Enable Multicast DNS so the live system can be reached by host name
 - Create a configuration file at `/root/bootstrap.env` containing all `BOOTSTRAP_*` variables
 - Create an installation script at `/root/bootstrap` that does the following:
@@ -117,9 +112,17 @@ The generated image will be configured to do the following automatically on the 
   - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap.env` on the target system
   - Create a root file system snapshot at `/.snapshots/@/bootstrap` (if using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes))
 
+Optionally, the script can be requested to do the following:
+
+- Add any iwd pre-shared keys from the host system (requires sudo)
+- Authorize any SSH public keys from the following places on the host system:
+  - Public keys added to the user's ssh-agent
+  - Public keys in the file `~/.ssh/authorized_keys`
+  - Public keys in `~/.ssh` belonging to the user
+
 To see complete usage details:
 
-    ./scripts/mkci --help
+    ./scripts/mkci -h
 
 ### Virtual Machine Installation
 
@@ -155,7 +158,7 @@ The following settings are controlled by the script and will be ignored.
 
 To see complete usage details:
 
-    ./scripts/mkvm --help
+    ./scripts/mkvm -h
 
 ### Remote Installation
 
@@ -203,7 +206,7 @@ The virtual machine can be configured as you would expect:
 
 To see complete usage details:
 
-    ./scripts/test --help
+    ./scripts/test -h
 
 ## Configuration
 

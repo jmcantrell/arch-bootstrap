@@ -10,7 +10,7 @@ usage="Create a virtual machine.
 
 Usage:
     $self_name -h|--help
-    $self_name [OPTIONS] ISO_FILE DISK_FILE
+    $self_name [OPTIONS] MEDIA IMAGE
 
 Options:
     -e    edit configuration before booting the live system
@@ -30,8 +30,8 @@ Options:
                  (default: same as ./scripts/vm)
 
 Arguments:
-    ISO_FILE     installation media ISO file
-    DISK_FILE    data disk image file
+    MEDIA     specify installation iso file
+    IMAGE     specify main disk image file
 "
 
 if (($# > 0)); then

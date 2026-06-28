@@ -12,7 +12,7 @@ usage="Run a virtual machine.
 
 Usage:
     $self_name -h|--help
-    $self_name [OPTIONS] DISK_FILE
+    $self_name [OPTIONS] IMAGE
 
 Options:
     -m SIZE         specify memory size (default: $mem_size)
@@ -29,7 +29,7 @@ Options:
                     (default: $vsock_id)
 
 Arguments:
-    DISK_FILE       data disk image file
+    IMAGE    specify main disk image file
 "
 
 if (($# > 0)); then

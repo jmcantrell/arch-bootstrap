@@ -9,7 +9,7 @@ usage="Create a cloud-init ISO file.
 
 Usage:
     $self_name -h|--help
-    $self_name [OPTIONS] ISO_FILE
+    $self_name [OPTIONS] FILE
 
 Options:
     -e    edit files before building
@@ -26,7 +26,7 @@ Options:
     -r COMMAND    add COMMAND to be run after boot
 
 Arguments:
-    ISO_FILE      write cloud-init iso to ISO_FILE
+    FILE    write cloud-init iso to FILE
 "
 
 if (($# > 0)); then

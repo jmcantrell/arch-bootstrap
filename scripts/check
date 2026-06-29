@@ -3,7 +3,7 @@
 set -euo pipefail
 
 while IFS= read -r -d '' file; do
-    if [[ $file == *.bash ]] || head -n1 -- "$file" | grep -qxF "#!/usr/bin/env bash"; then
+    if [[ $file =~ \.(ba)?sh$ || $(head -n1 -- "$file") =~ ^#!/usr/bin/env\ (ba)?sh$ ]]; then
         printf "%s\0" "$file"
     fi
 done < <(git ls-files -z) | xargs -r0 shellcheck --

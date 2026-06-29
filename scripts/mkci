@@ -5,17 +5,18 @@ shopt -s nullglob
 
 self_name=${0##*/}
 
-usage="Create a cloud-init ISO file.
+usage="Create a cloud-init iso file.
 
 Usage:
-    $self_name -h|--help
     $self_name [OPTIONS] FILE
 
 Options:
+    -h    show this help message and exit
+
     -e    edit files before building
 
-    -s    include user's ssh public keys
-    -k    include system's iwd pre-shared keys
+    -s    include the user's ssh public keys
+    -k    include the system's iwd pre-shared keys
 
     -m MOUNT      add MOUNT line to fstab
                   (where MOUNT is like 'SOURCE TARGET[ TYPE[ OPTIONS[ DUMP[ PASS]]]]')
@@ -28,13 +29,6 @@ Options:
 Arguments:
     FILE    write cloud-init iso to FILE
 "
-
-if (($# > 0)); then
-    if [[ $1 == -h || $1 == --help ]]; then
-        printf "%s\n" "$usage"
-        exit
-    fi
-fi
 
 users=()
 mounts=()
@@ -55,7 +49,7 @@ for name in bootstrap{,_repo}; do
     mount_lines["/mnt/$name"]="LABEL=${name@U} /mnt/$name auto defaults,nofail 0 2"
 done
 
-while getopts "eskm:f:r:" opt; do
+while getopts "eskm:f:r:h" opt; do
     case $opt in
         e) edit=1 ;;
         s) include_ssh=1 ;;
@@ -76,6 +70,10 @@ while getopts "eskm:f:r:" opt; do
             write_files+=("$(jo -- encoding=b64 path="$path" -s permissions="$permissions" content=%"$file")")
             ;;
         r) runcmd+=("$OPTARG") ;;
+        h)
+            printf "%s\n" "$usage"
+            exit
+            ;;
         *) exit 2 ;;
     esac
 done
@@ -147,36 +145,29 @@ cat >"$script_file" <<EOF
 
 set -euo pipefail
 
-cd /root
+exec > >(tee /root/bootstrap.log) 2>&1
 
-log_file=\$PWD/bootstrap.log
-env_file=\$PWD/bootstrap.env
-local_script=\$PWD/bootstrap.local
-
-exec > >(tee -- "\$log_file") 2>&1
-
-source "\$env_file"
+source /root/bootstrap.env
 
 cd /mnt/bootstrap
-
 source ./init
-
 print-config
-
 if [[ ! -v BOOTSTRAP_PACKAGE_REPO_SERVER ]]; then
     refresh-mirrors
 fi
-
 create-target
 install-target
 
-if [[ -f \$local_script && -x \$local_script ]]; then
-    cd /root
-    "\$local_script"
+cd /root
+if [[ -f ./bootstrap.local && -x ./bootstrap.local ]]; then
+    ./bootstrap.local
 fi
 
-mkdir -p "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc && mv -t "\$_" "\$env_file"
-mkdir -p "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log && mv -t "\$_" "\$log_file"
+cd "\$BOOTSTRAP_TARGET_MOUNT_DIR"
+mkdir -p ./usr/local/etc
+cp -t ./usr/local/etc /root/bootstrap.env
+mkdir -p ./usr/local/var/log
+cp -t ./usr/local/var/log /root/bootstrap.log
 
 if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     chroot-target mkdir -p /.snapshots/@

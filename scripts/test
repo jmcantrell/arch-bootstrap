@@ -7,14 +7,15 @@ self_name=${0##*/}
 usage="Test installation in a virtual machine.
 
 Usage:
-    $self_name -h|--help
     $self_name [OPTIONS] MEDIA
 
 Options:
+    -h    show this help message and exit
+
     -e    edit configuration before booting the live system
 
-    -s    include user's ssh public keys
-    -k    include system's iwd pre-shared keys
+    -s    include the user's ssh public keys
+    -k    include the system's iwd pre-shared keys
 
     -d FILE      store disk image in FILE (default: ephemeral)
     -i FILE      store cloud-init ISO in FILE (default: ephemeral)
@@ -30,25 +31,22 @@ Arguments:
     MEDIA    specify installation iso file
 "
 
-if (($# > 0)); then
-    if [[ $1 == -h || $1 == --help ]]; then
-        printf "%s\n" "$usage"
-        exit
-    fi
-fi
-
-boot_firmware=${BOOTSTRAP_BOOT_FIRMWARE:-bios}
-unset uefi_file disk_file
+unset uefi_file
+unset disk_file
 vm_opts=()
 mkvm_opts=()
 
-while getopts "d:i:u:p:c:esk" opt; do
+while getopts "d:i:u:p:c:eskh" opt; do
     case $opt in
         u) uefi_file=$OPTARG ;;
         d) disk_file=$OPTARG ;;
         p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
         i) mkvm_opts+=(-"$opt" "$OPTARG") ;;
         e | s | k) mkvm_opts+=(-"$opt") ;;
+        h)
+            printf "%s\n" "$usage"
+            exit
+            ;;
         *) exit 2 ;;
     esac
 done
@@ -59,7 +57,7 @@ media_file=${1:?missing media file}
 temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
 trap 'rm -rf -- "$temp_dir"' EXIT
 
-if [[ $boot_firmware == uefi ]]; then
+if [[ ${BOOTSTRAP_BOOT_FIRMWARE:-} == uefi ]]; then
     if [[ ! -v uefi_file ]]; then
         uefi_file=$temp_dir/uefi_vars.fd
     fi

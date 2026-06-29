@@ -5,19 +5,6 @@ shopt -s globstar
 
 self_name=${0##*/}
 
-usage="Parse documentation from source files and embed into the README.
-
-Usage:
-    $self_name [-h|--help]
-"
-
-if (($# > 0)); then
-    if [[ $1 == -h || $1 == --help ]]; then
-        printf "%s\n" "$usage"
-        exit
-    fi
-fi
-
 input_file=./README.md
 
 temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)

@@ -9,14 +9,15 @@ repo_dir=/var/lib/bootstrap/repo
 usage="Create a virtual machine.
 
 Usage:
-    $self_name -h|--help
     $self_name [OPTIONS] MEDIA IMAGE
 
 Options:
+    -h    show this help message and exit
+
     -e    edit configuration before booting the live system
 
-    -s    include user's ssh public keys
-    -k    include system's iwd pre-shared keys
+    -s    include the user's ssh public keys
+    -k    include the system's iwd pre-shared keys
 
     -m SIZE      specify memory size (default: same as ./scripts/vm)
 
@@ -34,13 +35,6 @@ Arguments:
     IMAGE     specify main disk image file
 "
 
-if (($# > 0)); then
-    if [[ $1 == -h || $1 == --help ]]; then
-        printf "%s\n" "$usage"
-        exit
-    fi
-fi
-
 temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
 trap 'rm -rf -- "$temp_dir"' EXIT
 
@@ -49,12 +43,16 @@ vm_opts=()
 disk_file=$temp_dir/disk.cow
 cidata_file=$temp_dir/cidata.iso
 
-while getopts "m:i:u:p:c:esk" opt; do
+while getopts "m:i:u:p:c:eskh" opt; do
     case $opt in
         i) cidata_file=$OPTARG ;;
         m) vm_opts+=(-"$opt") ;;
         u | p | c) vm_opts+=(-"$opt" "$OPTARG") ;;
         e | s | k) ci_opts+=(-"$opt") ;;
+        h)
+            printf "%s\n" "$usage"
+            exit
+            ;;
         *) exit 2 ;;
     esac
 done

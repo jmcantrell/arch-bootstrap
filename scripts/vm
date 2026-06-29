@@ -11,10 +11,11 @@ vsock_id=42
 usage="Run a virtual machine.
 
 Usage:
-    $self_name -h|--help
     $self_name [OPTIONS] IMAGE
 
 Options:
+    -h    show this help message and exit
+
     -m SIZE         specify memory size (default: $mem_size)
 
     -i FILE         add iso FILE as a cdrom
@@ -32,20 +33,14 @@ Arguments:
     IMAGE    specify main disk image file
 "
 
-if (($# > 0)); then
-    if [[ $1 == -h || $1 == --help ]]; then
-        printf "%s\n" "$usage"
-        exit
-    fi
-fi
-
 opts=()
-unset boot_order uefi_file
+unset boot_order
+unset uefi_file
 cdrom_id_next=0
 cdrom_device_fmt="scsi-cd,bus=scsi0.0,drive=cdrom%d"
 cdrom_drive_fmt="id=cdrom%d,if=none,format=raw,media=cdrom,read-only=on,file=%s"
 
-while getopts "m:i:u:s:p:c:" opt; do
+while getopts "m:i:u:s:p:c:h" opt; do
     case $opt in
         m) mem_size=$OPTARG ;;
         u) uefi_file=$OPTARG ;;
@@ -60,6 +55,10 @@ while getopts "m:i:u:s:p:c:" opt; do
         s) opts+=(-virtfs "local,path=${OPTARG#*=},mount_tag=${OPTARG%%=*},security_model=passthrough") ;;
         p) host_port=$OPTARG ;;
         c) vsock_id=$OPTARG ;;
+        h)
+            printf "%s\n" "$usage"
+            exit
+            ;;
         *) exit 2 ;;
     esac
 done

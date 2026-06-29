@@ -10,20 +10,26 @@ default_repo_dir=/var/lib/bootstrap/repo
 usage="Create a custom repository for bootstrapping.
 
 Usage:
-    $self_name -h|--help
     $self_name [DIRECTORY]
+
+Options:
+    -h    show this help message and exit
 
 Arguments:
     DIRECTORY    create repository in DIRECTORY
                  (default: ${default_repo_dir@Q})
 "
 
-if (($# > 0)); then
-    if [[ $1 == -h || $1 == --help ]]; then
-        printf "%s\n" "$usage"
-        exit
-    fi
-fi
+while getopts "h" opt; do
+    case $opt in
+        h)
+            printf "%s\n" "$usage"
+            exit
+            ;;
+        *) exit 64 ;;
+    esac
+done
+shift $((OPTIND - 1))
 
 ((EUID == 0)) || exec sudo -- "$0" "$@"
 
@@ -38,4 +44,6 @@ find ./config/packages -type f -exec cat -- {} + | sort -u |
 
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 
-repo-add --new --remove --include-sigs -- "$repo_dir"/bootstrap.db.tar.zst "$repo_dir"/*.pkg.tar.zst
+repo-add --new --remove --include-sigs -- \
+    "$repo_dir"/bootstrap.db.tar.zst \
+    "$repo_dir"/*.pkg.tar.zst

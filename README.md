@@ -112,14 +112,6 @@ The generated image will be configured to do the following automatically on the 
   - Copy the configuration file `/root/bootstrap.env` to `/usr/local/etc/bootstrap.env` on the target system
   - Create a root file system snapshot at `/.snapshots/@/bootstrap` (if using [btrfs](#bootstrap_fs_root_kind) [subvolumes](#bootstrap_fs_root_enable_subvolumes))
 
-Optionally, the script can be requested to do the following:
-
-- Add any iwd pre-shared keys from the host system (requires sudo)
-- Authorize any SSH public keys from the following places on the host system:
-  - Public keys added to the user's ssh-agent
-  - Public keys in the file `~/.ssh/authorized_keys`
-  - Public keys in `~/.ssh` belonging to the user
-
 To see complete usage details:
 
     ./scripts/mkci -h

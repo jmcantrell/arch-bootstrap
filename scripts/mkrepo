@@ -40,7 +40,7 @@ trap 'rm -rf "$temp_dir"' EXIT
 mkdir -p "$temp_dir"
 
 find ./config/packages -type f -exec cat -- {} + | sort -u |
-    pacman -Syuw --noconfirm --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
+    pacman -Syuw --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
 
 paccache --verbose --remove --keep 1 --cachedir "$repo_dir"
 

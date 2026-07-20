@@ -163,11 +163,8 @@ if [[ -f ./bootstrap.local && -x ./bootstrap.local ]]; then
     ./bootstrap.local
 fi
 
-cd "\$BOOTSTRAP_TARGET_MOUNT_DIR"
-mkdir -p ./usr/local/etc
-cp -t ./usr/local/etc /root/bootstrap.env
-mkdir -p ./usr/local/var/log
-cp -t ./usr/local/var/log /root/bootstrap.log
+install -D -m600 -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/etc /root/bootstrap.env
+install -D -m600 -t "\$BOOTSTRAP_TARGET_MOUNT_DIR"/usr/local/var/log /root/bootstrap.log
 
 if [[ \$BOOTSTRAP_FS_ROOT_KIND == btrfs && -v BOOTSTRAP_FS_ROOT_ENABLE_SUBVOLUMES ]]; then
     chroot-target mkdir -p /.snapshots/@

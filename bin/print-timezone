@@ -4,7 +4,9 @@ set -euo pipefail
 
 link=/etc/localtime
 
-[[ -L $link ]] || exit 9
+if [[ ! -L $link ]]; then
+    exit 9
+fi
 
 IFS= read -r -d '' file < <(readlink -z -- "$link")
 

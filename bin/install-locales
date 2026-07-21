@@ -4,7 +4,9 @@ set -euo pipefail
 
 config_file=$BOOTSTRAP_CONFIG_DIR/locales
 
-[[ -f $config_file ]] || exit 0
+if [[ ! -f $config_file ]]; then
+    exit
+fi
 
 while IFS= read -r lang; do
     sed -i "/^#$lang/s/#//" "$BOOTSTRAP_TARGET_MOUNT_DIR"/etc/locale.gen

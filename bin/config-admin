@@ -9,7 +9,7 @@ chroot-target useradd -m -G users,"$BOOTSTRAP_ADMIN_GROUP" -- "$BOOTSTRAP_ADMIN_
 
 if [[ -f ~/.ssh/authorized_keys ]]; then
     ssh_dir=/home/$BOOTSTRAP_ADMIN_LOGIN/.ssh
-    rsync -va ~/.ssh/authorized_keys "$BOOTSTRAP_TARGET_MOUNT_DIR"/"${ssh_dir#/}"/
+    rsync -va -- ~/.ssh/authorized_keys "$BOOTSTRAP_TARGET_MOUNT_DIR"/"${ssh_dir#/}"/
     chroot-target chown -vR -- "$BOOTSTRAP_ADMIN_LOGIN:$BOOTSTRAP_ADMIN_LOGIN" "$ssh_dir"
 fi
 

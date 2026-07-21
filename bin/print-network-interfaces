@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+shopt -s nullglob
 
-find /sys/class/net -mindepth 1 -maxdepth 1 "$@" \! -name lo -printf "%P\n"
+for file in /sys/class/net/*; do
+    name=${file##*/}
+    if [[ $name != lo ]]; then
+        printf "%s\n" "$name"
+    fi
+done

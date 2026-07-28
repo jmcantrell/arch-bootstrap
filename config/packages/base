@@ -1,4 +1,5 @@
 base
+iptables
 linux
 linux-firmware
 linux-lts

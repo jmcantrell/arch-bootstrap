@@ -19,7 +19,6 @@ for config_name in "${config_names[@]}"; do
     install-template /etc/systemd/network/"$file_name".d/"$config_name".conf
 done
 
-rsync -va /var/lib/iwd/ \
-    "$BOOTSTRAP_TARGET_MOUNT_DIR"/var/lib/iwd/
+rsync -va {,"$BOOTSTRAP_TARGET_MOUNT_DIR"}/var/lib/iwd/
 
 chroot-target systemctl -v enable iwd.service

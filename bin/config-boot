@@ -19,7 +19,7 @@ if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
         cryptdevice=UUID="$(blkid -s UUID -o value -- "$BOOTSTRAP_LUKS_DEVICE"):$BOOTSTRAP_LUKS_MAPPER_NAME${BOOTSTRAP_ENABLE_TRIM:+:allow-discards}"
         cryptkey=rootfs:"$BOOTSTRAP_LUKS_INITRD_KEY_FILE"
     )
-    preload_modules+=(cryptodisk luks)
+    preload_modules+=(cryptodisk luks2)
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=y
 else
     export BOOTSTRAP_GRUB_ENABLE_CRYPTODISK=n

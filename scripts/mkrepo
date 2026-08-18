@@ -39,6 +39,8 @@ temp_dir=/tmp/bootstrap-db
 trap 'rm -rf "$temp_dir"' EXIT
 mkdir -p "$temp_dir"
 
+mkdir -p "$repo_dir"
+
 find ./config/packages -type f -exec cat -- {} + | sort -u |
     pacman -Syuw --needed --dbpath="$temp_dir" --cachedir="$repo_dir" -
 

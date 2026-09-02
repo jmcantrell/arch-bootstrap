@@ -197,14 +197,12 @@ umask 077
 cidata_dir=$temp_dir/cidata
 mkdir -p -- "$cidata_dir"
 
-cat >"$cidata_dir"/meta-data <<EOF
-${BOOTSTRAP_HOSTNAME:+local-hostname: $BOOTSTRAP_HOSTNAME}
-EOF
+printf "%s\n" "${BOOTSTRAP_HOSTNAME:+local-hostname: $BOOTSTRAP_HOSTNAME}" >"$cidata_dir"/meta-data
 
-cat >"$cidata_dir"/user-data <<EOF
-#cloud-config
-$(jo -- "${user_data[@]}" | yq -p json)
-EOF
+{
+    printf '#cloud-config\n'
+    jo -- "${user_data[@]}" | yq -p json
+} >"$cidata_dir"/user-data
 
 if ((edit)); then
     $EDITOR -- "$env_file" "$script_file" "$cidata_dir"/{user,meta}-data

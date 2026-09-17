@@ -8,7 +8,7 @@ file=$(realpath -e -- "${1:?missing file}")
 
 if [[ $file == "$templates_dir"/* ]]; then
     template_file=$file
-    system_file=${file#"$templates_dir"/}
+    system_file=${file#"$templates_dir"}
 else
     template_file=$templates_dir/${file##/}
     system_file=$file

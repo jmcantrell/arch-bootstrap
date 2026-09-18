@@ -31,7 +31,9 @@ while getopts "h" opt; do
 done
 shift $((OPTIND - 1))
 
-((EUID == 0)) || exec sudo -- "$0" "$@"
+if ((EUID != 0)); then
+    exec sudo -- "$0" "$@"
+fi
 
 repo_dir=${1:-$default_repo_dir}
 

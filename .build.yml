@@ -1,0 +1,10 @@
+---
+image: archlinux
+packages:
+  - python-pipx
+sources:
+  - https://git.sr.ht/~jmcantrell/arch-bootstrap
+tasks:
+  - lint-commits: |
+      cd arch-bootstrap
+      pipx run --spec gitlint-core gitlint --ignore-stdin --commits "origin/main..HEAD"

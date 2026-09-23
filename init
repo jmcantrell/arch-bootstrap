@@ -4,18 +4,18 @@ export BOOTSTRAP_CONFIG_DIR=$BOOTSTRAP_ROOT_DIR/config
 
 export PATH=$BOOTSTRAP_ROOT_DIR/bin:$PATH
 
-source "$BOOTSTRAP_LIB_DIR"/init/base.bash
+source "$BOOTSTRAP_LIB_DIR"/base.bash
 
 if [[ -v BOOTSTRAP_ENABLE_LUKS ]]; then
-    source "$BOOTSTRAP_LIB_DIR"/init/luks.bash
+    source "$BOOTSTRAP_LIB_DIR"/luks.bash
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_LVM ]]; then
-    source "$BOOTSTRAP_LIB_DIR"/init/lvm.bash
+    source "$BOOTSTRAP_LIB_DIR"/lvm.bash
 fi
 
 if [[ -v BOOTSTRAP_ENABLE_SWAP ]]; then
-    source "$BOOTSTRAP_LIB_DIR"/init/swap.bash
+    source "$BOOTSTRAP_LIB_DIR"/swap.bash
 fi
 
 export BOOTSTRAP_BOOT_DEVICE=$BOOTSTRAP_PART_BOOT_DEVICE

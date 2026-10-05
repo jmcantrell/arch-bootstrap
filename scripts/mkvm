@@ -35,7 +35,7 @@ Arguments:
     IMAGE     specify main disk image file
 "
 
-temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
+temp_dir=$(mktemp -td -- arch-bootstrap-"$self_name.$$".XXXXXXXXXX)
 trap 'rm -rf -- "$temp_dir"' EXIT
 
 ci_opts=()

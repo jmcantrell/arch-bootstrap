@@ -7,7 +7,7 @@ self_name=${0##*/}
 
 input_file=./README.md
 
-temp_dir=$(mktemp -td -- "$self_name.$$".XXXXXXXXXX)
+temp_dir=$(mktemp -td -- arch-bootstrap-"$self_name.$$".XXXXXXXXXX)
 trap 'rm -rf -- "$temp_dir"' EXIT
 
 csplit -ks -n1 -f "$temp_dir"/before -- "$input_file" '/<!-- CONFIG START -->/1'

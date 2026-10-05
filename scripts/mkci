@@ -40,9 +40,9 @@ write_files+=("$(jo -- path=/etc/systemd/system/reflector.service -s permissions
 runcmd+=("systemctl stop reflector.service && rm /etc/systemd/system/reflector.service && systemctl daemon-reload")
 runcmd+=("sed -i '/^\[Network\]/a MulticastDNS=yes' /etc/systemd/network/*.network && networkctl reload")
 
-edit=0
-include_ssh=0
-include_keys=0
+unset edit
+unset include_ssh
+unset include_keys
 declare -A mount_lines=()
 
 for name in bootstrap{,_repo}; do
@@ -51,9 +51,9 @@ done
 
 while getopts "eskm:f:r:h" opt; do
     case $opt in
-        e) edit=1 ;;
-        s) include_ssh=1 ;;
-        k) include_keys=1 ;;
+        e) edit=true ;;
+        s) include_ssh=true ;;
+        k) include_keys=true ;;
         m)
             read -r _ target _ <<<"$OPTARG"
             mount_lines[$target]=$OPTARG
@@ -93,7 +93,7 @@ for line in "${mount_lines[@]}"; do
     mounts+=("$(jo -a -- "${args[@]}")")
 done
 
-if ((include_ssh)); then
+if [[ -v include_ssh ]]; then
     declare -A ssh_pubkeys=()
 
     if reply=$(ssh-add -L); then
@@ -118,16 +118,16 @@ if ((include_ssh)); then
     users+=("$(jo name=root ssh_authorized_keys="$(jo -a "${!ssh_pubkeys[@]}")")")
 fi
 
-should_restart_iwd=0
+unset should_restart_iwd
 
-if ((include_keys)); then
+if [[ -v include_keys ]]; then
     while IFS= read -r -d '' psk_file; do
         should_restart_iwd=1
         write_files+=("$(sudo jo encoding=b64 path="$psk_file" content=%"$psk_file")")
     done < <(sudo find /var/lib/iwd -type f -name "*.psk" -print0)
 fi
 
-if ((should_restart_iwd)); then
+if [[ -v should_restart_iwd ]]; then
     runcmd+=("systemctl restart iwd.service")
 fi
 
@@ -204,7 +204,7 @@ printf "%s\n" "${BOOTSTRAP_HOSTNAME:+local-hostname: $BOOTSTRAP_HOSTNAME}" >"$ci
     jo -- "${user_data[@]}" | yq -p json
 } >"$cidata_dir"/user-data
 
-if ((edit)); then
+if [[ -v edit ]]; then
     $EDITOR -- "$env_file" "$script_file" "$cidata_dir"/{user,meta}-data
 fi
 
